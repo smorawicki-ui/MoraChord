@@ -35,13 +35,12 @@
     
     .main-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* --- TOP BAR --- */
     .top-section {
       background: var(--panel);
       padding: 10px 16px; display: flex; flex-direction: column; gap: 8px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 10;
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-      overflow-y: auto; max-height: 48dvh;
+      overflow-y: auto; max-height: 50dvh;
     }
     .header-row { display: flex; align-items: center; justify-content: space-between; }
     
@@ -73,9 +72,8 @@
     }
     .custom-fm-grid.visible { display: grid; }
 
-    /* SECUENCIADOR CUSTOM EXPANDIDO A 6 PISTAS */
     .custom-drum-sequencer {
-      display: none; flex-direction: column; gap: 4px; padding: 8px;
+      display: none; flex-direction: column; gap: 6px; padding: 10px;
       background: #070d14; border-radius: 12px; border: 1px solid var(--accent); margin-top: 4px;
     }
     .custom-drum-sequencer.visible { display: flex; }
@@ -83,9 +81,9 @@
     .seq-label { font-size: 0.55rem; font-weight: bold; width: 55px; color: var(--accent-hover); letter-spacing: 0.5px;}
     .seq-pads { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; flex: 1; }
     .seq-pad {
-      height: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; cursor: pointer;
+      height: 22px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
     }
-    .seq-pad.active { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+    .seq-pad.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
 
     .param-group { display: flex; flex-direction: column; gap: 4px; }
     .param-group label { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px;}
@@ -101,16 +99,14 @@
       border-radius: 50%; box-shadow: var(--shadow-out); border: 2px solid var(--accent-hover);
     }
 
-    /* DRUM ROW */
     .drum-row {
-      display: flex; align-items: center; gap: 12px; margin-top: 4px; 
-      padding-top: 10px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px; margin-top: 4px; 
+      padding-top: 10px; border-top: 1px solid var(--border); flex-wrap: wrap;
     }
     #btn-drum-play { background: var(--accent); color: #fff; box-shadow: var(--shadow-out); font-weight: 800; letter-spacing: 1px; }
     #btn-drum-play.playing { background: #e11d48; border-color: transparent; }
     #drum-pattern, #drum-kit, #po-sync-select { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
 
-    /* --- MIDDLE SECTION --- */
     .middle-section { flex: 1; display: flex; padding: 16px; gap: 16px; }
 
     .joystick-container {
@@ -136,7 +132,6 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
-    /* KEYS: Grilla */
     .keys-container { flex: 1; display: grid; gap: 10px; }
     
     .keys-container.layout-diatonic {
@@ -187,7 +182,6 @@
     .btn-key .chord-name { font-size: 1.3rem; font-weight: 800; pointer-events: none; letter-spacing: -0.5px;}
     .btn-key .roman { font-size: 0.6rem; color: inherit; opacity: 0.7; font-weight: 600; margin-top: 2px; pointer-events: none; }
 
-    /* --- STRUMPLATE --- */
     .strum-section {
       height: 100dvh; width: 140px; background: var(--bg); padding: 16px 12px; 
       display: flex; flex-direction: column; border-left: 2px solid var(--border);
@@ -260,7 +254,7 @@
         <div class="param-group"><label><span>Release</span> <span id="val-rel">1.5s</span></label><input type="range" id="p-release" min="0.1" max="4.0" step="0.1" value="1.5"></div>
         <div class="param-group"><label><span>Cutoff</span> <span id="val-cut">800Hz</span></label><input type="range" id="p-cutoff" min="200" max="4000" step="50" value="800"></div>
         <div class="param-group"><label><span>Echo Vol</span> <span id="val-echo">20%</span></label><input type="range" id="p-echo" min="0" max="0.8" step="0.05" value="0.2"></div>
-        <div class="param-group"><label><span>Glide (Speed)</span> <span id="val-glide">0.05s</span></label><input type="range" id="p-glide" min="0.01" max="0.5" step="0.01" value="0.05"></div>
+        <div class="param-group"><label><span>Glide</span> <span id="val-glide">0.05s</span></label><input type="range" id="p-glide" min="0.01" max="0.5" step="0.01" value="0.05"></div>
       </div>
 
       <div class="custom-fm-grid" id="custom-fm-panel">
@@ -292,7 +286,12 @@
         </div>
       </div>
 
+      <!-- SECUENCIADOR CON BOTÓN DE OCULTAR -->
       <div class="custom-drum-sequencer" id="custom-drum-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+          <span style="font-size:0.7rem; color:var(--accent); font-weight:bold;">SECUENCIADOR (16 PASOS)</span>
+          <button id="btn-close-seq" class="ctrl-btn" style="padding: 4px 10px; background: var(--bg); border: 1px solid var(--border);">Ocultar ▴</button>
+        </div>
         <div class="seq-row"><div class="seq-label">KICK</div><div class="seq-pads" id="seq-kick-pads"></div></div>
         <div class="seq-row"><div class="seq-label">DEEP BD</div><div class="seq-pads" id="seq-deepkick-pads"></div></div>
         <div class="seq-row"><div class="seq-label">SNARE</div><div class="seq-pads" id="seq-snare-pads"></div></div>
@@ -302,37 +301,39 @@
       </div>
 
       <div class="drum-row">
-        <div style="display: flex; gap: 8px;">
-          <button class="ctrl-btn" id="btn-drum-play">▶ PLAY BEAT</button>
-          
-          <select id="po-sync-select" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
-            <option value="off">Sync PO: OFF</option>
-            <option value="on">Sync PO: ON (Audio Pulse)</option>
-          </select>
+        <button class="ctrl-btn" id="btn-drum-play">▶ PLAY BEAT</button>
+        
+        <select id="po-sync-select" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
+          <option value="off">Sync PO: OFF</option>
+          <option value="on">Sync PO: ON (Audio Pulse)</option>
+        </select>
 
-          <select id="drum-kit" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
-            <option value="classic">Kit Clásico</option>
-            <option value="chiptune">Kit 8-Bit</option>
-          </select>
+        <select id="drum-kit" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
+          <option value="classic">Kit Clásico</option>
+          <option value="chiptune">Kit 8-Bit</option>
+        </select>
 
-          <select id="drum-pattern" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
-            <option value="rock">Rock Básico</option>
-            <option value="rockalt">Rock Alternativo</option>
-            <option value="disco">Disco / House</option>
-            <option value="synth">Synthwave</option>
-            <option value="hiphop">Hip-Hop / Boom Bap</option>
-            <option value="trap">Trap</option>
-            <option value="dnb">Drum & Bass</option>
-            <option value="reggaeton">Reggaeton / Dembow</option>
-            <option value="cumbia">Cumbia</option>
-            <option value="salsa">Salsa</option>
-            <option value="bossa">Bossa Nova</option>
-            <option value="reggae">Reggae / Ska</option>
-            <option value="waltz">Waltz (3/4)</option>
-            <option value="swing">Jazz Swing</option>
-            <option value="custom">✏️ Personalizado (16 pasos)</option>
-          </select>
-        </div>
+        <select id="drum-pattern" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
+          <option value="rock">Rock Básico</option>
+          <option value="rockalt">Rock Alternativo</option>
+          <option value="disco">Disco / House</option>
+          <option value="synth">Synthwave</option>
+          <option value="hiphop">Hip-Hop / Boom Bap</option>
+          <option value="trap">Trap</option>
+          <option value="dnb">Drum & Bass</option>
+          <option value="reggaeton">Reggaeton / Dembow</option>
+          <option value="cumbia">Cumbia</option>
+          <option value="salsa">Salsa</option>
+          <option value="bossa">Bossa Nova</option>
+          <option value="reggae">Reggae / Ska</option>
+          <option value="waltz">Waltz (3/4)</option>
+          <option value="swing">Jazz Swing</option>
+          <option value="custom">✏️ Personalizado (16 pasos)</option>
+        </select>
+
+        <!-- Botón para volver a abrir el panel si se ocultó -->
+        <button id="btn-edit-seq" class="ctrl-btn" style="display:none; background: var(--bg); border: 1px solid var(--accent);">⚙️ Editar</button>
+
         <div class="param-group" style="flex: 1;"><label><span>Tempo</span> <span id="val-bpm">120 BPM</span></label><input type="range" id="p-bpm" min="60" max="200" step="1" value="120"></div>
         <div class="param-group" style="flex: 1;"><label><span>Vol. Drum</span> <span id="val-dvol">60%</span></label><input type="range" id="p-drum-vol" min="0" max="1" step="0.05" value="0.6"></div>
       </div>
@@ -399,7 +400,6 @@
     ];
     let currentScaleIdx = 0;
 
-    // --- SECUENCIADOR CUSTOM DE 16 PASOS (6 PISTAS) ---
     const customSteps = {
       kick:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
       deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
@@ -429,13 +429,21 @@
 
     const patternSelect = document.getElementById('drum-pattern');
     const customDrumPanel = document.getElementById('custom-drum-panel');
+    const btnEditSeq = document.getElementById('btn-edit-seq');
+    const btnCloseSeq = document.getElementById('btn-close-seq');
+
     patternSelect.addEventListener('change', (e) => {
       if (e.target.value === 'custom') {
         customDrumPanel.classList.add('visible');
+        btnEditSeq.style.display = 'block';
       } else {
         customDrumPanel.classList.remove('visible');
+        btnEditSeq.style.display = 'none';
       }
     });
+
+    btnEditSeq.addEventListener('pointerdown', () => { customDrumPanel.classList.add('visible'); });
+    btnCloseSeq.addEventListener('pointerdown', () => { customDrumPanel.classList.remove('visible'); });
 
     const customParams = { carrierWave: 'sine', modulatorWave: 'sine', fmRatio: 2.0, fmDepth: 300 };
 
@@ -498,6 +506,10 @@
       return distortionCurve;
     }
 
+    // MEMORIA CACHÉ PARA EVITAR "PAPAS FRITAS" (RUIDO BLANCO GLOBAL)
+    let globalNoiseBuffer = null;
+    let globalChiptuneNoiseBuffer = null;
+
     function initAudio() {
       if (actx) return;
       try { if (screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape').catch(()=>{}); } } catch(e) {}
@@ -520,6 +532,16 @@
 
       drumMasterGain = actx.createGain(); drumMasterGain.gain.value = synthParams.drumVol;
       drumMasterGain.connect(masterLimiter); 
+
+      // Generar ruido blanco una sola vez para eliminar tirones de CPU
+      const size = actx.sampleRate * 2; // 2 segundos de buffer
+      globalNoiseBuffer = actx.createBuffer(1, size, actx.sampleRate);
+      const data = globalNoiseBuffer.getChannelData(0);
+      for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
+
+      globalChiptuneNoiseBuffer = actx.createBuffer(1, size, actx.sampleRate);
+      const cData = globalChiptuneNoiseBuffer.getChannelData(0);
+      for (let i = 0; i < size; i++) cData[i] = Math.random() > 0.5 ? 1 : -1;
     }
 
     function playPOSyncPulse(time) {
@@ -551,7 +573,6 @@
       }
     }
     
-    // NUEVO: BOMBO DE ULTRATUMBA
     function playDeepKick(time) {
       const osc = actx.createOscillator(); const gain = actx.createGain(); 
       osc.connect(gain); gain.connect(drumMasterGain);
@@ -565,13 +586,14 @@
 
     function playSnare(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
+      const noise = actx.createBufferSource(); 
+      noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
+      const noiseGain = actx.createGain();
+      noiseGain.gain.setValueAtTime(isChiptune ? 0.6 : 1, time); 
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+      
       if (isChiptune) {
-        const bufferSize = actx.sampleRate * 0.15; const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
-        const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() > 0.5 ? 1 : -1;
-        const noise = actx.createBufferSource(); noise.buffer = buffer; const noiseGain = actx.createGain();
-        noiseGain.gain.setValueAtTime(0.6, time); noiseGain.gain.linearRampToValueAtTime(0.01, time + 0.15);
-        noise.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time);
-        
+        noise.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time); noise.stop(time + 0.2);
         const osc = actx.createOscillator(); const oscGain = actx.createGain(); osc.type = 'square'; osc.connect(oscGain);
         osc.frequency.setValueAtTime(800, time); osc.frequency.exponentialRampToValueAtTime(200, time + 0.1);
         oscGain.gain.setValueAtTime(0.5, time); oscGain.gain.linearRampToValueAtTime(0.01, time + 0.15);
@@ -579,49 +601,38 @@
       } else {
         const osc = actx.createOscillator(); const oscGain = actx.createGain(); osc.type = 'triangle'; osc.connect(oscGain); osc.frequency.setValueAtTime(250, time);
         oscGain.gain.setValueAtTime(0.7, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-        const bufferSize = actx.sampleRate * 0.2; const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
-        const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        const noise = actx.createBufferSource(); noise.buffer = buffer;
         const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 1000;
-        const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(1, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
         noise.connect(noiseFilter); noiseFilter.connect(noiseGain); oscGain.connect(drumMasterGain); noiseGain.connect(drumMasterGain);
-        osc.start(time); osc.stop(time + 0.2); noise.start(time);
+        osc.start(time); osc.stop(time + 0.2); noise.start(time); noise.stop(time + 0.2);
       }
     }
     
     function playHiHat(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const bufferSize = actx.sampleRate * (isChiptune ? 0.05 : 0.1); const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
-      const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = isChiptune ? (Math.random() > 0.5 ? 1 : -1) : (Math.random() * 2 - 1);
-      const noise = actx.createBufferSource(); noise.buffer = buffer;
+      const noise = actx.createBufferSource(); 
+      noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 4000 : 5000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.1));
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time);
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time); noise.stop(time + 0.1);
     }
     
-    // NUEVO: OPEN HI-HAT
     function playOpenHiHat(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const bufferSize = actx.sampleRate * (isChiptune ? 0.2 : 0.4); 
-      const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
-      const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = isChiptune ? (Math.random() > 0.5 ? 1 : -1) : (Math.random() * 2 - 1);
-      const noise = actx.createBufferSource(); noise.buffer = buffer;
+      const noise = actx.createBufferSource(); 
+      noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 3000 : 4000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.2 : 0.4));
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time);
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time); noise.stop(time + 0.4);
     }
 
-    // NUEVO: RIDE
     function playRide(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(0.2, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
       noiseGain.connect(drumMasterGain);
 
-      const bufferSize = actx.sampleRate * 0.5; const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
-      const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = isChiptune ? (Math.random() > 0.5 ? 1 : -1) : (Math.random() * 2 - 1);
-      const noise = actx.createBufferSource(); noise.buffer = buffer;
+      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 6000;
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noise.start(time);
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noise.start(time); noise.stop(time + 0.5);
 
       if (!isChiptune) {
          const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.value = 3200;
@@ -773,7 +784,7 @@
         osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filter); oscillators.push(sub);
+          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); sub.connect(filter); oscillators.push(sub);
         }
         filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
 
@@ -849,18 +860,17 @@
       voice.voiceGain.gain.cancelScheduledValues(t); 
       voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value, t);
       const rel = synthParams.release; 
-      voice.voiceGain.gain.linearRampToValueAtTime(0.0001, t + rel);
+      // Apagado suave exponencial para evitar clics (papas fritas)
+      voice.voiceGain.gain.setTargetAtTime(0.0001, t, rel / 3);
       voice.oscillators.forEach(o => o.stop(t + rel + 0.1));
     }
 
-    // --- MAGIA: EL JOYSTICK MODIFICA NOTAS RESIDUALES Y ARPEGIADOR EN TIEMPO REAL ---
     function updateActiveChordsFrequencies() {
       if (!actx) return;
       const t = actx.currentTime;
       const scale = SCALES[currentScaleIdx];
       const isChrom = scale.isChromatic;
 
-      // 1. Doblar en tiempo real los acordes principales
       activeKeys.forEach((voices, btn) => {
         let idx = parseInt(btn.dataset.idx);
         let rootMidi = isChrom ? (48 + keyOffset + idx) : (48 + keyOffset + scale.intervals[idx]);
@@ -872,7 +882,8 @@
             voice.voiceGain.gain.setTargetAtTime(0.0001, t, synthParams.glide); return;
           }
           if (voice.voiceGain.gain.value < 0.01) {
-            voice.voiceGain.gain.setTargetAtTime(0.1, t, synthParams.glide);
+            let maxVol = 0.1;
+            voice.voiceGain.gain.setTargetAtTime(maxVol, t, synthParams.glide);
           }
           let newMidi = rootMidi + intervalData.i[index];
           let newFreq = 440 * Math.pow(2, (newMidi - 69) / 12);
@@ -883,36 +894,6 @@
               osc.frequency.setTargetAtTime(finalFreq, t, synthParams.glide);
             }
           });
-        });
-      });
-
-      // 2. Doblar en tiempo real las cuerdas del arpegiador que sigan sonando
-      strumVoices.forEach(strum => {
-        let midi = isChrom ? (48 + keyOffset + strum.armedDegree) : (48 + keyOffset + scale.intervals[strum.armedDegree]);
-        let baseQual = isChrom ? 'maj' : scale.qual[strum.armedDegree];
-        
-        let intervalData = getIntervalsAndName(baseQual, currentMod);
-        let chordTones = intervalData.i.filter(v => v >= 0);
-        if (chordTones.length === 0) chordTones = [0, 4, 7];
-        
-        let extendedHarmonics = [
-          chordTones[0],
-          chordTones[1] || chordTones[0] + 3,
-          chordTones[2] || chordTones[0] + 7,
-          chordTones[3] || chordTones[0] + 10,
-          chordTones[0] + 12,
-          (chordTones[1] || chordTones[0] + 3) + 12,
-          (chordTones[2] || chordTones[0] + 7) + 12,
-          chordTones[0] + 24
-        ];
-        let noteInterval = extendedHarmonics[strum.idx];
-        let newFreq = 440 * Math.pow(2, ((midi + noteInterval) - 69) / 12);
-
-        strum.voice.oscillators.forEach(osc => {
-          if(osc.freqMultiplier !== undefined) {
-            let finalFreq = newFreq * osc.freqMultiplier;
-            osc.frequency.setTargetAtTime(finalFreq, t, synthParams.glide);
-          }
         });
       });
     }
@@ -950,7 +931,7 @@
       let armedIntData = getIntervalsAndName(armedBaseQual, currentMod);
       document.getElementById('main-chord-display').innerText = getNoteName(armedMidi) + " " + armedIntData.s;
 
-      if (activeKeys.size > 0 || strumVoices.length > 0) updateActiveChordsFrequencies();
+      if (activeKeys.size > 0) updateActiveChordsFrequencies();
     }
 
     document.getElementById('scale-select').addEventListener('change', (e) => { currentScaleIdx = parseInt(e.target.value); updateUI(); });
@@ -1041,8 +1022,7 @@
           let noteInterval = extendedHarmonics[idx];
           
           let voice = playChordNote(midi + noteInterval, currentInst, false, true); 
-          // Guardamos la memoria de qué acorde era al momento de tocar para poder doblarlo en vivo con el joystick
-          strumVoices.push({ voice: voice, idx: idx, armedDegree: armedDegree });
+          strumVoices.push(voice);
         }
       }
     }
@@ -1050,7 +1030,7 @@
     strumplate.addEventListener('pointermove', (e) => { if(e.buttons > 0 || e.pressure > 0) handleStrum(e); });
     function releaseStrum(e) {
       lastStrumIdx = -1; 
-      strumVoices.forEach(v => { stopChordNote(v.voice); }); 
+      strumVoices.forEach(v => { stopChordNote(v); }); 
       strumVoices = [];
     }
     strumplate.addEventListener('pointerup', releaseStrum); strumplate.addEventListener('pointercancel', releaseStrum);
