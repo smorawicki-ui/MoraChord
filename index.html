@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- Configuración de App Nativa -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#071118">
+  
+  <!-- MANIFIESTO INCRUSTADO: Esto le dice al celular "Soy una app, oculta el navegador" -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"HiChord Pro","short_name":"HiChord","display":"standalone","background_color":"#071118","theme_color":"#071118"}'>
   
   <title>HiChord Pro - Ensembles</title>
   <style>
@@ -136,7 +141,6 @@
         <button class="ctrl-btn" id="btn-scale">Mayor</button>
         <div class="ctrl-group">
           <button class="ctrl-btn active" data-inst="analog">SYNTH</button>
-          <!-- Instrumentos Nuevos/Renombrados -->
           <button class="ctrl-btn" data-inst="strings">STRINGS</button>
           <button class="ctrl-btn" data-inst="organ">ORGAN</button>
         </div>
@@ -210,7 +214,7 @@
     bindParam('p-attack', 'val-atk', 'attack', 's'); bindParam('p-release', 'val-rel', 'release', 's');
     bindParam('p-cutoff', 'val-cut', 'cutoff', 'Hz'); bindParam('p-echo', 'val-echo', 'echo', '%');
 
-    // --- MOTOR DE AUDIO (CON LIMITADOR) ---
+    // --- MOTOR DE AUDIO ---
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null;
     
     function initAudio() {
@@ -287,10 +291,9 @@
         voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
 
       } else if (inst === 'strings') {
-        // CUERDAS: Ensamblaje de ondas sierra altamente desafinadas para hacer un "Chorus" analógico (Violines/Cellos)
         const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.2; 
-        filter.frequency.setValueAtTime(synthParams.cutoff * 0.4, t); // Entra oscuro
-        filter.frequency.linearRampToValueAtTime(synthParams.cutoff, t + currentAttack * 1.5); // Se abre con el ataque del "arco"
+        filter.frequency.setValueAtTime(synthParams.cutoff * 0.4, t); 
+        filter.frequency.linearRampToValueAtTime(synthParams.cutoff, t + currentAttack * 1.5); 
 
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -12; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = freq; osc2.detune.value = 12; osc2.freqMultiplier = 1;
@@ -304,13 +307,12 @@
           sub.connect(subFilter); subFilter.connect(subGain); subGain.connect(filter); oscillators.push(sub);
         }
         filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t);
-        voiceGain.gain.linearRampToValueAtTime(0.07, t + currentAttack * 1.5); // Ataque más lento
+        voiceGain.gain.linearRampToValueAtTime(0.07, t + currentAttack * 1.5); 
 
       } else if (inst === 'organ') {
-        // ÓRGANO: Ondas puras en diferentes armónicos. Sin decaimiento, sostenido continuo.
         const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.freqMultiplier = 1;
-        const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.value = freq * 2; osc3.freqMultiplier = 2; // Armónico de octava
+        const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.value = freq * 2; osc3.freqMultiplier = 2; 
         
         const g1 = actx.createGain(); g1.gain.value = 0.6; osc1.connect(g1); g1.connect(voiceGain);
         const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(voiceGain);
@@ -337,7 +339,6 @@
       voice.oscillators.forEach(o => o.stop(t + rel + 0.1));
     }
 
-    // --- GLISSANDO / VOICE LEADING (Corregido para multíples osciladores matemáticos) ---
     function updateActiveChordsFrequencies() {
       if (!actx) return;
       const t = actx.currentTime;
@@ -360,7 +361,6 @@
           let newFreq = 440 * Math.pow(2, (newMidi - 69) / 12);
           
           voice.oscillators.forEach(osc => {
-            // El freqMultiplier asegura que los sub-bajos y armónicos de órgano se deslicen correctamente
             let finalFreq = newFreq * (osc.freqMultiplier || 1);
             osc.frequency.exponentialRampToValueAtTime(finalFreq, t + 0.15);
           });
