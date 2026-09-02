@@ -40,7 +40,7 @@
       padding: 10px 16px; display: flex; flex-direction: column; gap: 8px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 10;
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-      overflow-y: auto; max-height: 50dvh;
+      overflow-y: auto; max-height: 52dvh;
     }
     .header-row { display: flex; align-items: center; justify-content: space-between; }
     
@@ -105,7 +105,7 @@
     }
     #btn-drum-play { background: var(--accent); color: #fff; box-shadow: var(--shadow-out); font-weight: 800; letter-spacing: 1px; }
     #btn-drum-play.playing { background: #e11d48; border-color: transparent; }
-    #drum-pattern, #drum-kit, #po-sync-select { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
+    #drum-pattern, #drum-kit, #po-sync-select, #quantize-select { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
 
     .middle-section { flex: 1; display: flex; padding: 16px; gap: 16px; }
 
@@ -180,7 +180,7 @@
     .btn-key.armed { background: var(--panel-light); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow), var(--shadow-out); }
     .btn-key:active, .btn-key.active { transform: scale(0.94); background: var(--accent); color: #fff; box-shadow: var(--shadow-in); border-color: transparent; }
     .btn-key .chord-name { font-size: 1.3rem; font-weight: 800; pointer-events: none; letter-spacing: -0.5px;}
-    .btn-key .roman { font-size: 0.6rem; color: inherit; opacity: 0.7; font-weight: 600; margin-top: 2px; pointer-events: none; }
+    .btn-key .roman { font-size: 0.65rem; color: inherit; opacity: 0.7; font-weight: 700; margin-top: 2px; pointer-events: none; }
 
     .strum-section {
       height: 100dvh; width: 140px; background: var(--bg); padding: 16px 12px; 
@@ -217,12 +217,33 @@
           <div style="width: 1px; height: 16px; background: var(--border); margin: 0 4px;"></div>
           
           <select id="scale-select" class="inst-select">
-            <option value="0">Mayor (8 Botones)</option>
-            <option value="1">Menor (8 Botones)</option>
-            <option value="2">Dórica (8 Botones)</option>
-            <option value="3">Mixolidia (8 Botones)</option>
-            <option value="4">Blues (8 Botones)</option>
-            <option value="5">Libre (Cromático 12)</option>
+            <optgroup label="Occidentales">
+              <option value="0">Mayor (Jónica)</option>
+              <option value="1">Menor Natural (Eólica)</option>
+              <option value="2">Menor Armónica</option>
+              <option value="3">Menor Melódica</option>
+            </optgroup>
+            <optgroup label="Modos Griegos">
+              <option value="4">Dórica</option>
+              <option value="5">Frigia</option>
+              <option value="6">Lidia</option>
+              <option value="7">Mixolidia</option>
+              <option value="8">Locria</option>
+            </optgroup>
+            <optgroup label="Exóticas y del Mundo">
+              <option value="9">Frigia Dominante (Árabe)</option>
+              <option value="10">Doble Armónica (Bizantina)</option>
+              <option value="11">Húngara Menor</option>
+              <option value="12">Japonesa (Hirajoshi)</option>
+            </optgroup>
+            <optgroup label="Pentatónicas & Blues">
+              <option value="13">Pentatónica Mayor</option>
+              <option value="14">Pentatónica Menor</option>
+              <option value="15">Blues</option>
+            </optgroup>
+            <optgroup label="Libre">
+              <option value="16">Libre (Cromático 12)</option>
+            </optgroup>
           </select>
         </div>
 
@@ -286,7 +307,6 @@
         </div>
       </div>
 
-      <!-- SECUENCIADOR CON BOTÓN DE OCULTAR -->
       <div class="custom-drum-sequencer" id="custom-drum-panel">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
           <span style="font-size:0.7rem; color:var(--accent); font-weight:bold;">SECUENCIADOR (16 PASOS)</span>
@@ -303,9 +323,16 @@
       <div class="drum-row">
         <button class="ctrl-btn" id="btn-drum-play">▶ PLAY BEAT</button>
         
+        <select id="quantize-select" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);" title="Cuantizar notas">
+          <option value="off">Quant: OFF</option>
+          <option value="16">Quant: 1/16</option>
+          <option value="8">Quant: 1/8</option>
+          <option value="4">Quant: 1/4</option>
+        </select>
+
         <select id="po-sync-select" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
           <option value="off">Sync PO: OFF</option>
-          <option value="on">Sync PO: ON (Audio Pulse)</option>
+          <option value="on">Sync PO: ON</option>
         </select>
 
         <select id="drum-kit" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
@@ -331,11 +358,19 @@
           <option value="custom">✏️ Personalizado (16 pasos)</option>
         </select>
 
-        <!-- Botón para volver a abrir el panel si se ocultó -->
         <button id="btn-edit-seq" class="ctrl-btn" style="display:none; background: var(--bg); border: 1px solid var(--accent);">⚙️ Editar</button>
 
-        <div class="param-group" style="flex: 1;"><label><span>Tempo</span> <span id="val-bpm">120 BPM</span></label><input type="range" id="p-bpm" min="60" max="200" step="1" value="120"></div>
-        <div class="param-group" style="flex: 1;"><label><span>Vol. Drum</span> <span id="val-dvol">60%</span></label><input type="range" id="p-drum-vol" min="0" max="1" step="0.05" value="0.6"></div>
+        <div class="pill-group" title="Tempo BPM">
+          <button class="ctrl-btn" id="btn-bpm-down">-</button>
+          <span id="val-bpm" style="font-size:0.75rem; font-weight:800; min-width:54px; text-align:center; color:#fff;">120 BPM</span>
+          <button class="ctrl-btn" id="btn-bpm-up">+</button>
+        </div>
+
+        <div class="pill-group" title="Volumen Batería">
+          <button class="ctrl-btn" id="btn-dvol-down">-</button>
+          <span id="val-dvol" style="font-size:0.75rem; font-weight:800; min-width:40px; text-align:center; color:#fff;">60%</span>
+          <button class="ctrl-btn" id="btn-dvol-up">+</button>
+        </div>
       </div>
     </div>
 
@@ -390,13 +425,25 @@
       navigator.serviceWorker.register('sw.js').catch(()=>{});
     }
 
+    // 16 ESCALAS CON ANÁLISIS ARMÓNICO REAL Y EXACTO (I-VIII)
     const SCALES = [
-      { name: 'Mayor',      intervals: [0,2,4,5,7,9,11,12], qual: ['maj','min','min','maj','maj','min','dim','maj'], roman: ['I','ii','iii','IV','V','vi','vii°','VIII'] },
-      { name: 'Menor',      intervals: [0,2,3,5,7,8,10,12], qual: ['min','dim','maj','min','min','maj','maj','min'], roman: ['i','ii°','III','iv','v','VI','VII','VIII'] },
-      { name: 'Dórica',     intervals: [0,2,3,5,7,9,10,12], qual: ['min','min','maj','maj','min','dim','maj','min'], roman: ['i','ii','III','IV','v','vi°','VII','VIII'] },
-      { name: 'Mixolidia',  intervals: [0,2,4,5,7,9,10,12], qual: ['maj','min','dim','maj','min','min','maj','maj'], roman: ['I','ii','iii°','IV','v','vi','VII','VIII'] },
-      { name: 'Blues',      intervals: [0,3,5,6,7,10,12,15], qual: ['min','maj','min','dim','min','maj','min','min'], roman: ['i','III','iv','iv#°','v','VII','i(8)','X'] },
-      { name: 'Libre (Cromático)', isChromatic: true }
+      { name: 'Mayor (Jónica)',           intervals: [0,2,4,5,7,9,11,12], qual: ['maj','min','min','maj','maj','min','dim','maj'], roman: ['I','ii','iii','IV','V','vi','vii°','VIII'] },
+      { name: 'Menor Natural (Eólica)',   intervals: [0,2,3,5,7,8,10,12], qual: ['min','dim','maj','min','min','maj','maj','min'], roman: ['i','ii°','bIII','iv','v','bVI','bVII','VIII'] },
+      { name: 'Menor Armónica',           intervals: [0,2,3,5,7,8,11,12], qual: ['min','dim','aug','min','maj','maj','dim','min'], roman: ['i','ii°','bIII+','iv','V','bVI','vii°','VIII'] },
+      { name: 'Menor Melódica',           intervals: [0,2,3,5,7,9,11,12], qual: ['min','min','aug','maj','maj','dim','dim','min'], roman: ['i','ii','bIII+','IV','V','vi°','vii°','VIII'] },
+      { name: 'Dórica',                  intervals: [0,2,3,5,7,9,10,12], qual: ['min','min','maj','maj','min','dim','maj','min'], roman: ['i','ii','bIII','IV','v','vi°','bVII','VIII'] },
+      { name: 'Frigia',                  intervals: [0,1,3,5,7,8,10,12], qual: ['min','maj','maj','min','dim','maj','min','min'], roman: ['i','bII','bIII','iv','v°','bVI','bvii','VIII'] },
+      { name: 'Lidia',                   intervals: [0,2,4,6,7,9,11,12], qual: ['maj','maj','min','dim','maj','min','min','maj'], roman: ['I','II','iii','#iv°','V','vi','vii','VIII'] },
+      { name: 'Mixolidia',               intervals: [0,2,4,5,7,9,10,12], qual: ['maj','min','dim','maj','min','min','maj','maj'], roman: ['I','ii','iii°','IV','v','vi','bVII','VIII'] },
+      { name: 'Locria',                  intervals: [0,1,3,5,6,8,10,12], qual: ['dim','maj','min','min','maj','maj','min','dim'], roman: ['i°','bII','biii','iv','bV','bVI','bvii','VIII'] },
+      { name: 'Frigia Dominante (Árabe)',intervals: [0,1,4,5,7,8,10,12], qual: ['maj','maj','dim','min','dim','maj','min','maj'], roman: ['I','bII','iii°','iv','v°','bVI','bvii','VIII'] },
+      { name: 'Doble Armónica (Bizantina)',intervals: [0,1,4,5,7,8,11,12], qual: ['maj','maj','min','min','maj','aug','dim','maj'], roman: ['I','bII','iii','iv','V','bVI+','vii°','VIII'] },
+      { name: 'Húngara Menor',            intervals: [0,2,3,6,7,8,11,12], qual: ['min','dim','aug','dim','maj','maj','dim','min'], roman: ['i','ii°','bIII+','#iv°','V','bVI','vii°','VIII'] },
+      { name: 'Japonesa (Hirajoshi)',     intervals: [0,2,3,7,8,12,14,15], qual: ['min','maj','min','min','maj','min','maj','min'], roman: ['i','II','bIII','v','bVI','VIII','IX','bX'] },
+      { name: 'Pentatónica Mayor',        intervals: [0,2,4,7,9,12,14,16], qual: ['maj','min','min','maj','min','maj','min','min'], roman: ['I','ii','iii','V','vi','VIII','IX','X'] },
+      { name: 'Pentatónica Menor',        intervals: [0,3,5,7,10,12,15,17], qual: ['min','maj','min','min','maj','min','maj','min'], roman: ['i','bIII','iv','v','bVII','VIII','bX','XI'] },
+      { name: 'Blues',                   intervals: [0,3,5,6,7,10,12,15], qual: ['min','maj','min','dim','min','maj','min','min'], roman: ['i','bIII','iv','iv#°','v','bVII','VIII','X'] },
+      { name: 'Libre (Cromático 12)',    isChromatic: true }
     ];
     let currentScaleIdx = 0;
 
@@ -468,7 +515,6 @@
         synthParams[key] = val;
         if(label) label.innerText = val + unit;
         if(key === 'echo' && delayInputGain) delayInputGain.gain.value = val;
-        if(key === 'drumVol' && drumMasterGain) drumMasterGain.gain.value = val;
       });
     }
     bindParam('p-attack', 'val-atk', 'attack', 's'); 
@@ -476,8 +522,26 @@
     bindParam('p-cutoff', 'val-cut', 'cutoff', 'Hz'); 
     bindParam('p-echo', 'val-echo', 'echo', '%');
     bindParam('p-glide', 'val-glide', 'glide', 's');
-    bindParam('p-bpm', 'val-bpm', 'bpm', ' BPM'); 
-    bindParam('p-drum-vol', 'val-dvol', 'drumVol', '%');
+
+    document.getElementById('btn-bpm-down').addEventListener('pointerdown', () => {
+      synthParams.bpm = Math.max(40, synthParams.bpm - 1);
+      document.getElementById('val-bpm').innerText = synthParams.bpm + ' BPM';
+    });
+    document.getElementById('btn-bpm-up').addEventListener('pointerdown', () => {
+      synthParams.bpm = Math.min(260, synthParams.bpm + 1);
+      document.getElementById('val-bpm').innerText = synthParams.bpm + ' BPM';
+    });
+
+    document.getElementById('btn-dvol-down').addEventListener('pointerdown', () => {
+      synthParams.drumVol = Math.max(0, Math.round((synthParams.drumVol - 0.05) * 100) / 100);
+      document.getElementById('val-dvol').innerText = Math.round(synthParams.drumVol * 100) + '%';
+      if(drumMasterGain) drumMasterGain.gain.value = synthParams.drumVol;
+    });
+    document.getElementById('btn-dvol-up').addEventListener('pointerdown', () => {
+      synthParams.drumVol = Math.min(1, Math.round((synthParams.drumVol + 0.05) * 100) / 100);
+      document.getElementById('val-dvol').innerText = Math.round(synthParams.drumVol * 100) + '%';
+      if(drumMasterGain) drumMasterGain.gain.value = synthParams.drumVol;
+    });
 
     let currentInst = 'analog';
     const instSelect = document.getElementById('inst-select');
@@ -493,7 +557,6 @@
     });
 
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
-    
     let distortionCurve = null;
     function getDistortionCurve() {
       if (distortionCurve) return distortionCurve;
@@ -506,7 +569,6 @@
       return distortionCurve;
     }
 
-    // MEMORIA CACHÉ PARA EVITAR "PAPAS FRITAS" (RUIDO BLANCO GLOBAL)
     let globalNoiseBuffer = null;
     let globalChiptuneNoiseBuffer = null;
 
@@ -533,8 +595,7 @@
       drumMasterGain = actx.createGain(); drumMasterGain.gain.value = synthParams.drumVol;
       drumMasterGain.connect(masterLimiter); 
 
-      // Generar ruido blanco una sola vez para eliminar tirones de CPU
-      const size = actx.sampleRate * 2; // 2 segundos de buffer
+      const size = actx.sampleRate * 2;
       globalNoiseBuffer = actx.createBuffer(1, size, actx.sampleRate);
       const data = globalNoiseBuffer.getChannelData(0);
       for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
@@ -542,6 +603,29 @@
       globalChiptuneNoiseBuffer = actx.createBuffer(1, size, actx.sampleRate);
       const cData = globalChiptuneNoiseBuffer.getChannelData(0);
       for (let i = 0; i < size; i++) cData[i] = Math.random() > 0.5 ? 1 : -1;
+    }
+
+    function getQuantizedTime() {
+      if (!actx) return 0;
+      const quant = document.getElementById('quantize-select').value;
+      if (quant === 'off') return actx.currentTime;
+      
+      const divSteps = quant === '4' ? 4 : (quant === '8' ? 2 : 1);
+      const stepDur = 0.25 * (60.0 / synthParams.bpm);
+
+      if (isPlayingDrums) {
+        let stepsUntil = (divSteps - (currentStep % divSteps)) % divSteps;
+        if (stepsUntil === 0 && (nextNoteTime - actx.currentTime < stepDur * 0.2)) {
+          stepsUntil = divSteps;
+        }
+        return Math.max(actx.currentTime, nextNoteTime + (stepsUntil - 1) * stepDur);
+      } else {
+        const grid = stepDur * divSteps;
+        const remainder = actx.currentTime % grid;
+        let delta = grid - remainder;
+        if (delta < 0.015) delta += grid;
+        return actx.currentTime + delta;
+      }
     }
 
     function playPOSyncPulse(time) {
@@ -705,6 +789,7 @@
         if (baseQual === 'maj') { i = [b, 0,4,7]; s = ''; }
         if (baseQual === 'min') { i = [b, 0,3,7]; s = 'm'; }
         if (baseQual === 'dim') { i = [b, 0,3,6]; s = 'dim'; }
+        if (baseQual === 'aug') { i = [b, 0,4,8]; s = 'aug'; }
       } else if (mod === 'flip') { 
         if (baseQual === 'maj') { i = [b, 0,3,7]; s = 'm'; } else { i = [b, 0,4,7]; s = ''; }
       } else if (mod === 'dom7') { i = [b, 0,4,7,10]; s = '7'; }
@@ -720,9 +805,9 @@
       return { i: i || [b,0,4,7], s }; 
     }
 
-    function playChordNote(midi, inst, isBass, isStrum = false) {
+    function playChordNote(midi, inst, isBass, isStrum = false, startTime = null) {
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
-      const t = actx.currentTime;
+      const t = startTime !== null ? startTime : actx.currentTime;
       const voiceGain = actx.createGain();
       const oscillators = [];
       let currentAttack = isStrum ? 0.05 : synthParams.attack; 
@@ -784,7 +869,7 @@
         osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); sub.connect(filter); oscillators.push(sub);
+          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filter); oscillators.push(sub);
         }
         filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
 
@@ -851,18 +936,20 @@
       
       voiceGain.connect(masterGain); delayInputGain.gain.value = synthParams.echo; voiceGain.connect(delayInputGain); 
       oscillators.forEach(o => o.start(t));
-      return { oscillators, voiceGain, inst, isBass };
+      return { oscillators, voiceGain, inst, isBass, startTime: t };
     }
 
     function stopChordNote(voice) {
       if (!voice) return;
       const t = actx.currentTime;
-      voice.voiceGain.gain.cancelScheduledValues(t); 
-      voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value, t);
       const rel = synthParams.release; 
-      // Apagado suave exponencial para evitar clics (papas fritas)
-      voice.voiceGain.gain.setTargetAtTime(0.0001, t, rel / 3);
-      voice.oscillators.forEach(o => o.stop(t + rel + 0.1));
+      const stopT = Math.max(t, (voice.startTime || t) + 0.05);
+      voice.voiceGain.gain.cancelScheduledValues(stopT); 
+      voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value || 0.1, stopT);
+      voice.voiceGain.gain.setTargetAtTime(0.0001, stopT, rel / 3);
+      voice.oscillators.forEach(o => {
+        try { o.stop(stopT + rel + 0.1); } catch(e) {}
+      });
     }
 
     function updateActiveChordsFrequencies() {
@@ -879,11 +966,10 @@
         
         voices.forEach((voice, index) => {
           if (index >= intervalData.i.length) {
-            voice.voiceGain.gain.setTargetAtTime(0.0001, t, synthParams.glide); return;
+            voice.voiceGain.gain.setTargetAtTime(0.0001, t, 0.05); return;
           }
           if (voice.voiceGain.gain.value < 0.01) {
-            let maxVol = 0.1;
-            voice.voiceGain.gain.setTargetAtTime(maxVol, t, synthParams.glide);
+            voice.voiceGain.gain.setTargetAtTime(0.1, t, 0.05);
           }
           let newMidi = rootMidi + intervalData.i[index];
           let newFreq = 440 * Math.pow(2, (newMidi - 69) / 12);
@@ -977,10 +1063,12 @@
         let maxIntervals = getIntervalsAndName(baseQual, '9th').i; 
         let currentIntervals = getIntervalsAndName(baseQual, currentMod).i;
         let voices = []; 
+        let qTime = getQuantizedTime();
+
         maxIntervals.forEach((_, i) => { 
           let voiceMidi = rootMidi + (currentIntervals[i] !== undefined ? currentIntervals[i] : maxIntervals[i]);
-          let voice = playChordNote(voiceMidi, currentInst, i === 0, false);
-          if (currentIntervals[i] === undefined) { voice.voiceGain.gain.setValueAtTime(0, actx.currentTime); }
+          let voice = playChordNote(voiceMidi, currentInst, i === 0, false, qTime);
+          if (currentIntervals[i] === undefined) { voice.voiceGain.gain.setValueAtTime(0, qTime); }
           voices.push(voice); 
         });
         activeKeys.set(btn, voices);
@@ -1020,8 +1108,9 @@
             chordTones[0] + 24
           ];
           let noteInterval = extendedHarmonics[idx];
+          let qTime = getQuantizedTime();
           
-          let voice = playChordNote(midi + noteInterval, currentInst, false, true); 
+          let voice = playChordNote(midi + noteInterval, currentInst, false, true, qTime); 
           strumVoices.push(voice);
         }
       }
