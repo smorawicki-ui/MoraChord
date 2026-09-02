@@ -65,13 +65,23 @@
     select.inst-select optgroup { color: var(--text-muted); font-style: italic; }
 
     .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 8px; }
-    .param-group { display: flex; flex-direction: column; gap: 6px; }
+    
+    /* Panel Custom FM (Oculto por defecto, se muestra al elegir Custom) */
+    .custom-fm-grid {
+      display: none; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 8px;
+      background: #070d14; border-radius: 12px; border: 1px dashed var(--accent); margin-top: 4px;
+    }
+    .custom-fm-grid.visible { display: grid; }
+
+    .param-group { display: flex; flex-direction: column; gap: 4px; }
     .param-group label { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px;}
     .param-group label span:last-child { color: var(--accent-hover); }
-    .param-group input[type=range] { 
-      width: 100%; height: 6px; background: var(--bg); outline: none; -webkit-appearance: none; 
-      border-radius: 10px; box-shadow: var(--shadow-in);
+    .param-group input[type=range], .param-group select { 
+      width: 100%; height: 24px; background: var(--bg); outline: none; border: 1px solid var(--border); 
+      border-radius: 6px; color: var(--accent-hover); font-size: 0.7rem; font-weight: bold; padding: 0 4px;
+      box-shadow: var(--shadow-in);
     }
+    .param-group input[type=range] { height: 6px; border: none; -webkit-appearance: none; border-radius: 10px; }
     .param-group input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none; width: 16px; height: 16px; background: var(--panel-light); 
       border-radius: 50%; box-shadow: var(--shadow-out); border: 2px solid var(--accent-hover);
@@ -89,7 +99,6 @@
     /* --- MIDDLE SECTION --- */
     .middle-section { flex: 1; display: flex; padding: 16px; gap: 16px; }
 
-    /* JOYSTICK CORREGIDO (Espacioso, sin textos amontonados) */
     .joystick-container {
       flex: 0 0 135px; background: var(--panel); border-radius: 24px; 
       display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-out);
@@ -206,6 +215,9 @@
               <option value="tremolo">Tremolo Keys</option>
               <option value="alien">Alienígena (FM)</option>
             </optgroup>
+            <optgroup label="Laboratorio">
+              <option value="custom">Custom FM Synth 🎛️</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -215,6 +227,36 @@
         <div class="param-group"><label><span>Release</span> <span id="val-rel">1.5s</span></label><input type="range" id="p-release" min="0.1" max="4.0" step="0.1" value="1.5"></div>
         <div class="param-group"><label><span>Cutoff</span> <span id="val-cut">800Hz</span></label><input type="range" id="p-cutoff" min="200" max="4000" step="50" value="800"></div>
         <div class="param-group"><label><span>Echo Vol</span> <span id="val-echo">20%</span></label><input type="range" id="p-echo" min="0" max="0.8" step="0.05" value="0.2"></div>
+      </div>
+
+      <!-- PANEL DE SÍNTESIS CUSTOM FM (Aparece al elegir Custom) -->
+      <div class="custom-fm-grid" id="custom-fm-panel">
+        <div class="param-group">
+          <label><span>Onda Principal</span></label>
+          <select id="cf-carrier">
+            <option value="sine">Senoidal</option>
+            <option value="square">Cuadrada</option>
+            <option value="sawtooth">Sierra</option>
+            <option value="triangle">Triangular</option>
+          </select>
+        </div>
+        <div class="param-group">
+          <label><span>Onda Moduladora</span></label>
+          <select id="cf-modulator">
+            <option value="sine">Senoidal</option>
+            <option value="square">Cuadrada</option>
+            <option value="sawtooth">Sierra</option>
+            <option value="triangle">Triangular</option>
+          </select>
+        </div>
+        <div class="param-group">
+          <label><span>Ratio FM</span> <span id="val-fm-ratio">2.0x</span></label>
+          <input type="range" id="cf-ratio" min="0.5" max="8.0" step="0.1" value="2.0">
+        </div>
+        <div class="param-group">
+          <label><span>Profundidad FM</span> <span id="val-fm-depth">300Hz</span></label>
+          <input type="range" id="cf-depth" min="0" max="1500" step="25" value="300">
+        </div>
       </div>
 
       <div class="drum-row">
@@ -309,6 +351,29 @@
     ];
     let currentScaleIdx = 0;
 
+    // Parámetros Custom FM
+    const customParams = {
+      carrierWave: 'sine',
+      modulatorWave: 'sine',
+      fmRatio: 2.0,
+      fmDepth: 300
+    };
+
+    document.getElementById('cf-carrier').addEventListener('change', (e) => { customParams.carrierWave = e.target.value; });
+    document.getElementById('cf-modulator').addEventListener('change', (e) => { customParams.modulatorWave = e.target.value; });
+    
+    const rInput = document.getElementById('cf-ratio');
+    rInput.addEventListener('input', (e) => {
+      customParams.fmRatio = parseFloat(e.target.value);
+      document.getElementById('val-fm-ratio').innerText = customParams.fmRatio.toFixed(1) + 'x';
+    });
+
+    const dInput = document.getElementById('cf-depth');
+    dInput.addEventListener('input', (e) => {
+      customParams.fmDepth = parseFloat(e.target.value);
+      document.getElementById('val-fm-depth').innerText = Math.round(customParams.fmDepth) + 'Hz';
+    });
+
     const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, bpm: 120, drumVol: 0.6 };
     function bindParam(inputId, labelId, key, unit) {
       const input = document.getElementById(inputId);
@@ -326,7 +391,17 @@
     bindParam('p-bpm', 'val-bpm', 'bpm', ' BPM'); bindParam('p-drum-vol', 'val-dvol', 'drumVol', '%');
 
     let currentInst = 'analog';
-    document.getElementById('inst-select').addEventListener('change', (e) => { currentInst = e.target.value; });
+    const instSelect = document.getElementById('inst-select');
+    const customPanel = document.getElementById('custom-fm-panel');
+
+    instSelect.addEventListener('change', (e) => {
+      currentInst = e.target.value;
+      if (currentInst === 'custom') {
+        customPanel.classList.add('visible');
+      } else {
+        customPanel.classList.remove('visible');
+      }
+    });
 
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
     
@@ -471,7 +546,31 @@
       const oscillators = [];
       let currentAttack = isStrum ? 0.05 : synthParams.attack; 
 
-      if (inst === 'analog') {
+      if (inst === 'custom') {
+        // --- MOTOR DE SÍNTESIS FM PERSONALIZADO ---
+        const carrier = actx.createOscillator();
+        const modulator = actx.createOscillator();
+        const modGain = actx.createGain();
+
+        carrier.type = customParams.carrierWave;
+        carrier.frequency.value = freq;
+        carrier.freqMultiplier = 1;
+
+        modulator.type = customParams.modulatorWave;
+        modulator.frequency.value = freq * customParams.fmRatio;
+        modulator.freqMultiplier = customParams.fmRatio;
+
+        modGain.gain.value = customParams.fmDepth;
+        modulator.connect(modGain);
+        modGain.connect(carrier.frequency);
+
+        carrier.connect(voiceGain);
+        oscillators.push(carrier, modulator);
+
+        voiceGain.gain.setValueAtTime(0, t);
+        voiceGain.gain.linearRampToValueAtTime(0.1, t + currentAttack);
+
+      } else if (inst === 'analog') {
         const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.5; filter.frequency.value = synthParams.cutoff;
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -2; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.detune.value = 2; osc2.freqMultiplier = 1;
@@ -695,7 +794,6 @@
       btn.addEventListener('pointerup', releaseBtn); btn.addEventListener('pointercancel', releaseBtn);
     });
 
-    // --- STRUMPLATE CORREGIDO (APAGADO Y MATRIZ LIMPIA DE 8 PASOS) ---
     const strumplate = document.getElementById('strumplate'); let lastStrumIdx = -1; let strumVoices = [];
     function handleStrum(e) {
       initAudio(); const elem = document.elementFromPoint(e.clientX, e.clientY);
@@ -710,13 +808,10 @@
           let baseQual = isChrom ? 'maj' : scale.qual[armedDegree];
           
           let intervalData = getIntervalsAndName(baseQual, currentMod);
-          
-          // Matriz ascendente de 8 pasos única y ordenada sin duplicados
           let rawIntervals = intervalData.i.filter(v => v >= 0);
           if (rawIntervals.length === 0) rawIntervals = [0, 4, 7];
           
           let uniqueScale = [...new Set([...rawIntervals, ...rawIntervals.map(n => n + 12)])].sort((a,b)=>a-b);
-          // Aseguramos que abarque exactamente 8 pasos limpios
           while(uniqueScale.length < 8) { uniqueScale.push(uniqueScale[uniqueScale.length-1] + 2); }
           let noteInterval = uniqueScale[idx];
           
