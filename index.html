@@ -108,7 +108,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
-    /* KEYS: Lógicas dinámicas */
+    /* KEYS */
     .keys-container { flex: 1; display: grid; gap: 10px; }
     
     .keys-container.layout-diatonic {
@@ -284,7 +284,6 @@
   </div>
 
   <script>
-    // --- REGISTRO DEL SW ---
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(()=>{});
     }
@@ -468,7 +467,7 @@
         osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filter); oscillators.push(sub);
+          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); sub.connect(filter); oscillators.push(sub);
         }
         filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
 
@@ -558,7 +557,6 @@
       voice.oscillators.forEach(o => o.stop(t + rel + 0.1));
     }
 
-    // --- CORRECCIÓN MATEMÁTICA ANTI-CRASH ---
     function updateActiveChordsFrequencies() {
       if (!actx) return;
       const t = actx.currentTime;
@@ -585,7 +583,6 @@
           voice.oscillators.forEach(osc => {
             if(osc.freqMultiplier !== undefined) {
               let finalFreq = newFreq * osc.freqMultiplier;
-              // Usamos setTargetAtTime para una transición matemática segura sin crashes
               osc.frequency.setTargetAtTime(finalFreq, t, 0.05);
             }
           });
@@ -656,15 +653,12 @@
       if (currentMod !== newMod) { currentMod = newMod; updateUI(); }
     }
 
-    // --- BOTONES CON EL ORDEN CORREGIDO ---
     document.querySelectorAll('.btn-key').forEach(btn => {
       btn.addEventListener('pointerdown', (e) => {
         initAudio(); 
-        if (actx.state === 'suspended') actx.resume(); // Seguridad extra para Safari/iOS
-        
+        if (actx.state === 'suspended') actx.resume();
         let idx = parseInt(btn.dataset.idx); armedDegree = idx; 
-        updateUI(); // Se debe dibujar la pantalla ANTES de crear las notas para no causar crash
-        
+        updateUI(); 
         btn.classList.add('active'); btn.setPointerCapture(e.pointerId);
         
         const scale = SCALES[currentScaleIdx];
@@ -690,7 +684,7 @@
       btn.addEventListener('pointerup', releaseBtn); btn.addEventListener('pointercancel', releaseBtn);
     });
 
-    // STRUMPLATE
+    // --- STRUMPLATE 100% PROGRESIVO INDEPENDIENTE ---
     const strumplate = document.getElementById('strumplate'); let lastStrumIdx = -1; let strumVoices = [];
     function handleStrum(e) {
       initAudio(); const elem = document.elementFromPoint(e.clientX, e.clientY);
@@ -705,9 +699,17 @@
           let baseQual = isChrom ? 'maj' : scale.qual[armedDegree];
           
           let intervalData = getIntervalsAndName(baseQual, currentMod);
-          let arpIntervals = intervalData.i.slice(1); if(arpIntervals.length === 0) arpIntervals = [0];
-          let noteInterval = arpIntervals[idx % arpIntervals.length]; if(idx >= arpIntervals.length) noteInterval += 12; 
-          let voice = playChordNote(midi + noteInterval, currentInst, false, true); strumVoices.push(voice);
+          
+          // Mapeo estrictamente único de 8 notas ascendentes en orden de índice (0 al 7)
+          let rawIntervals = intervalData.i.filter(v => v >= 0);
+          if (rawIntervals.length === 0) rawIntervals = [0, 4, 7];
+          
+          // Construimos una escala de 8 pasos única sin duplicar notas adyacentes
+          let uniqueScale = [...new Set([...rawIntervals, ...rawIntervals.map(n => n + 12), ...rawIntervals.map(n => n + 19)])].sort((a,b)=>a-b);
+          let noteInterval = uniqueScale[idx % uniqueScale.length];
+          
+          let voice = playChordNote(midi + noteInterval, currentInst, false, true); 
+          strumVoices.push(voice);
         }
       }
     }
@@ -718,7 +720,6 @@
     }
     strumplate.addEventListener('pointerup', releaseStrum); strumplate.addEventListener('pointercancel', releaseStrum);
 
-    // Inicializar
     updateUI();
   </script>
 </body>
