@@ -89,22 +89,27 @@
     /* --- MIDDLE SECTION --- */
     .middle-section { flex: 1; display: flex; padding: 16px; gap: 16px; }
 
+    /* JOYSTICK CORREGIDO (Espacioso, sin textos amontonados) */
     .joystick-container {
-      flex: 0 0 110px; background: var(--panel); border-radius: 24px; 
+      flex: 0 0 135px; background: var(--panel); border-radius: 24px; 
       display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-out);
     }
     .joy-wrapper {
-      display: grid; grid-template-columns: 28px 50px 28px; grid-template-rows: 28px 50px 28px;
-      gap: 2px; align-items: center; justify-items: center;
+      display: grid; grid-template-columns: 36px 52px 36px; grid-template-rows: 36px 52px 36px;
+      gap: 2px; align-items: center; justify-items: center; padding: 4px;
     }
-    .lbl { font-size: 0.6rem; color: var(--text-muted); text-align: center; font-weight: 600; transition: 0.2s; line-height: 1.1; }
+    .lbl { 
+      font-size: 0.55rem; color: var(--text-muted); text-align: center; font-weight: 700; 
+      transition: 0.2s; line-height: 1.1; white-space: nowrap;
+    }
     .lbl.active { color: var(--accent-hover); transform: scale(1.15); font-weight: 800; text-shadow: 0 0 8px var(--accent-glow); }
     .joy-center {
-      width: 50px; height: 50px; border-radius: 50%; background: var(--bg); position: relative; box-shadow: var(--shadow-in);
+      width: 52px; height: 52px; border-radius: 50%; background: var(--bg); position: relative; box-shadow: var(--shadow-in);
+      grid-column: 2; grid-row: 2;
     }
     .joy-stick {
       width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(145deg, #38bdf8, #0284c7);
-      position: absolute; top: 12px; left: 12px; pointer-events: none;
+      position: absolute; top: 13px; left: 13px; pointer-events: none;
       box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
@@ -246,9 +251,15 @@
     <div class="middle-section">
       <div class="joystick-container">
         <div class="joy-wrapper">
-          <div class="lbl" id="lbl-aug">↖<br>Aug</div><div class="lbl" id="lbl-flip">↑<br>M/m</div><div class="lbl" id="lbl-dom7">↗<br>Dom7</div>
-          <div class="lbl" id="lbl-dim">←<br>Dim</div><div class="joy-center" id="joyCenter"><div class="joy-stick" id="joyStick"></div></div><div class="lbl" id="lbl-7th">→<br>M/m7</div>
-          <div class="lbl" id="lbl-6th">↙<br>6th</div><div class="lbl" id="lbl-sus4">↓<br>Sus4</div><div class="lbl" id="lbl-9th">↘<br>9th</div>
+          <div class="lbl" style="grid-column:1; grid-row:1;" id="lbl-aug">↖<br>Aug</div>
+          <div class="lbl" style="grid-column:2; grid-row:1;" id="lbl-flip">↑<br>M/m</div>
+          <div class="lbl" style="grid-column:3; grid-row:1;" id="lbl-dom7">↗<br>Dom7</div>
+          <div class="lbl" style="grid-column:1; grid-row:2;" id="lbl-dim">←<br>Dim</div>
+          <div class="joy-center" id="joyCenter"><div class="joy-stick" id="joyStick"></div></div>
+          <div class="lbl" style="grid-column:3; grid-row:2;" id="lbl-7th">→<br>M/m7</div>
+          <div class="lbl" style="grid-column:1; grid-row:3;" id="lbl-6th">↙<br>6th</div>
+          <div class="lbl" style="grid-column:2; grid-row:3;" id="lbl-sus4">↓<br>Sus4</div>
+          <div class="lbl" style="grid-column:3; grid-row:3;" id="lbl-9th">↘<br>9th</div>
         </div>
       </div>
 
@@ -467,7 +478,7 @@
         osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); sub.connect(filter); oscillators.push(sub);
+          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filter); oscillators.push(sub);
         }
         filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
 
@@ -684,7 +695,7 @@
       btn.addEventListener('pointerup', releaseBtn); btn.addEventListener('pointercancel', releaseBtn);
     });
 
-    // --- STRUMPLATE 100% PROGRESIVO INDEPENDIENTE ---
+    // --- STRUMPLATE CORREGIDO (APAGADO Y MATRIZ LIMPIA DE 8 PASOS) ---
     const strumplate = document.getElementById('strumplate'); let lastStrumIdx = -1; let strumVoices = [];
     function handleStrum(e) {
       initAudio(); const elem = document.elementFromPoint(e.clientX, e.clientY);
@@ -700,13 +711,14 @@
           
           let intervalData = getIntervalsAndName(baseQual, currentMod);
           
-          // Mapeo estrictamente único de 8 notas ascendentes en orden de índice (0 al 7)
+          // Matriz ascendente de 8 pasos única y ordenada sin duplicados
           let rawIntervals = intervalData.i.filter(v => v >= 0);
           if (rawIntervals.length === 0) rawIntervals = [0, 4, 7];
           
-          // Construimos una escala de 8 pasos única sin duplicar notas adyacentes
-          let uniqueScale = [...new Set([...rawIntervals, ...rawIntervals.map(n => n + 12), ...rawIntervals.map(n => n + 19)])].sort((a,b)=>a-b);
-          let noteInterval = uniqueScale[idx % uniqueScale.length];
+          let uniqueScale = [...new Set([...rawIntervals, ...rawIntervals.map(n => n + 12)])].sort((a,b)=>a-b);
+          // Aseguramos que abarque exactamente 8 pasos limpios
+          while(uniqueScale.length < 8) { uniqueScale.push(uniqueScale[uniqueScale.length-1] + 2); }
+          let noteInterval = uniqueScale[idx];
           
           let voice = playChordNote(midi + noteInterval, currentInst, false, true); 
           strumVoices.push(voice);
@@ -716,7 +728,9 @@
     strumplate.addEventListener('pointerdown', (e) => { strumplate.setPointerCapture(e.pointerId); lastStrumIdx = -1; handleStrum(e); });
     strumplate.addEventListener('pointermove', (e) => { if(e.buttons > 0 || e.pressure > 0) handleStrum(e); });
     function releaseStrum(e) {
-      lastStrumIdx = -1; strumVoices.forEach(v => { setTimeout(() => stopChordNote(v), 500); }); strumVoices = [];
+      lastStrumIdx = -1; 
+      strumVoices.forEach(v => { stopChordNote(v); }); 
+      strumVoices = [];
     }
     strumplate.addEventListener('pointerup', releaseStrum); strumplate.addEventListener('pointercancel', releaseStrum);
 
