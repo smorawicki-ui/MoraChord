@@ -41,6 +41,7 @@
       padding: 10px 16px; display: flex; flex-direction: column; gap: 8px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 10;
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+      overflow-y: auto; max-height: 45dvh;
     }
     .header-row { display: flex; align-items: center; justify-content: space-between; }
     
@@ -64,13 +65,28 @@
     select.inst-select option { background: var(--panel); color: var(--text); }
     select.inst-select optgroup { color: var(--text-muted); font-style: italic; }
 
-    .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 8px; }
+    /* PARAMS GRID: Ahora tiene 5 columnas para que entren todos los controles */
+    .params-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 8px; }
     
     .custom-fm-grid {
       display: none; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 8px;
       background: #070d14; border-radius: 12px; border: 1px dashed var(--accent); margin-top: 4px;
     }
     .custom-fm-grid.visible { display: grid; }
+
+    /* SECUENCIADOR CUSTOM DE BATERÍA (16 PASOS) */
+    .custom-drum-sequencer {
+      display: none; flex-direction: column; gap: 4px; padding: 8px;
+      background: #070d14; border-radius: 12px; border: 1px solid var(--accent); margin-top: 4px;
+    }
+    .custom-drum-sequencer.visible { display: flex; }
+    .seq-row { display: flex; align-items: center; gap: 6px; }
+    .seq-label { font-size: 0.6rem; font-weight: bold; width: 45px; color: var(--accent-hover); }
+    .seq-pads { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; flex: 1; }
+    .seq-pad {
+      height: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; cursor: pointer;
+    }
+    .seq-pad.active { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
 
     .param-group { display: flex; flex-direction: column; gap: 4px; }
     .param-group label { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px;}
@@ -88,12 +104,12 @@
 
     /* DRUM ROW */
     .drum-row {
-      display: flex; align-items: center; gap: 16px; margin-top: 4px; 
+      display: flex; align-items: center; gap: 12px; margin-top: 4px; 
       padding-top: 10px; border-top: 1px solid var(--border);
     }
     #btn-drum-play { background: var(--accent); color: #fff; box-shadow: var(--shadow-out); font-weight: 800; letter-spacing: 1px; }
     #btn-drum-play.playing { background: #e11d48; border-color: transparent; }
-    #drum-pattern, #drum-kit { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
+    #drum-pattern, #drum-kit, #po-sync-select { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
 
     /* --- MIDDLE SECTION --- */
     .middle-section { flex: 1; display: flex; padding: 16px; gap: 16px; }
@@ -121,7 +137,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
-    /* KEYS: Grijas Invertidas tanto en Diatónico (4x2) como en Cromático (4x3) para que arranquen abajo-izq y terminen arriba-der */
+    /* KEYS: Grilla 4x2 Invertida (Arranca abajo-izq [0], termina arriba-der [7]) */
     .keys-container { flex: 1; display: grid; gap: 10px; }
     
     .keys-container.layout-diatonic {
@@ -246,6 +262,7 @@
         <div class="param-group"><label><span>Release</span> <span id="val-rel">1.5s</span></label><input type="range" id="p-release" min="0.1" max="4.0" step="0.1" value="1.5"></div>
         <div class="param-group"><label><span>Cutoff</span> <span id="val-cut">800Hz</span></label><input type="range" id="p-cutoff" min="200" max="4000" step="50" value="800"></div>
         <div class="param-group"><label><span>Echo Vol</span> <span id="val-echo">20%</span></label><input type="range" id="p-echo" min="0" max="0.8" step="0.05" value="0.2"></div>
+        <div class="param-group"><label><span>Glide (Speed)</span> <span id="val-glide">0.05s</span></label><input type="range" id="p-glide" min="0.01" max="0.5" step="0.01" value="0.05"></div>
       </div>
 
       <div class="custom-fm-grid" id="custom-fm-panel">
@@ -274,6 +291,21 @@
         <div class="param-group">
           <label><span>Profundidad FM</span> <span id="val-fm-depth">300Hz</span></label>
           <input type="range" id="cf-depth" min="0" max="1500" step="25" value="300">
+        </div>
+      </div>
+
+      <div class="custom-drum-sequencer" id="custom-drum-panel">
+        <div class="seq-row">
+          <div class="seq-label">KICK</div>
+          <div class="seq-pads" id="seq-kick-pads"></div>
+        </div>
+        <div class="seq-row">
+          <div class="seq-label">SNARE</div>
+          <div class="seq-pads" id="seq-snare-pads"></div>
+        </div>
+        <div class="seq-row">
+          <div class="seq-label">HIHAT</div>
+          <div class="seq-pads" id="seq-hihat-pads"></div>
         </div>
       </div>
 
@@ -306,6 +338,7 @@
             <option value="reggae">Reggae / Ska</option>
             <option value="waltz">Waltz (3/4)</option>
             <option value="swing">Jazz Swing</option>
+            <option value="custom">✏️ Personalizado (16 pasos)</option>
           </select>
         </div>
         <div class="param-group" style="flex: 1;"><label><span>Tempo</span> <span id="val-bpm">120 BPM</span></label><input type="range" id="p-bpm" min="60" max="200" step="1" value="120"></div>
@@ -374,6 +407,40 @@
     ];
     let currentScaleIdx = 0;
 
+    // --- SECUENCIADOR CUSTOM DE 16 PASOS ---
+    const customSteps = {
+      kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+      snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+      hihat: [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1]
+    };
+
+    function buildCustomPads() {
+      ['kick', 'snare', 'hihat'].forEach(track => {
+        const container = document.getElementById(`seq-${track}-pads`);
+        container.innerHTML = '';
+        for (let i = 0; i < 16; i++) {
+          const pad = document.createElement('div');
+          pad.className = `seq-pad ${customSteps[track][i] ? 'active' : ''}`;
+          pad.addEventListener('pointerdown', () => {
+            customSteps[track][i] = customSteps[track][i] ? 0 : 1;
+            pad.className = `seq-pad ${customSteps[track][i] ? 'active' : ''}`;
+          });
+          container.appendChild(pad);
+        }
+      });
+    }
+    buildCustomPads();
+
+    const patternSelect = document.getElementById('drum-pattern');
+    const customDrumPanel = document.getElementById('custom-drum-panel');
+    patternSelect.addEventListener('change', (e) => {
+      if (e.target.value === 'custom') {
+        customDrumPanel.classList.add('visible');
+      } else {
+        customDrumPanel.classList.remove('visible');
+      }
+    });
+
     const customParams = { carrierWave: 'sine', modulatorWave: 'sine', fmRatio: 2.0, fmDepth: 300 };
 
     document.getElementById('cf-carrier').addEventListener('change', (e) => { customParams.carrierWave = e.target.value; });
@@ -387,21 +454,26 @@
       document.getElementById('val-fm-depth').innerText = Math.round(customParams.fmDepth) + 'Hz';
     });
 
-    const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, bpm: 120, drumVol: 0.6 };
+    // SEGURO ANTI-CRASH INSTALADO AQUÍ:
+    const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
     function bindParam(inputId, labelId, key, unit) {
       const input = document.getElementById(inputId);
+      if (!input) return; // Si el botón no existe, ignóralo para evitar crashes.
       const label = document.getElementById(labelId);
       input.addEventListener('input', (e) => {
         let val = parseFloat(e.target.value);
         synthParams[key] = val;
-        if(label) label.innerText = (key === 'echo' ? Math.round(val * 100) : (key === 'drumVol' ? Math.round(val * 100) : val)) + unit;
-        if(key === 'echo' && delayInputGain) delayInputGain.gain.value = val;
+        if(label) label.innerText = val + unit;
         if(key === 'drumVol' && drumMasterGain) drumMasterGain.gain.value = val;
       });
     }
-    bindParam('p-attack', 'val-atk', 'attack', 's'); bindParam('p-release', 'val-rel', 'release', 's');
-    bindParam('p-cutoff', 'val-cut', 'cutoff', 'Hz'); bindParam('p-echo', 'val-echo', 'echo', '%');
-    bindParam('p-bpm', 'val-bpm', 'bpm', ' BPM'); bindParam('p-drum-vol', 'val-dvol', 'drumVol', '%');
+    bindParam('p-attack', 'val-atk', 'attack', 's'); 
+    bindParam('p-release', 'val-rel', 'release', 's');
+    bindParam('p-cutoff', 'val-cut', 'cutoff', 'Hz'); 
+    bindParam('p-echo', 'val-echo', 'echo', '%');
+    bindParam('p-glide', 'val-glide', 'glide', 's');
+    bindParam('p-bpm', 'val-bpm', 'bpm', ' BPM'); 
+    bindParam('p-drum-vol', 'val-dvol', 'drumVol', '%');
 
     let currentInst = 'analog';
     const instSelect = document.getElementById('inst-select');
@@ -418,11 +490,24 @@
 
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
     
+    // CACHÉ DE CURVA DE DISTORSIÓN (Para que la guitarra no gaste CPU)
+    let distortionCurve = null;
+    function getDistortionCurve() {
+      if (distortionCurve) return distortionCurve;
+      distortionCurve = new Float32Array(44100);
+      const k = 50;
+      for (let i = 0; i < 44100; ++i) {
+        let x = (i * 2) / 44100 - 1;
+        distortionCurve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
+      }
+      return distortionCurve;
+    }
+
     function initAudio() {
       if (actx) return;
       try { if (screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape').catch(()=>{}); } } catch(e) {}
       
-      actx = new (window.AudioContext || window.webkitAudioContext)();
+      actx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
       
       masterLimiter = actx.createDynamicsCompressor();
       masterLimiter.threshold.value = -3.0; masterLimiter.knee.value = 0.0;
@@ -518,16 +603,27 @@
     let isPlayingDrums = false; let currentStep = 0; let nextNoteTime = 0; let timerID;
     function nextNote() {
       const secondsPerBeat = 60.0 / synthParams.bpm; nextNoteTime += 0.25 * secondsPerBeat;
-      currentStep++; const pattern = PATTERNS[document.getElementById('drum-pattern').value];
-      if (currentStep >= pattern.length) currentStep = 0;
+      currentStep++; 
+      const patternKey = document.getElementById('drum-pattern').value;
+      const maxSteps = patternKey === 'custom' ? 16 : PATTERNS[patternKey].length;
+      if (currentStep >= maxSteps) currentStep = 0;
     }
     function scheduleNote(stepNumber, time) {
-      const pattern = PATTERNS[document.getElementById('drum-pattern').value]; const note = pattern[stepNumber];
+      const patternKey = document.getElementById('drum-pattern').value;
       playPOSyncPulse(time);
-      if (!note) return;
-      if ([1, 4, 6, 7].includes(note)) playKick(time);
-      if ([2, 5, 6, 7].includes(note)) playSnare(time);
-      if ([3, 4, 5, 6].includes(note)) playHiHat(time);
+
+      if (patternKey === 'custom') {
+        if (customSteps.kick[stepNumber]) playKick(time);
+        if (customSteps.snare[stepNumber]) playSnare(time);
+        if (customSteps.hihat[stepNumber]) playHiHat(time);
+      } else {
+        const pattern = PATTERNS[patternKey];
+        const note = pattern[stepNumber];
+        if (!note) return;
+        if ([1, 4, 6, 7].includes(note)) playKick(time);
+        if ([2, 5, 6, 7].includes(note)) playSnare(time);
+        if ([3, 4, 5, 6].includes(note)) playHiHat(time);
+      }
     }
     function scheduler() {
       while (nextNoteTime < actx.currentTime + 0.1) { scheduleNote(currentStep, nextNoteTime); nextNote(); }
@@ -598,16 +694,8 @@
         voiceGain.gain.linearRampToValueAtTime(0.1, t + currentAttack);
 
       } else if (inst === 'guitar') {
-        // --- GUITARRA ELÉCTRICA DISTORSIONADA (OVERDRIVE) ---
         const distortion = actx.createWaveShaper();
-        // Curva matemática de saturación/distorsión suave
-        const curve = new Float32Array(44100);
-        const k = 50;
-        for (let i = 0; i < 44100; ++i) {
-          let x = (i * 2) / 44100 - 1;
-          curve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
-        }
-        distortion.curve = curve;
+        distortion.curve = getDistortionCurve();
 
         const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 2500;
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
@@ -621,9 +709,8 @@
         voiceGain.gain.linearRampToValueAtTime(0.09, t + 0.02);
 
       } else if (inst === 'acidbass') {
-        // --- BAJO ÁCIDO TIPO TB-303 ---
-        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 15.0; // Resonancia alta (ácida)
-        filter.frequency.setValueAtTime(synthParams.cutoff * 3, t);
+        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 18.0; 
+        filter.frequency.setValueAtTime(synthParams.cutoff * 4, t);
         filter.frequency.exponentialRampToValueAtTime(synthParams.cutoff, t + 0.3);
 
         const osc = actx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = freq; osc.freqMultiplier = 1;
@@ -746,7 +833,7 @@
           voice.oscillators.forEach(osc => {
             if(osc.freqMultiplier !== undefined) {
               let finalFreq = newFreq * osc.freqMultiplier;
-              osc.frequency.setTargetAtTime(finalFreq, t, 0.05);
+              osc.frequency.setTargetAtTime(finalFreq, t, synthParams.glide);
             }
           });
         });
