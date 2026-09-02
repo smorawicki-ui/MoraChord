@@ -9,12 +9,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0d141e">
   
-  <!-- ICONOS SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d141e' rx='112' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d141e' rx='112' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   
-  <!-- MANIFIESTO VERSIÓN 3 -->
-  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTW9yYUNob3JkIFBybyAzIiwic2hvcnRfbmFtZSI6Ik1vcmFDaG9yZCIsInN0YXJ0X3VybCI6Ii4vP3Y9MyIsImRpc3BsYXkiOiJmdWxsc2NyZWVuIiwib3JpZW50YXRpb24iOiJsYW5kc2NhcGUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBkMTQxZSIsInRoZW1lX2NvbG9yIjoiIzBkMTQxZSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7Y2hhcnNldD11dGYtOCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMiclM0UlM0NyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyBmaWxsPSclMjMwZDE0MWUnIHJ4PScxMTInIC8lM0UlM0NnIGZpbGw9JyUyMzM4YmRmOCclM0UlM0NyZWN0IHg9JzE0MCcgeT0nMjE2JyB3aWR0aD0nODAnIHJ4PScxNicgLyUzRSUzQ3JlY3QgeD0nMTg4JyB5PScxNTYnIHdpZHRoPSczMicgaGVpZ2h0PScyMDAnIHJ4PScxNicgLyUzRSUzQ3JlY3QgeD0nMjM2JyB5PSc5Nicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyMCcgcng9JzE2JyAvJTNFJTNDcmVjdCB4PScyODQnIHk9JzEzNicgd2lkdGg9JzMyJyBoZWlnaHQ9JzI0MCcgcng9JzE2JyAvJTNFJTNDcmVjdCB4PSczMzInIHk9JzIwNicgd2lkdGg9JzMyJyBoZWlnaHQ9JzEwMCcgcng9JzE2JyAvJTNFJTNDL2clM0UlM0Mvc3ZnJTUyIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn1dfQ==">
+  <!-- AQUÍ CONECTAMOS EL CERTIFICADO -->
+  <link rel="manifest" href="manifest.json">
   
   <title>MoraChord Pro</title>
   <style>
@@ -81,12 +80,12 @@
 
     /* DRUM ROW */
     .drum-row {
-      display: flex; align-items: center; gap: 12px; margin-top: 4px; 
+      display: flex; align-items: center; gap: 16px; margin-top: 4px; 
       padding-top: 10px; border-top: 1px solid var(--border);
     }
     #btn-drum-play { background: var(--accent); color: #fff; box-shadow: var(--shadow-out); font-weight: 800; letter-spacing: 1px; }
     #btn-drum-play.playing { background: #e11d48; border-color: transparent; }
-    .drum-select { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); padding: 6px 8px; border-radius: 8px; font-weight: 700; font-size: 0.75rem; outline: none; }
+    #drum-pattern, #drum-kit { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
 
     /* --- MIDDLE SECTION --- */
     .middle-section { flex: 1; display: flex; padding: 16px; gap: 16px; }
@@ -110,7 +109,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
-    /* KEYS: Lógicas dinámicas */
+    /* KEYS */
     .keys-container { flex: 1; display: grid; gap: 10px; }
     
     .keys-container.layout-diatonic {
@@ -218,12 +217,12 @@
         <div style="display: flex; gap: 8px;">
           <button class="ctrl-btn" id="btn-drum-play">▶ PLAY BEAT</button>
           
-          <select id="drum-kit" class="drum-select">
+          <select id="drum-kit" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
             <option value="classic">Kit Clásico</option>
             <option value="chiptune">Kit 8-Bit</option>
           </select>
 
-          <select id="drum-pattern" class="drum-select">
+          <select id="drum-pattern" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
             <option value="rock">Rock Básico</option>
             <option value="rockalt">Rock Alternativo</option>
             <option value="disco">Disco / House</option>
@@ -288,6 +287,12 @@
   </div>
 
   <script>
+    // --- REGISTRO DEL GUARDIÁN (SERVICE WORKER) ---
+    // Esto es clave para que Chrome lo reconozca como App Instalable
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW falló:', err));
+    }
+
     const SCALES = [
       { name: 'Mayor',      intervals: [0,2,4,5,7,9,11], qual: ['maj','min','min','maj','maj','min','dim'], roman: ['I','ii','iii','IV','V','vi','vii°'] },
       { name: 'Menor',      intervals: [0,2,3,5,7,8,10], qual: ['min','dim','maj','min','min','maj','maj'], roman: ['i','ii°','III','iv','v','VI','VII'] },
@@ -321,8 +326,6 @@
     
     function initAudio() {
       if (actx) return;
-      try { if (screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape').catch(()=>{}); } } catch(e) {}
-
       actx = new (window.AudioContext || window.webkitAudioContext)();
       
       masterLimiter = actx.createDynamicsCompressor();
@@ -343,18 +346,15 @@
       drumMasterGain.connect(masterLimiter); 
     }
 
-    // --- DRUM MACHINE (Con Kit Clásico y 8-Bit) ---
+    // --- DRUM MACHINE ---
     function playKick(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       const osc = actx.createOscillator(); const gain = actx.createGain(); 
       osc.connect(gain); gain.connect(drumMasterGain);
       
       if (isChiptune) {
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(300, time);
-        osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
-        gain.gain.setValueAtTime(0.8, time);
-        gain.gain.linearRampToValueAtTime(0.01, time + 0.1);
+        osc.type = 'square'; osc.frequency.setValueAtTime(300, time); osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
+        gain.gain.setValueAtTime(0.8, time); gain.gain.linearRampToValueAtTime(0.01, time + 0.1);
         osc.start(time); osc.stop(time + 0.15);
       } else {
         osc.frequency.setValueAtTime(150, time); osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.5);
@@ -362,27 +362,19 @@
         osc.start(time); osc.stop(time + 0.5);
       }
     }
-
     function playSnare(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      
       if (isChiptune) {
-        // Ruido de 1-bit aspero para el snare 8-bit
         const bufferSize = actx.sampleRate * 0.15; const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
         const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() > 0.5 ? 1 : -1;
-        const noise = actx.createBufferSource(); noise.buffer = buffer;
-        const noiseGain = actx.createGain();
+        const noise = actx.createBufferSource(); noise.buffer = buffer; const noiseGain = actx.createGain();
         noiseGain.gain.setValueAtTime(0.6, time); noiseGain.gain.linearRampToValueAtTime(0.01, time + 0.15);
-        noise.connect(noiseGain); noiseGain.connect(drumMasterGain);
-        noise.start(time);
+        noise.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time);
         
-        // Acompañado de un golpe cuadrado corto
-        const osc = actx.createOscillator(); const oscGain = actx.createGain();
-        osc.type = 'square'; osc.connect(oscGain);
+        const osc = actx.createOscillator(); const oscGain = actx.createGain(); osc.type = 'square'; osc.connect(oscGain);
         osc.frequency.setValueAtTime(800, time); osc.frequency.exponentialRampToValueAtTime(200, time + 0.1);
         oscGain.gain.setValueAtTime(0.5, time); oscGain.gain.linearRampToValueAtTime(0.01, time + 0.15);
         oscGain.connect(drumMasterGain); osc.start(time); osc.stop(time + 0.15);
-        
       } else {
         const osc = actx.createOscillator(); const oscGain = actx.createGain(); osc.type = 'triangle'; osc.connect(oscGain); osc.frequency.setValueAtTime(250, time);
         oscGain.gain.setValueAtTime(0.7, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
@@ -395,42 +387,24 @@
         osc.start(time); osc.stop(time + 0.2); noise.start(time);
       }
     }
-
     function playHiHat(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      
-      const bufferSize = actx.sampleRate * (isChiptune ? 0.05 : 0.1); 
-      const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
-      const data = buffer.getChannelData(0); 
-      for (let i = 0; i < bufferSize; i++) data[i] = isChiptune ? (Math.random() > 0.5 ? 1 : -1) : (Math.random() * 2 - 1);
-      
+      const bufferSize = actx.sampleRate * (isChiptune ? 0.05 : 0.1); const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+      const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = isChiptune ? (Math.random() > 0.5 ? 1 : -1) : (Math.random() * 2 - 1);
       const noise = actx.createBufferSource(); noise.buffer = buffer;
-      const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; 
-      noiseFilter.frequency.value = isChiptune ? 4000 : 5000;
-      
-      const noiseGain = actx.createGain(); 
-      noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); 
-      noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.1));
-      
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
-      noise.start(time);
+      const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 4000 : 5000;
+      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.1));
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time);
     }
 
     const PATTERNS = {
-      'rock':      [4,3,3,3, 5,3,3,3, 4,3,3,3, 5,3,3,3],
-      'rockalt':   [4,3,3,1, 5,3,3,3, 4,3,4,3, 5,3,3,3],
-      'disco':     [4,3,5,3, 4,3,5,3, 4,3,5,3, 4,3,5,3],
-      'hiphop':    [4,3,3,3, 5,3,3,3, 4,3,4,3, 5,3,3,3],
-      'trap':      [4,3,3,3, 5,3,3,3, 3,3,4,3, 5,3,3,3],
-      'dnb':       [4,3,3,3, 5,3,3,3, 3,3,1,3, 5,3,3,3],
-      'reggaeton': [4,3,3,5, 1,3,5,3, 4,3,3,5, 1,3,5,3],
-      'cumbia':    [4,3,2,3, 1,3,2,3, 4,3,2,3, 1,3,2,3],
-      'salsa':     [4,3,1,3, 2,3,4,3, 1,3,1,3, 2,3,4,3],
-      'bossa':     [4,3,3,2, 3,4,2,3, 4,2,3,4, 3,4,2,3],
-      'reggae':    [3,3,3,3, 6,3,3,3, 3,3,3,3, 6,3,3,3],
-      'synth':     [4,3,5,3, 4,3,5,4, 4,3,5,3, 4,4,5,3],
-      'waltz':     [4,3,3, 2,3,3, 2,3,3, 2,3,3],
-      'swing':     [4,0,0, 5,0,3, 4,0,0, 5,0,3]
+      'rock':      [4,3,3,3, 5,3,3,3, 4,3,3,3, 5,3,3,3], 'rockalt':   [4,3,3,1, 5,3,3,3, 4,3,4,3, 5,3,3,3],
+      'disco':     [4,3,5,3, 4,3,5,3, 4,3,5,3, 4,3,5,3], 'hiphop':    [4,3,3,3, 5,3,3,3, 4,3,4,3, 5,3,3,3],
+      'trap':      [4,3,3,3, 5,3,3,3, 3,3,4,3, 5,3,3,3], 'dnb':       [4,3,3,3, 5,3,3,3, 3,3,1,3, 5,3,3,3],
+      'reggaeton': [4,3,3,5, 1,3,5,3, 4,3,3,5, 1,3,5,3], 'cumbia':    [4,3,2,3, 1,3,2,3, 4,3,2,3, 1,3,2,3],
+      'salsa':     [4,3,1,3, 2,3,4,3, 1,3,1,3, 2,3,4,3], 'bossa':     [4,3,3,2, 3,4,2,3, 4,2,3,4, 3,4,2,3],
+      'reggae':    [3,3,3,3, 6,3,3,3, 3,3,3,3, 6,3,3,3], 'synth':     [4,3,5,3, 4,3,5,4, 4,3,5,3, 4,4,5,3],
+      'waltz':     [4,3,3, 2,3,3, 2,3,3, 2,3,3],         'swing':     [4,0,0, 5,0,3, 4,0,0, 5,0,3]
     };
 
     let isPlayingDrums = false; let currentStep = 0; let nextNoteTime = 0; let timerID;
@@ -624,6 +598,7 @@
     function updateUI() {
       const scale = SCALES[currentScaleIdx];
       const isChrom = scale.isChromatic;
+      document.getElementById('scale-select').value = currentScaleIdx;
       document.getElementById('key-display').innerText = getNoteName(48 + keyOffset);
       
       const container = document.getElementById('keys-container');
@@ -740,6 +715,7 @@
     }
     strumplate.addEventListener('pointerup', releaseStrum); strumplate.addEventListener('pointercancel', releaseStrum);
 
+    // Inicializar
     updateUI();
   </script>
 </body>
