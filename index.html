@@ -12,8 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d141e' rx='112' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d141e' rx='112' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   
-  <!-- AQUÍ CONECTAMOS EL CERTIFICADO -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTW9yYUNob3JkIFBybyA0Iiwic2hvcnRfbmFtZSI6Ik1vcmFDaG9yZCIsInN0YXJ0X3VybCI6Ii4vP3Y9NCIsImRpc3BsYXkiOiJmdWxsc2NyZWVuIiwib3JpZW50YXRpb24iOiJsYW5kc2NhcGUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBkMTQxZSIsInRoZW1lX2NvbG9yIjoiIzBkMTQxZSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7Y2hhcnNldD11dGYtOCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMiclM0UlM0NyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyBmaWxsPSclMjMwZDE0MWUnIHJ4PScxMTInIC8lM0UlM0NnIGZpbGw9JyUyMzM4YmRmOCclM0UlM0NyZWN0IHg9JzE0MCcgeT0nMjE2JyB3aWR0aD0nODAnIHJ4PScxNicgLyUzRSUzQ3JlY3QgeD0nMTg4JyB5PScxNTYnIHdpZHRoPSczMicgaGVpZ2h0PScyMDAnIHJ4PScxNicgLyUzRSUzQ3JlY3QgeD0nMjM2JyB5PSc5Nicgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyMCcgcng9JzE2JyAvJTNFJTNDcmVjdCB4PScyODQnIHk9JzEzNicgd2lkdGg9JzMyJyBoZWlnaHQ9JzI0MCcgcng9JzE2JyAvJTNFJTNDcmVjdCB4PSczMzInIHk9JzIwNicgd2lkdGg9JzMyJyBoZWlnaHQ9JzEwMCcgcng9JzE2JyAvJTNFJTNDL2clM0UlM0Mvc3ZnJTUyIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn1dfQ==">
   
   <title>MoraChord Pro</title>
   <style>
@@ -207,7 +206,7 @@
       </div>
       
       <div class="params-grid">
-        <div class="param-group"><label><span>Attack</span> <span id="val-atk">0.8s</span></label><input type="range" id="p-attack" min="0.01" max="2.0" step="0.05" value="0.8"></div>
+        <div class="param-group"><label><span>Attack</span> <span id="val-atk">0.05s</span></label><input type="range" id="p-attack" min="0.01" max="2.0" step="0.01" value="0.05"></div>
         <div class="param-group"><label><span>Release</span> <span id="val-rel">1.5s</span></label><input type="range" id="p-release" min="0.1" max="4.0" step="0.1" value="1.5"></div>
         <div class="param-group"><label><span>Cutoff</span> <span id="val-cut">800Hz</span></label><input type="range" id="p-cutoff" min="200" max="4000" step="50" value="800"></div>
         <div class="param-group"><label><span>Echo Vol</span> <span id="val-echo">20%</span></label><input type="range" id="p-echo" min="0" max="0.8" step="0.05" value="0.2"></div>
@@ -254,7 +253,6 @@
       </div>
 
       <div class="keys-container layout-diatonic" id="keys-container">
-        <!-- 7 Botones Diatónicos / Primeros 7 Cromáticos -->
         <div class="btn-key armed" data-idx="0"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key" data-idx="1"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key" data-idx="2"><div class="chord-name"></div><div class="roman"></div></div>
@@ -263,7 +261,6 @@
         <div class="btn-key" data-idx="5"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key" data-idx="6"><div class="chord-name"></div><div class="roman"></div></div>
         
-        <!-- 5 Botones Extra (Cromáticos) -->
         <div class="btn-key chromatic-only" data-idx="7"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key chromatic-only" data-idx="8"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key chromatic-only" data-idx="9"><div class="chord-name"></div><div class="roman"></div></div>
@@ -287,12 +284,6 @@
   </div>
 
   <script>
-    // --- REGISTRO DEL GUARDIÁN (SERVICE WORKER) ---
-    // Esto es clave para que Chrome lo reconozca como App Instalable
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW falló:', err));
-    }
-
     const SCALES = [
       { name: 'Mayor',      intervals: [0,2,4,5,7,9,11], qual: ['maj','min','min','maj','maj','min','dim'], roman: ['I','ii','iii','IV','V','vi','vii°'] },
       { name: 'Menor',      intervals: [0,2,3,5,7,8,10], qual: ['min','dim','maj','min','min','maj','maj'], roman: ['i','ii°','III','iv','v','VI','VII'] },
@@ -303,7 +294,8 @@
     ];
     let currentScaleIdx = 0;
 
-    const synthParams = { attack: 0.8, release: 1.5, cutoff: 800, echo: 0.2, bpm: 120, drumVol: 0.6 };
+    // ATTACK AHORA EN 0.05 PARA ELIMINAR DELAY
+    const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, bpm: 120, drumVol: 0.6 };
     function bindParam(inputId, labelId, key, unit) {
       const input = document.getElementById(inputId);
       const label = document.getElementById(labelId);
@@ -326,7 +318,10 @@
     
     function initAudio() {
       if (actx) return;
-      actx = new (window.AudioContext || window.webkitAudioContext)();
+      try { if (screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape').catch(()=>{}); } } catch(e) {}
+
+      // LATENCY HINT: 'interactive' OBLIGA AL DISPOSITIVO A PROCESAR AUDIO SIN RETRASO
+      actx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
       
       masterLimiter = actx.createDynamicsCompressor();
       masterLimiter.threshold.value = -3.0; masterLimiter.knee.value = 0.0;
@@ -458,6 +453,7 @@
       return { i: i || [b,0,4,7], s }; 
     }
 
+    // --- SÍNTESIS DE AUDIO (AFINACIÓN A440 ESTRICTA) ---
     function playChordNote(midi, inst, isBass, isStrum = false) {
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
       const t = actx.currentTime;
@@ -467,8 +463,9 @@
 
       if (inst === 'analog') {
         const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.5; filter.frequency.value = synthParams.cutoff;
-        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -6; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.detune.value = 6; osc2.freqMultiplier = 1;
+        // DETUNE REDUCIDO de 6 a 2 para afinación perfecta
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -2; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.detune.value = 2; osc2.freqMultiplier = 1;
         osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
@@ -479,8 +476,9 @@
       } else if (inst === 'strings') {
         const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.2; 
         filter.frequency.setValueAtTime(synthParams.cutoff * 0.4, t); filter.frequency.linearRampToValueAtTime(synthParams.cutoff, t + currentAttack * 1.5); 
-        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -12; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = freq; osc2.detune.value = 12; osc2.freqMultiplier = 1;
+        // DETUNE REDUCIDO de 12 a 4 para armonía limpia
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -4; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = freq; osc2.detune.value = 4; osc2.freqMultiplier = 1;
         const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.value = freq; osc3.detune.value = 0; osc3.freqMultiplier = 1;
         osc1.connect(filter); osc2.connect(filter); osc3.connect(filter); oscillators.push(osc1, osc2, osc3);
         if (isBass && !isStrum) { 
@@ -502,7 +500,7 @@
 
       } else if (inst === '8bit') {
         const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = freq; osc2.detune.value = 5; osc2.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = freq; osc2.detune.value = 2; osc2.freqMultiplier = 1;
         osc1.connect(voiceGain); osc2.connect(voiceGain); oscillators.push(osc1, osc2);
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'square'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
@@ -523,8 +521,8 @@
       } else if (inst === 'sweep') {
         const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 8.0; 
         filter.frequency.setValueAtTime(4000, t); filter.frequency.exponentialRampToValueAtTime(Math.max(synthParams.cutoff, 200), t + currentAttack * 2);
-        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -10; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = freq; osc2.detune.value = 10; osc2.freqMultiplier = 1;
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -3; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = freq; osc2.detune.value = 3; osc2.freqMultiplier = 1;
         osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
         filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
 
@@ -658,12 +656,13 @@
       if (currentMod !== newMod) { currentMod = newMod; updateUI(); }
     }
 
-    // BOTONES
+    // BOTONES Y AUDIO SIN BLOQUEO DE UI
     document.querySelectorAll('.btn-key').forEach(btn => {
       btn.addEventListener('pointerdown', (e) => {
-        initAudio(); let idx = parseInt(btn.dataset.idx); armedDegree = idx; updateUI(); 
-        btn.classList.add('active'); btn.setPointerCapture(e.pointerId);
+        initAudio(); let idx = parseInt(btn.dataset.degree); armedDegree = idx; 
         
+        // DISPARAMOS EL AUDIO ANTES DE DIBUJAR LA PANTALLA
+        btn.classList.add('active'); btn.setPointerCapture(e.pointerId);
         const scale = SCALES[currentScaleIdx];
         const isChrom = scale.isChromatic;
         let rootMidi = isChrom ? (48 + keyOffset + idx) : (48 + keyOffset + scale.intervals[idx]);
@@ -679,6 +678,9 @@
           voices.push(voice); 
         });
         activeKeys.set(btn, voices);
+        
+        // DIBUJAR PANTALLA DESPUÉS
+        requestAnimationFrame(() => updateUI());
       });
       function releaseBtn() {
         btn.classList.remove('active'); 
@@ -715,7 +717,6 @@
     }
     strumplate.addEventListener('pointerup', releaseStrum); strumplate.addEventListener('pointercancel', releaseStrum);
 
-    // Inicializar
     updateUI();
   </script>
 </body>
