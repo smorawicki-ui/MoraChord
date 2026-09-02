@@ -41,7 +41,7 @@
       padding: 10px 16px; display: flex; flex-direction: column; gap: 8px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 10;
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-      overflow-y: auto; max-height: 45dvh;
+      overflow-y: auto; max-height: 48dvh;
     }
     .header-row { display: flex; align-items: center; justify-content: space-between; }
     
@@ -65,7 +65,6 @@
     select.inst-select option { background: var(--panel); color: var(--text); }
     select.inst-select optgroup { color: var(--text-muted); font-style: italic; }
 
-    /* PARAMS GRID: Ahora tiene 5 columnas para que entren todos los controles */
     .params-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 4px 8px; }
     
     .custom-fm-grid {
@@ -74,14 +73,14 @@
     }
     .custom-fm-grid.visible { display: grid; }
 
-    /* SECUENCIADOR CUSTOM DE BATERÍA (16 PASOS) */
+    /* SECUENCIADOR CUSTOM EXPANDIDO A 6 PISTAS */
     .custom-drum-sequencer {
       display: none; flex-direction: column; gap: 4px; padding: 8px;
       background: #070d14; border-radius: 12px; border: 1px solid var(--accent); margin-top: 4px;
     }
     .custom-drum-sequencer.visible { display: flex; }
     .seq-row { display: flex; align-items: center; gap: 6px; }
-    .seq-label { font-size: 0.6rem; font-weight: bold; width: 45px; color: var(--accent-hover); }
+    .seq-label { font-size: 0.55rem; font-weight: bold; width: 55px; color: var(--accent-hover); letter-spacing: 0.5px;}
     .seq-pads { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; flex: 1; }
     .seq-pad {
       height: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; cursor: pointer;
@@ -137,7 +136,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
-    /* KEYS: Grilla 4x2 Invertida (Arranca abajo-izq [0], termina arriba-der [7]) */
+    /* KEYS: Grilla */
     .keys-container { flex: 1; display: grid; gap: 10px; }
     
     .keys-container.layout-diatonic {
@@ -147,7 +146,6 @@
         "i ii iii iv";
     }
     .keys-container.layout-diatonic .btn-key.chromatic-only { display: none; }
-
     .keys-container.layout-diatonic .btn-key[data-idx="0"] { grid-area: i; border-radius: 20px; }
     .keys-container.layout-diatonic .btn-key[data-idx="1"] { grid-area: ii; }
     .keys-container.layout-diatonic .btn-key[data-idx="2"] { grid-area: iii; }
@@ -164,8 +162,8 @@
         "c5 c6 c7 c8"
         "c1 c2 c3 c4";
     }
+    .keys-container.layout-chromatic .btn-key { grid-area: auto; border-radius: 12px; }
     .keys-container.layout-chromatic .roman { display: none; }
-
     .keys-container.layout-chromatic .btn-key[data-idx="0"] { grid-area: c1; border-radius: 12px; }
     .keys-container.layout-chromatic .btn-key[data-idx="1"] { grid-area: c2; }
     .keys-container.layout-chromatic .btn-key[data-idx="2"] { grid-area: c3; }
@@ -295,18 +293,12 @@
       </div>
 
       <div class="custom-drum-sequencer" id="custom-drum-panel">
-        <div class="seq-row">
-          <div class="seq-label">KICK</div>
-          <div class="seq-pads" id="seq-kick-pads"></div>
-        </div>
-        <div class="seq-row">
-          <div class="seq-label">SNARE</div>
-          <div class="seq-pads" id="seq-snare-pads"></div>
-        </div>
-        <div class="seq-row">
-          <div class="seq-label">HIHAT</div>
-          <div class="seq-pads" id="seq-hihat-pads"></div>
-        </div>
+        <div class="seq-row"><div class="seq-label">KICK</div><div class="seq-pads" id="seq-kick-pads"></div></div>
+        <div class="seq-row"><div class="seq-label">DEEP BD</div><div class="seq-pads" id="seq-deepkick-pads"></div></div>
+        <div class="seq-row"><div class="seq-label">SNARE</div><div class="seq-pads" id="seq-snare-pads"></div></div>
+        <div class="seq-row"><div class="seq-label">C. HH</div><div class="seq-pads" id="seq-hihat-pads"></div></div>
+        <div class="seq-row"><div class="seq-label">O. HH</div><div class="seq-pads" id="seq-openhat-pads"></div></div>
+        <div class="seq-row"><div class="seq-label">RIDE</div><div class="seq-pads" id="seq-ride-pads"></div></div>
       </div>
 
       <div class="drum-row">
@@ -407,16 +399,20 @@
     ];
     let currentScaleIdx = 0;
 
-    // --- SECUENCIADOR CUSTOM DE 16 PASOS ---
+    // --- SECUENCIADOR CUSTOM DE 16 PASOS (6 PISTAS) ---
     const customSteps = {
-      kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
-      snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
-      hihat: [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1]
+      kick:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+      deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+      snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+      hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+      openhat:  [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+      ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
     };
 
     function buildCustomPads() {
-      ['kick', 'snare', 'hihat'].forEach(track => {
+      ['kick', 'deepkick', 'snare', 'hihat', 'openhat', 'ride'].forEach(track => {
         const container = document.getElementById(`seq-${track}-pads`);
+        if(!container) return;
         container.innerHTML = '';
         for (let i = 0; i < 16; i++) {
           const pad = document.createElement('div');
@@ -454,16 +450,16 @@
       document.getElementById('val-fm-depth').innerText = Math.round(customParams.fmDepth) + 'Hz';
     });
 
-    // SEGURO ANTI-CRASH INSTALADO AQUÍ:
     const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
     function bindParam(inputId, labelId, key, unit) {
       const input = document.getElementById(inputId);
-      if (!input) return; // Si el botón no existe, ignóralo para evitar crashes.
+      if (!input) return;
       const label = document.getElementById(labelId);
       input.addEventListener('input', (e) => {
         let val = parseFloat(e.target.value);
         synthParams[key] = val;
         if(label) label.innerText = val + unit;
+        if(key === 'echo' && delayInputGain) delayInputGain.gain.value = val;
         if(key === 'drumVol' && drumMasterGain) drumMasterGain.gain.value = val;
       });
     }
@@ -490,7 +486,6 @@
 
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
     
-    // CACHÉ DE CURVA DE DISTORSIÓN (Para que la guitarra no gaste CPU)
     let distortionCurve = null;
     function getDistortionCurve() {
       if (distortionCurve) return distortionCurve;
@@ -555,6 +550,19 @@
         osc.start(time); osc.stop(time + 0.5);
       }
     }
+    
+    // NUEVO: BOMBO DE ULTRATUMBA
+    function playDeepKick(time) {
+      const osc = actx.createOscillator(); const gain = actx.createGain(); 
+      osc.connect(gain); gain.connect(drumMasterGain);
+      osc.type = 'sine'; 
+      osc.frequency.setValueAtTime(100, time); 
+      osc.frequency.exponentialRampToValueAtTime(35, time + 0.1);
+      gain.gain.setValueAtTime(1, time); 
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.8);
+      osc.start(time); osc.stop(time + 1.0);
+    }
+
     function playSnare(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       if (isChiptune) {
@@ -580,6 +588,7 @@
         osc.start(time); osc.stop(time + 0.2); noise.start(time);
       }
     }
+    
     function playHiHat(time) {
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       const bufferSize = actx.sampleRate * (isChiptune ? 0.05 : 0.1); const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
@@ -588,6 +597,40 @@
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 4000 : 5000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.1));
       noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time);
+    }
+    
+    // NUEVO: OPEN HI-HAT
+    function playOpenHiHat(time) {
+      const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
+      const bufferSize = actx.sampleRate * (isChiptune ? 0.2 : 0.4); 
+      const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+      const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = isChiptune ? (Math.random() > 0.5 ? 1 : -1) : (Math.random() * 2 - 1);
+      const noise = actx.createBufferSource(); noise.buffer = buffer;
+      const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 3000 : 4000;
+      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.2 : 0.4));
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time);
+    }
+
+    // NUEVO: RIDE
+    function playRide(time) {
+      const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
+      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(0.2, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+      noiseGain.connect(drumMasterGain);
+
+      const bufferSize = actx.sampleRate * 0.5; const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+      const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = isChiptune ? (Math.random() > 0.5 ? 1 : -1) : (Math.random() * 2 - 1);
+      const noise = actx.createBufferSource(); noise.buffer = buffer;
+      const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 6000;
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noise.start(time);
+
+      if (!isChiptune) {
+         const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.value = 3200;
+         const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = 4800;
+         const oscGain = actx.createGain(); oscGain.gain.setValueAtTime(0.1, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+         const oscFilter = actx.createBiquadFilter(); oscFilter.type = 'highpass'; oscFilter.frequency.value = 2000;
+         osc1.connect(oscFilter); osc2.connect(oscFilter); oscFilter.connect(oscGain); oscGain.connect(drumMasterGain);
+         osc1.start(time); osc2.start(time); osc1.stop(time + 0.6); osc2.stop(time + 0.6);
+      }
     }
 
     const PATTERNS = {
@@ -614,8 +657,11 @@
 
       if (patternKey === 'custom') {
         if (customSteps.kick[stepNumber]) playKick(time);
+        if (customSteps.deepkick[stepNumber]) playDeepKick(time);
         if (customSteps.snare[stepNumber]) playSnare(time);
         if (customSteps.hihat[stepNumber]) playHiHat(time);
+        if (customSteps.openhat[stepNumber]) playOpenHiHat(time);
+        if (customSteps.ride[stepNumber]) playRide(time);
       } else {
         const pattern = PATTERNS[patternKey];
         const note = pattern[stepNumber];
@@ -807,12 +853,14 @@
       voice.oscillators.forEach(o => o.stop(t + rel + 0.1));
     }
 
+    // --- MAGIA: EL JOYSTICK MODIFICA NOTAS RESIDUALES Y ARPEGIADOR EN TIEMPO REAL ---
     function updateActiveChordsFrequencies() {
       if (!actx) return;
       const t = actx.currentTime;
       const scale = SCALES[currentScaleIdx];
       const isChrom = scale.isChromatic;
 
+      // 1. Doblar en tiempo real los acordes principales
       activeKeys.forEach((voices, btn) => {
         let idx = parseInt(btn.dataset.idx);
         let rootMidi = isChrom ? (48 + keyOffset + idx) : (48 + keyOffset + scale.intervals[idx]);
@@ -821,11 +869,10 @@
         
         voices.forEach((voice, index) => {
           if (index >= intervalData.i.length) {
-            voice.voiceGain.gain.setTargetAtTime(0.0001, t, 0.05); return;
+            voice.voiceGain.gain.setTargetAtTime(0.0001, t, synthParams.glide); return;
           }
           if (voice.voiceGain.gain.value < 0.01) {
-            let maxVol = 0.1;
-            voice.voiceGain.gain.setTargetAtTime(maxVol, t, 0.05);
+            voice.voiceGain.gain.setTargetAtTime(0.1, t, synthParams.glide);
           }
           let newMidi = rootMidi + intervalData.i[index];
           let newFreq = 440 * Math.pow(2, (newMidi - 69) / 12);
@@ -836,6 +883,36 @@
               osc.frequency.setTargetAtTime(finalFreq, t, synthParams.glide);
             }
           });
+        });
+      });
+
+      // 2. Doblar en tiempo real las cuerdas del arpegiador que sigan sonando
+      strumVoices.forEach(strum => {
+        let midi = isChrom ? (48 + keyOffset + strum.armedDegree) : (48 + keyOffset + scale.intervals[strum.armedDegree]);
+        let baseQual = isChrom ? 'maj' : scale.qual[strum.armedDegree];
+        
+        let intervalData = getIntervalsAndName(baseQual, currentMod);
+        let chordTones = intervalData.i.filter(v => v >= 0);
+        if (chordTones.length === 0) chordTones = [0, 4, 7];
+        
+        let extendedHarmonics = [
+          chordTones[0],
+          chordTones[1] || chordTones[0] + 3,
+          chordTones[2] || chordTones[0] + 7,
+          chordTones[3] || chordTones[0] + 10,
+          chordTones[0] + 12,
+          (chordTones[1] || chordTones[0] + 3) + 12,
+          (chordTones[2] || chordTones[0] + 7) + 12,
+          chordTones[0] + 24
+        ];
+        let noteInterval = extendedHarmonics[strum.idx];
+        let newFreq = 440 * Math.pow(2, ((midi + noteInterval) - 69) / 12);
+
+        strum.voice.oscillators.forEach(osc => {
+          if(osc.freqMultiplier !== undefined) {
+            let finalFreq = newFreq * osc.freqMultiplier;
+            osc.frequency.setTargetAtTime(finalFreq, t, synthParams.glide);
+          }
         });
       });
     }
@@ -873,7 +950,7 @@
       let armedIntData = getIntervalsAndName(armedBaseQual, currentMod);
       document.getElementById('main-chord-display').innerText = getNoteName(armedMidi) + " " + armedIntData.s;
 
-      if (activeKeys.size > 0) updateActiveChordsFrequencies();
+      if (activeKeys.size > 0 || strumVoices.length > 0) updateActiveChordsFrequencies();
     }
 
     document.getElementById('scale-select').addEventListener('change', (e) => { currentScaleIdx = parseInt(e.target.value); updateUI(); });
@@ -964,7 +1041,8 @@
           let noteInterval = extendedHarmonics[idx];
           
           let voice = playChordNote(midi + noteInterval, currentInst, false, true); 
-          strumVoices.push(voice);
+          // Guardamos la memoria de qué acorde era al momento de tocar para poder doblarlo en vivo con el joystick
+          strumVoices.push({ voice: voice, idx: idx, armedDegree: armedDegree });
         }
       }
     }
@@ -972,7 +1050,7 @@
     strumplate.addEventListener('pointermove', (e) => { if(e.buttons > 0 || e.pressure > 0) handleStrum(e); });
     function releaseStrum(e) {
       lastStrumIdx = -1; 
-      strumVoices.forEach(v => { stopChordNote(v); }); 
+      strumVoices.forEach(v => { stopChordNote(v.voice); }); 
       strumVoices = [];
     }
     strumplate.addEventListener('pointerup', releaseStrum); strumplate.addEventListener('pointercancel', releaseStrum);
