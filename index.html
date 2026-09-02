@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#071118">
+  
+  <title>HiChord Pro - Ensembles</title>
+  <style>
+    :root {
+      --bg: #071118; --panel: #0f1c26; --border: #1a2c3a;
+      --accent: #0284c7; --accent-hover: #38bdf8;
+      --text: #f0f9ff; --text-muted: #7dd3fc;
+    }
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; touch-action: none; margin: 0; padding: 0; }
+    
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .main-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* --- TOP BAR --- */
+    .top-section {
+      background: var(--panel); border-bottom: 1px solid var(--border);
+      padding: 8px 10px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .header-row { display: flex; align-items: center; justify-content: space-between; }
+    .ctrl-group { display: flex; align-items: center; gap: 4px; }
+    
+    .ctrl-btn {
+      background: #08121a; border: 1px solid var(--border); color: var(--text-muted);
+      padding: 6px 8px; border-radius: 6px; font-weight: bold; font-size: 0.75rem;
+    }
+    .ctrl-btn.active { background: var(--accent); border-color: var(--accent-hover); color: #fff; }
+    #btn-scale { border-color: var(--accent); color: var(--accent-hover); width: 80px; }
+
+    #key-display { font-size: 1.1rem; font-weight: 900; width: 22px; text-align: center; color: var(--accent-hover); }
+    #main-chord-display { font-size: 1.2rem; font-weight: 900; color: #fff; text-align: center; min-width: 90px;}
+
+    .params-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      background: #071118; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border);
+    }
+    .param-group { display: flex; flex-direction: column; gap: 3px; }
+    .param-group label { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: bold; color: var(--accent-hover); }
+    .param-group input[type=range] { 
+      width: 100%; accent-color: var(--accent); height: 4px; background: #1a2c3a; outline: none; -webkit-appearance: none; border-radius: 2px;
+    }
+    .param-group input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent-hover); border-radius: 50%;
+    }
+
+    /* --- MIDDLE: JOYSTICK & KEYS --- */
+    .middle-section { flex: 1; display: flex; padding: 8px; gap: 8px; }
+
+    .joystick-container {
+      flex: 0 0 100px; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    }
+    .joy-wrapper {
+      display: grid; grid-template-columns: 26px 46px 26px; grid-template-rows: 26px 46px 26px;
+      gap: 2px; align-items: center; justify-items: center;
+    }
+    .lbl { font-size: 0.55rem; color: #52758f; text-align: center; font-weight: 700; transition: 0.1s; line-height: 1; }
+    .lbl.active { color: var(--accent-hover); transform: scale(1.1); text-shadow: 0 0 5px rgba(56,189,248,0.5); }
+    
+    .joy-center {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: #071118; border: 2px solid var(--border); position: relative;
+    }
+    .joy-stick {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--accent-hover);
+      position: absolute; top: 9px; left: 9px; pointer-events: none;
+    }
+
+    .keys-container {
+      flex: 1; display: grid; gap: 6px;
+      grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr);
+      grid-template-areas: "i i" "ii iii" "iv v" "vi vii";
+    }
+    .btn-key {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.05s;
+    }
+    .btn-key.armed { border-color: #38bdf8; background: #0c2638; }
+    .btn-key:active, .btn-key.active { transform: scale(0.96); border-color: var(--accent-hover); background: #083344; color: #fff; }
+    .btn-key .chord-name { font-size: 1.2rem; font-weight: 800; pointer-events: none; }
+    .btn-key .roman { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; margin-top: 2px; pointer-events: none; }
+    
+    .k-i { grid-area: i; background: #0f1c26; } .k-ii { grid-area: ii; } .k-iii { grid-area: iii; }
+    .k-iv { grid-area: iv; } .k-v { grid-area: v; } .k-vi { grid-area: vi; } .k-vii { grid-area: vii; }
+
+    /* --- STRUMPLATE --- */
+    .strum-section {
+      height: 90px; background: #04090d; border-top: 2px solid var(--border);
+      padding: 8px; display: flex; flex-direction: column;
+    }
+    .strum-header { font-size: 0.65rem; color: var(--text-muted); text-align: center; margin-bottom: 5px; font-weight: bold;}
+    .strum-plate {
+      flex: 1; background: #020609; border-radius: 8px; border: 1px solid var(--border);
+      display: flex; overflow: hidden; position: relative;
+    }
+    .strum-string {
+      flex: 1; border-right: 1px solid #0f1c26; display: flex; align-items: center; justify-content: center; transition: background 0.1s;
+    }
+    .strum-string:last-child { border-right: none; }
+    .strum-string.hit { background: var(--accent); }
+    .string-line { width: 2px; height: 100%; background: #1a2c3a; pointer-events: none; }
+
+    /* --- RESPONSIVE LANDSCAPE --- */
+    @media (orientation: landscape) {
+      body { flex-direction: row; }
+      .strum-section { height: 100dvh; width: 120px; border-top: none; border-left: 2px solid var(--border); }
+      .strum-plate { flex-direction: column; }
+      .strum-string { border-right: none; border-bottom: 1px solid #0f1c26; }
+      .string-line { width: 100%; height: 2px; }
+      .keys-container { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); grid-template-areas: "iv v vi vii" "i i ii iii"; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-column">
+    <div class="top-section">
+      <div class="header-row">
+        <div class="ctrl-group">
+          <button class="ctrl-btn" id="btn-key-down">-</button>
+          <span id="key-display">C</span>
+          <button class="ctrl-btn" id="btn-key-up">+</button>
+        </div>
+        <button class="ctrl-btn" id="btn-scale">Mayor</button>
+        <div class="ctrl-group">
+          <button class="ctrl-btn active" data-inst="analog">SYNTH</button>
+          <!-- Instrumentos Nuevos/Renombrados -->
+          <button class="ctrl-btn" data-inst="strings">STRINGS</button>
+          <button class="ctrl-btn" data-inst="organ">ORGAN</button>
+        </div>
+      </div>
+      
+      <div class="params-grid">
+        <div class="param-group"><label><span>ATTACK</span> <span id="val-atk">0.8s</span></label><input type="range" id="p-attack" min="0.01" max="2.0" step="0.05" value="0.8"></div>
+        <div class="param-group"><label><span>RELEASE</span> <span id="val-rel">1.5s</span></label><input type="range" id="p-release" min="0.1" max="4.0" step="0.1" value="1.5"></div>
+        <div class="param-group"><label><span>CUTOFF</span> <span id="val-cut">800Hz</span></label><input type="range" id="p-cutoff" min="200" max="4000" step="50" value="800"></div>
+        <div class="param-group"><label><span>ECHO VOL</span> <span id="val-echo">20%</span></label><input type="range" id="p-echo" min="0" max="0.8" step="0.05" value="0.2"></div>
+      </div>
+    </div>
+
+    <div class="middle-section">
+      <div class="joystick-container">
+        <div class="joy-wrapper">
+          <div class="lbl" id="lbl-aug">↖<br>Aug</div><div class="lbl" id="lbl-flip">↑<br>M/m</div><div class="lbl" id="lbl-dom7">↗<br>Dom7</div>
+          <div class="lbl" id="lbl-dim">←<br>Dim</div><div class="joy-center" id="joyCenter"><div class="joy-stick" id="joyStick"></div></div><div class="lbl" id="lbl-7th">→<br>M/m7</div>
+          <div class="lbl" id="lbl-6th">↙<br>6th</div><div class="lbl" id="lbl-sus4">↓<br>Sus4</div><div class="lbl" id="lbl-9th">↘<br>9th</div>
+        </div>
+      </div>
+
+      <div class="keys-container">
+        <div class="btn-key k-i armed" data-degree="0">  <div class="chord-name">C</div> <div class="roman" id="rm-0">I</div> </div>
+        <div class="btn-key k-ii" data-degree="1"> <div class="chord-name">Dm</div> <div class="roman" id="rm-1">ii</div> </div>
+        <div class="btn-key k-iii" data-degree="2"><div class="chord-name">Em</div> <div class="roman" id="rm-2">iii</div> </div>
+        <div class="btn-key k-iv" data-degree="3"> <div class="chord-name">F</div> <div class="roman" id="rm-3">IV</div> </div>
+        <div class="btn-key k-v" data-degree="4">  <div class="chord-name">G</div> <div class="roman" id="rm-4">V</div> </div>
+        <div class="btn-key k-vi" data-degree="5"> <div class="chord-name">Am</div> <div class="roman" id="rm-5">vi</div> </div>
+        <div class="btn-key k-vii" data-degree="6"><div class="chord-name">Bdim</div><div class="roman" id="rm-6">vii°</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="strum-section">
+    <div class="header-row" style="margin-bottom: 3px;">
+      <span class="strum-header">STRUMPLATE</span>
+      <div id="main-chord-display">C Maj</div>
+    </div>
+    <div class="strum-plate" id="strumplate">
+      <div class="strum-string" data-idx="0"><div class="string-line"></div></div><div class="strum-string" data-idx="1"><div class="string-line"></div></div>
+      <div class="strum-string" data-idx="2"><div class="string-line"></div></div><div class="strum-string" data-idx="3"><div class="string-line"></div></div>
+      <div class="strum-string" data-idx="4"><div class="string-line"></div></div><div class="strum-string" data-idx="5"><div class="string-line"></div></div>
+      <div class="strum-string" data-idx="6"><div class="string-line"></div></div><div class="strum-string" data-idx="7"><div class="string-line"></div></div>
+    </div>
+  </div>
+
+  <script>
+    // --- ESCALAS MUSICALES ---
+    const SCALES = [
+      { name: 'Mayor',      intervals: [0,2,4,5,7,9,11], qual: ['maj','min','min','maj','maj','min','dim'], roman: ['I','ii','iii','IV','V','vi','vii°'] },
+      { name: 'Menor',      intervals: [0,2,3,5,7,8,10], qual: ['min','dim','maj','min','min','maj','maj'], roman: ['i','ii°','III','iv','v','VI','VII'] },
+      { name: 'Dórica',     intervals: [0,2,3,5,7,9,10], qual: ['min','min','maj','maj','min','dim','maj'], roman: ['i','ii','III','IV','v','vi°','VII'] },
+      { name: 'Mixolidia',  intervals: [0,2,4,5,7,9,10], qual: ['maj','min','dim','maj','min','min','maj'], roman: ['I','ii','iii°','IV','v','vi','VII'] },
+      { name: 'Blues',      intervals: [0,3,5,6,7,10,12], qual: ['min','maj','min','dim','min','maj','min'], roman: ['i','III','iv','iv#°','v','VII','i(8)'] }
+    ];
+    let currentScaleIdx = 0;
+
+    // --- GESTIÓN DE PARÁMETROS ---
+    const synthParams = { attack: 0.8, release: 1.5, cutoff: 800, echo: 0.2 };
+    function bindParam(inputId, labelId, key, unit) {
+      const input = document.getElementById(inputId);
+      const label = document.getElementById(labelId);
+      input.addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        synthParams[key] = val;
+        label.innerText = (key === 'echo' ? Math.round(val * 100) : val) + unit;
+        if(key === 'echo' && delayInputGain) delayInputGain.gain.value = val;
+      });
+    }
+    bindParam('p-attack', 'val-atk', 'attack', 's'); bindParam('p-release', 'val-rel', 'release', 's');
+    bindParam('p-cutoff', 'val-cut', 'cutoff', 'Hz'); bindParam('p-echo', 'val-echo', 'echo', '%');
+
+    // --- MOTOR DE AUDIO (CON LIMITADOR) ---
+    let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null;
+    
+    function initAudio() {
+      if (actx) return;
+      actx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      masterLimiter = actx.createDynamicsCompressor();
+      masterLimiter.threshold.value = -3.0; 
+      masterLimiter.knee.value = 0.0;
+      masterLimiter.ratio.value = 20.0; 
+      masterLimiter.attack.value = 0.001; 
+      masterLimiter.release.value = 0.1;
+      
+      masterGain = actx.createGain(); masterGain.gain.value = 0.4; 
+
+      delayInputGain = actx.createGain(); delayInputGain.gain.value = synthParams.echo;
+      delayNode = actx.createDelay(); delayNode.delayTime.value = 0.4;
+      const delayFeedback = actx.createGain(); delayFeedback.gain.value = 0.4;
+      const delayFilter = actx.createBiquadFilter(); delayFilter.type = 'lowpass'; delayFilter.frequency.value = 1200;
+      
+      delayInputGain.connect(delayNode); delayNode.connect(delayFilter); delayFilter.connect(delayFeedback); delayFeedback.connect(delayNode);
+      masterGain.connect(masterLimiter); delayNode.connect(masterLimiter); masterLimiter.connect(actx.destination);
+    }
+
+    // --- LÓGICA MUSICAL ---
+    const NOTE_NAMES = ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+    let keyOffset = 0; let currentInst = 'analog'; let currentMod = 'center';
+    let armedDegree = 0; 
+    let activeKeys = new Map(); 
+
+    function getNoteName(midi) { return NOTE_NAMES[(midi % 12 + 12) % 12]; }
+    
+    function getIntervalsAndName(baseQual, mod) {
+      const b = -12; let i = []; let s = '';
+      if (mod === 'center') {
+        if (baseQual === 'maj') { i = [b, 0,4,7]; s = ''; }
+        if (baseQual === 'min') { i = [b, 0,3,7]; s = 'm'; }
+        if (baseQual === 'dim') { i = [b, 0,3,6]; s = 'dim'; }
+      } else if (mod === 'flip') { 
+        if (baseQual === 'maj') { i = [b, 0,3,7]; s = 'm'; } else { i = [b, 0,4,7]; s = ''; }
+      } else if (mod === 'dom7') { i = [b, 0,4,7,10]; s = '7'; }
+      else if (mod === '7th') {
+        if (baseQual === 'maj') { i = [b, 0,4,7,11]; s = 'Maj7'; } else { i = [b, 0,3,7,10]; s = 'm7'; }
+      } else if (mod === '9th') { 
+        if (baseQual === 'maj') { i = [b, 0,4,7,11,14]; s = 'Maj9'; } else { i = [b, 0,3,7,10,14]; s = 'm9'; }
+      } else if (mod === 'sus4') { i = [b, 0,5,7]; s = 'sus4'; }
+      else if (mod === '6th') {
+        if (baseQual === 'maj') { i = [b, 0,4,7,9]; s = '6'; } else { i = [b, 0,3,7,9]; s = 'm6'; }
+      } else if (mod === 'dim') { i = [b, 0,3,6,9]; s = 'dim7'; }
+      else if (mod === 'aug') { i = [b, 0,4,8]; s = 'aug'; }
+      return { i: i || [b,0,4,7], s }; 
+    }
+
+    // --- GENERACIÓN MULTI-INSTRUMENTO ---
+    function playNote(midi, inst, isBass, isStrum = false) {
+      const freq = 440 * Math.pow(2, (midi - 69) / 12);
+      const t = actx.currentTime;
+      const voiceGain = actx.createGain();
+      const oscillators = [];
+      let currentAttack = isStrum ? 0.05 : synthParams.attack; 
+
+      if (inst === 'analog') {
+        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.5; filter.frequency.value = synthParams.cutoff;
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -6; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.detune.value = 6; osc2.freqMultiplier = 1;
+        osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
+
+        if (isBass && !isStrum) { 
+          const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
+          const subGain = actx.createGain(); subGain.gain.value = 0.4;
+          sub.connect(subGain); subGain.connect(filter); oscillators.push(sub);
+        }
+        filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t);
+        voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
+
+      } else if (inst === 'strings') {
+        // CUERDAS: Ensamblaje de ondas sierra altamente desafinadas para hacer un "Chorus" analógico (Violines/Cellos)
+        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.2; 
+        filter.frequency.setValueAtTime(synthParams.cutoff * 0.4, t); // Entra oscuro
+        filter.frequency.linearRampToValueAtTime(synthParams.cutoff, t + currentAttack * 1.5); // Se abre con el ataque del "arco"
+
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -12; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = freq; osc2.detune.value = 12; osc2.freqMultiplier = 1;
+        const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.value = freq; osc3.detune.value = 0; osc3.freqMultiplier = 1;
+        osc1.connect(filter); osc2.connect(filter); osc3.connect(filter); oscillators.push(osc1, osc2, osc3);
+
+        if (isBass && !isStrum) { 
+          const sub = actx.createOscillator(); sub.type = 'sawtooth'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
+          const subFilter = actx.createBiquadFilter(); subFilter.type = 'lowpass'; subFilter.frequency.value = 600;
+          const subGain = actx.createGain(); subGain.gain.value = 0.5;
+          sub.connect(subFilter); subFilter.connect(subGain); subGain.connect(filter); oscillators.push(sub);
+        }
+        filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t);
+        voiceGain.gain.linearRampToValueAtTime(0.07, t + currentAttack * 1.5); // Ataque más lento
+
+      } else if (inst === 'organ') {
+        // ÓRGANO: Ondas puras en diferentes armónicos. Sin decaimiento, sostenido continuo.
+        const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.freqMultiplier = 1;
+        const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.value = freq * 2; osc3.freqMultiplier = 2; // Armónico de octava
+        
+        const g1 = actx.createGain(); g1.gain.value = 0.6; osc1.connect(g1); g1.connect(voiceGain);
+        const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(voiceGain);
+        const g3 = actx.createGain(); g3.gain.value = 0.05; osc3.connect(g3); g3.connect(voiceGain);
+        oscillators.push(osc1, osc2, osc3);
+        
+        voiceGain.gain.setValueAtTime(0, t);
+        voiceGain.gain.linearRampToValueAtTime(0.12, t + currentAttack);
+      }
+      
+      voiceGain.connect(masterGain); delayInputGain.gain.value = synthParams.echo; voiceGain.connect(delayInputGain); 
+      oscillators.forEach(o => o.start(t));
+      
+      return { oscillators, voiceGain, inst, isBass };
+    }
+
+    function stopNote(voice) {
+      if (!voice) return;
+      const t = actx.currentTime;
+      voice.voiceGain.gain.cancelScheduledValues(t); 
+      voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value, t);
+      const rel = synthParams.release; 
+      voice.voiceGain.gain.linearRampToValueAtTime(0.0001, t + rel);
+      voice.oscillators.forEach(o => o.stop(t + rel + 0.1));
+    }
+
+    // --- GLISSANDO / VOICE LEADING (Corregido para multíples osciladores matemáticos) ---
+    function updateActiveChordsFrequencies() {
+      if (!actx) return;
+      const t = actx.currentTime;
+      const scale = SCALES[currentScaleIdx];
+
+      activeKeys.forEach((voices, btn) => {
+        let deg = parseInt(btn.dataset.degree);
+        let rootMidi = 48 + keyOffset + scale.intervals[deg];
+        let intervalData = getIntervalsAndName(scale.qual[deg], currentMod);
+        
+        voices.forEach((voice, index) => {
+          if (index >= intervalData.i.length) {
+            voice.voiceGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.2); return;
+          }
+          if (voice.voiceGain.gain.value < 0.01) {
+            let maxVol = voice.inst === 'analog' ? 0.08 : (voice.inst === 'strings' ? 0.07 : 0.12);
+            voice.voiceGain.gain.linearRampToValueAtTime(maxVol, t + 0.1);
+          }
+          let newMidi = rootMidi + intervalData.i[index];
+          let newFreq = 440 * Math.pow(2, (newMidi - 69) / 12);
+          
+          voice.oscillators.forEach(osc => {
+            // El freqMultiplier asegura que los sub-bajos y armónicos de órgano se deslicen correctamente
+            let finalFreq = newFreq * (osc.freqMultiplier || 1);
+            osc.frequency.exponentialRampToValueAtTime(finalFreq, t + 0.15);
+          });
+        });
+      });
+    }
+
+    function updateUI() {
+      const scale = SCALES[currentScaleIdx];
+      document.getElementById('btn-scale').innerText = scale.name;
+      document.getElementById('key-display').innerText = getNoteName(48 + keyOffset);
+      
+      document.querySelectorAll('.btn-key').forEach(btn => {
+        let deg = parseInt(btn.dataset.degree);
+        let midi = 48 + keyOffset + scale.intervals[deg];
+        let rootName = getNoteName(midi);
+        let intervalData = getIntervalsAndName(scale.qual[deg], currentMod);
+        
+        btn.querySelector('.chord-name').innerText = rootName + intervalData.s;
+        document.getElementById('rm-' + deg).innerText = scale.roman[deg];
+        if (deg === armedDegree) btn.classList.add('armed'); else btn.classList.remove('armed');
+      });
+
+      document.querySelectorAll('.lbl').forEach(el => el.classList.remove('active'));
+      if(currentMod !== 'center') document.getElementById('lbl-' + currentMod).classList.add('active');
+
+      let armedMidi = 48 + keyOffset + scale.intervals[armedDegree];
+      let armedIntData = getIntervalsAndName(scale.qual[armedDegree], currentMod);
+      document.getElementById('main-chord-display').innerText = getNoteName(armedMidi) + " " + armedIntData.s;
+
+      if (activeKeys.size > 0) updateActiveChordsFrequencies();
+    }
+
+    document.getElementById('btn-scale').addEventListener('pointerdown', () => { currentScaleIdx = (currentScaleIdx + 1) % SCALES.length; updateUI(); });
+    document.querySelectorAll('[data-inst]').forEach(btn => {
+      btn.addEventListener('pointerdown', () => { document.querySelectorAll('[data-inst]').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentInst = btn.dataset.inst; });
+    });
+    document.getElementById('btn-key-up').addEventListener('pointerdown', () => { keyOffset = (keyOffset + 1) % 12; updateUI(); });
+    document.getElementById('btn-key-down').addEventListener('pointerdown', () => { keyOffset = (keyOffset - 1 + 12) % 12; updateUI(); });
+
+    // JOYSTICK
+    const joyCenter = document.getElementById('joyCenter'); const joyStick = document.getElementById('joyStick'); let joyPointerId = null;
+    joyCenter.addEventListener('pointerdown', (e) => { joyPointerId = e.pointerId; joyCenter.setPointerCapture(joyPointerId); handleJoy(e); });
+    joyCenter.addEventListener('pointermove', (e) => { if (e.pointerId === joyPointerId) handleJoy(e); });
+    function releaseJoy(e) { if (e.pointerId !== joyPointerId) return; joyPointerId = null; joyStick.style.transform = `translate(0px, 0px)`; currentMod = 'center'; updateUI(); }
+    joyCenter.addEventListener('pointerup', releaseJoy); joyCenter.addEventListener('pointercancel', releaseJoy);
+
+    function handleJoy(e) {
+      const rect = joyCenter.getBoundingClientRect(); let dx = e.clientX - rect.left - (rect.width/2); let dy = e.clientY - rect.top - (rect.height/2);
+      const dist = Math.sqrt(dx*dx + dy*dy); const maxR = 15;
+      if (dist > maxR) { dx = (dx/dist)*maxR; dy = (dy/dist)*maxR; }
+      joyStick.style.transform = `translate(${dx}px, ${dy}px)`;
+      let newMod = 'center';
+      if (dist >= 8) {
+        let a = Math.atan2(dy, dx) * 180 / Math.PI; a = a < 0 ? a + 360 : a;
+        if (a < 22.5 || a >= 337.5) newMod = '7th'; else if (a < 67.5) newMod = '9th';
+        else if (a < 112.5) newMod = 'sus4'; else if (a < 157.5) newMod = '6th';
+        else if (a < 202.5) newMod = 'dim'; else if (a < 247.5) newMod = 'aug';
+        else if (a < 292.5) newMod = 'flip'; else newMod = 'dom7';
+      }
+      if (currentMod !== newMod) { currentMod = newMod; updateUI(); }
+    }
+
+    // BOTONES
+    document.querySelectorAll('.btn-key').forEach(btn => {
+      btn.addEventListener('pointerdown', (e) => {
+        initAudio(); let deg = parseInt(btn.dataset.degree); armedDegree = deg; updateUI(); 
+        btn.classList.add('active'); btn.setPointerCapture(e.pointerId);
+        const scale = SCALES[currentScaleIdx]; let rootMidi = 48 + keyOffset + scale.intervals[deg];
+        let maxIntervals = getIntervalsAndName(scale.qual[deg], '9th').i; 
+        let currentIntervals = getIntervalsAndName(scale.qual[deg], currentMod).i;
+        let voices = []; 
+        maxIntervals.forEach((_, index) => { 
+          let voiceMidi = rootMidi + (currentIntervals[index] !== undefined ? currentIntervals[index] : maxIntervals[index]);
+          let voice = playNote(voiceMidi, currentInst, index === 0, false);
+          if (currentIntervals[index] === undefined) { voice.voiceGain.gain.setValueAtTime(0, actx.currentTime); }
+          voices.push(voice); 
+        });
+        activeKeys.set(btn, voices);
+      });
+      function releaseBtn() {
+        btn.classList.remove('active'); 
+        if (activeKeys.has(btn)) { activeKeys.get(btn).forEach(v => stopNote(v)); activeKeys.delete(btn); }
+      }
+      btn.addEventListener('pointerup', releaseBtn); btn.addEventListener('pointercancel', releaseBtn);
+    });
+
+    // STRUMPLATE
+    const strumplate = document.getElementById('strumplate'); let lastStrumIdx = -1; let strumVoices = [];
+    function handleStrum(e) {
+      initAudio(); const elem = document.elementFromPoint(e.clientX, e.clientY);
+      if (elem && elem.classList.contains('strum-string')) {
+        let idx = parseInt(elem.dataset.idx);
+        if (idx !== lastStrumIdx) {
+          lastStrumIdx = idx; elem.classList.add('hit'); setTimeout(() => elem.classList.remove('hit'), 150);
+          const scale = SCALES[currentScaleIdx];
+          let midi = 48 + keyOffset + scale.intervals[armedDegree];
+          let intervalData = getIntervalsAndName(scale.qual[armedDegree], currentMod);
+          let arpIntervals = intervalData.i.slice(1); if(arpIntervals.length === 0) arpIntervals = [0];
+          let noteInterval = arpIntervals[idx % arpIntervals.length]; if(idx >= arpIntervals.length) noteInterval += 12; 
+          let voice = playNote(midi + noteInterval, currentInst, false, true); strumVoices.push(voice);
+        }
+      }
+    }
+    strumplate.addEventListener('pointerdown', (e) => { strumplate.setPointerCapture(e.pointerId); lastStrumIdx = -1; handleStrum(e); });
+    strumplate.addEventListener('pointermove', (e) => { if(e.buttons > 0 || e.pressure > 0) handleStrum(e); });
+    function releaseStrum(e) {
+      lastStrumIdx = -1; strumVoices.forEach(v => { setTimeout(() => stopNote(v), 500); }); strumVoices = [];
+    }
+    strumplate.addEventListener('pointerup', releaseStrum); strumplate.addEventListener('pointercancel', releaseStrum);
+
+    updateUI();
+  </script>
+</body>
+</html>
