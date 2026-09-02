@@ -8,9 +8,15 @@
   "theme_color": "#0d141e",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d141e' rx='112' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E",
+      "src": "https://raw.githubusercontent.com/smorawicki-ui/MoraChord/main/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/smorawicki-ui/MoraChord/main/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
