@@ -66,7 +66,6 @@
 
     .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 4px 8px; }
     
-    /* Panel Custom FM (Oculto por defecto, se muestra al elegir Custom) */
     .custom-fm-grid {
       display: none; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 8px;
       background: #070d14; border-radius: 12px; border: 1px dashed var(--accent); margin-top: 4px;
@@ -89,12 +88,12 @@
 
     /* DRUM ROW */
     .drum-row {
-      display: flex; align-items: center; gap: 16px; margin-top: 4px; 
+      display: flex; align-items: center; gap: 12px; margin-top: 4px; 
       padding-top: 10px; border-top: 1px solid var(--border);
     }
     #btn-drum-play { background: var(--accent); color: #fff; box-shadow: var(--shadow-out); font-weight: 800; letter-spacing: 1px; }
     #btn-drum-play.playing { background: #e11d48; border-color: transparent; }
-    #drum-pattern, #drum-kit { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
+    #drum-pattern, #drum-kit, #po-sync-select { background: var(--bg); box-shadow: var(--shadow-in); border: 1px solid var(--border); color: var(--accent-hover); }
 
     /* --- MIDDLE SECTION --- */
     .middle-section { flex: 1; display: flex; padding: 16px; gap: 16px; }
@@ -122,28 +121,32 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
-    /* KEYS */
+    /* KEYS: Grilla 4x2 Invertida (Arranca abajo-izq [0], termina arriba-der [7]) */
     .keys-container { flex: 1; display: grid; gap: 10px; }
     
     .keys-container.layout-diatonic {
       grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);
-      grid-template-areas: "iv v vi vii" "i i ii iii";
+      grid-template-areas: 
+        "v vi vii viii"
+        "i ii iii iv";
     }
-    .layout-diatonic .btn-key.chromatic-only { display: none; }
-    .layout-diatonic .btn-key[data-idx="0"] { grid-area: i; border-radius: 20px;}
-    .layout-diatonic .btn-key[data-idx="1"] { grid-area: ii; }
-    .layout-diatonic .btn-key[data-idx="2"] { grid-area: iii; }
-    .layout-diatonic .btn-key[data-idx="3"] { grid-area: iv; }
-    .layout-diatonic .btn-key[data-idx="4"] { grid-area: v; }
-    .layout-diatonic .btn-key[data-idx="5"] { grid-area: vi; }
-    .layout-diatonic .btn-key[data-idx="6"] { grid-area: vii; }
+    .keys-container.layout-diatonic .btn-key.chromatic-only { display: none; }
+
+    .keys-container.layout-diatonic .btn-key[data-idx="0"] { grid-area: i; border-radius: 20px; }
+    .keys-container.layout-diatonic .btn-key[data-idx="1"] { grid-area: ii; }
+    .keys-container.layout-diatonic .btn-key[data-idx="2"] { grid-area: iii; }
+    .keys-container.layout-diatonic .btn-key[data-idx="3"] { grid-area: iv; }
+    .keys-container.layout-diatonic .btn-key[data-idx="4"] { grid-area: v; }
+    .keys-container.layout-diatonic .btn-key[data-idx="5"] { grid-area: vi; }
+    .keys-container.layout-diatonic .btn-key[data-idx="6"] { grid-area: vii; }
+    .keys-container.layout-diatonic .btn-key[data-idx="7"] { grid-area: viii; }
 
     .keys-container.layout-chromatic {
       grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr);
       grid-template-areas: none;
     }
-    .layout-chromatic .btn-key { grid-area: auto; border-radius: 12px; }
-    .layout-chromatic .roman { display: none; }
+    .keys-container.layout-chromatic .btn-key { grid-area: auto; border-radius: 12px; }
+    .keys-container.layout-chromatic .roman { display: none; }
 
     .btn-key {
       background: var(--panel); border-radius: 16px; color: var(--text);
@@ -152,8 +155,8 @@
     }
     .btn-key.armed { background: var(--panel-light); border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow), var(--shadow-out); }
     .btn-key:active, .btn-key.active { transform: scale(0.94); background: var(--accent); color: #fff; box-shadow: var(--shadow-in); border-color: transparent; }
-    .btn-key .chord-name { font-size: 1.4rem; font-weight: 800; pointer-events: none; letter-spacing: -0.5px;}
-    .btn-key .roman { font-size: 0.65rem; color: inherit; opacity: 0.7; font-weight: 600; margin-top: 4px; pointer-events: none; }
+    .btn-key .chord-name { font-size: 1.3rem; font-weight: 800; pointer-events: none; letter-spacing: -0.5px;}
+    .btn-key .roman { font-size: 0.6rem; color: inherit; opacity: 0.7; font-weight: 600; margin-top: 2px; pointer-events: none; }
 
     /* --- STRUMPLATE --- */
     .strum-section {
@@ -191,12 +194,12 @@
           <div style="width: 1px; height: 16px; background: var(--border); margin: 0 4px;"></div>
           
           <select id="scale-select" class="inst-select">
-            <option value="0">Mayor</option>
-            <option value="1">Menor</option>
-            <option value="2">Dórica</option>
-            <option value="3">Mixolidia</option>
-            <option value="4">Blues</option>
-            <option value="5">Libre (Cromático)</option>
+            <option value="0">Mayor (8 Botones)</option>
+            <option value="1">Menor (8 Botones)</option>
+            <option value="2">Dórica (8 Botones)</option>
+            <option value="3">Mixolidia (8 Botones)</option>
+            <option value="4">Blues (8 Botones)</option>
+            <option value="5">Libre (Cromático 12)</option>
           </select>
         </div>
 
@@ -229,7 +232,6 @@
         <div class="param-group"><label><span>Echo Vol</span> <span id="val-echo">20%</span></label><input type="range" id="p-echo" min="0" max="0.8" step="0.05" value="0.2"></div>
       </div>
 
-      <!-- PANEL DE SÍNTESIS CUSTOM FM (Aparece al elegir Custom) -->
       <div class="custom-fm-grid" id="custom-fm-panel">
         <div class="param-group">
           <label><span>Onda Principal</span></label>
@@ -263,6 +265,11 @@
         <div style="display: flex; gap: 8px;">
           <button class="ctrl-btn" id="btn-drum-play">▶ PLAY BEAT</button>
           
+          <select id="po-sync-select" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
+            <option value="off">Sync PO: OFF</option>
+            <option value="on">Sync PO: ON (Audio Pulse)</option>
+          </select>
+
           <select id="drum-kit" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
             <option value="classic">Kit Clásico</option>
             <option value="chiptune">Kit 8-Bit</option>
@@ -313,8 +320,8 @@
         <div class="btn-key" data-idx="4"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key" data-idx="5"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key" data-idx="6"><div class="chord-name"></div><div class="roman"></div></div>
+        <div class="btn-key" data-idx="7"><div class="chord-name"></div><div class="roman"></div></div>
         
-        <div class="btn-key chromatic-only" data-idx="7"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key chromatic-only" data-idx="8"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key chromatic-only" data-idx="9"><div class="chord-name"></div><div class="roman"></div></div>
         <div class="btn-key chromatic-only" data-idx="10"><div class="chord-name"></div><div class="roman"></div></div>
@@ -342,34 +349,24 @@
     }
 
     const SCALES = [
-      { name: 'Mayor',      intervals: [0,2,4,5,7,9,11], qual: ['maj','min','min','maj','maj','min','dim'], roman: ['I','ii','iii','IV','V','vi','vii°'] },
-      { name: 'Menor',      intervals: [0,2,3,5,7,8,10], qual: ['min','dim','maj','min','min','maj','maj'], roman: ['i','ii°','III','iv','v','VI','VII'] },
-      { name: 'Dórica',     intervals: [0,2,3,5,7,9,10], qual: ['min','min','maj','maj','min','dim','maj'], roman: ['i','ii','III','IV','v','vi°','VII'] },
-      { name: 'Mixolidia',  intervals: [0,2,4,5,7,9,10], qual: ['maj','min','dim','maj','min','min','maj'], roman: ['I','ii','iii°','IV','v','vi','VII'] },
-      { name: 'Blues',      intervals: [0,3,5,6,7,10,12], qual: ['min','maj','min','dim','min','maj','min'], roman: ['i','III','iv','iv#°','v','VII','i(8)'] },
+      { name: 'Mayor',      intervals: [0,2,4,5,7,9,11,12], qual: ['maj','min','min','maj','maj','min','dim','maj'], roman: ['I','ii','iii','IV','V','vi','vii°','VIII'] },
+      { name: 'Menor',      intervals: [0,2,3,5,7,8,10,12], qual: ['min','dim','maj','min','min','maj','maj','min'], roman: ['i','ii°','III','iv','v','VI','VII','VIII'] },
+      { name: 'Dórica',     intervals: [0,2,3,5,7,9,10,12], qual: ['min','min','maj','maj','min','dim','maj','min'], roman: ['i','ii','III','IV','v','vi°','VII','VIII'] },
+      { name: 'Mixolidia',  intervals: [0,2,4,5,7,9,10,12], qual: ['maj','min','dim','maj','min','min','maj','maj'], roman: ['I','ii','iii°','IV','v','vi','VII','VIII'] },
+      { name: 'Blues',      intervals: [0,3,5,6,7,10,12,15], qual: ['min','maj','min','dim','min','maj','min','min'], roman: ['i','III','iv','iv#°','v','VII','i(8)','X'] },
       { name: 'Libre (Cromático)', isChromatic: true }
     ];
     let currentScaleIdx = 0;
 
-    // Parámetros Custom FM
-    const customParams = {
-      carrierWave: 'sine',
-      modulatorWave: 'sine',
-      fmRatio: 2.0,
-      fmDepth: 300
-    };
+    const customParams = { carrierWave: 'sine', modulatorWave: 'sine', fmRatio: 2.0, fmDepth: 300 };
 
     document.getElementById('cf-carrier').addEventListener('change', (e) => { customParams.carrierWave = e.target.value; });
     document.getElementById('cf-modulator').addEventListener('change', (e) => { customParams.modulatorWave = e.target.value; });
-    
-    const rInput = document.getElementById('cf-ratio');
-    rInput.addEventListener('input', (e) => {
+    document.getElementById('cf-ratio').addEventListener('input', (e) => {
       customParams.fmRatio = parseFloat(e.target.value);
       document.getElementById('val-fm-ratio').innerText = customParams.fmRatio.toFixed(1) + 'x';
     });
-
-    const dInput = document.getElementById('cf-depth');
-    dInput.addEventListener('input', (e) => {
+    document.getElementById('cf-depth').addEventListener('input', (e) => {
       customParams.fmDepth = parseFloat(e.target.value);
       document.getElementById('val-fm-depth').innerText = Math.round(customParams.fmDepth) + 'Hz';
     });
@@ -403,7 +400,7 @@
       }
     });
 
-    let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
+    let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null, mergerNode = null;
     
     function initAudio() {
       if (actx) return;
@@ -427,6 +424,21 @@
 
       drumMasterGain = actx.createGain(); drumMasterGain.gain.value = synthParams.drumVol;
       drumMasterGain.connect(masterLimiter); 
+    }
+
+    // --- GENERADOR DE PULSO DE AUDIO SYNC PARA POCKET OPERATOR ---
+    function playPOSyncPulse(time) {
+      if (document.getElementById('po-sync-select').value !== 'on') return;
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(1000, time);
+      gain.gain.setValueAtTime(1.0, time);
+      gain.gain.linearRampToValueAtTime(0.01, time + 0.01); // Pulso muy corto de 10ms
+      osc.connect(gain);
+      gain.connect(drumMasterGain);
+      osc.start(time);
+      osc.stop(time + 0.015);
     }
 
     function playKick(time) {
@@ -496,6 +508,10 @@
     }
     function scheduleNote(stepNumber, time) {
       const pattern = PATTERNS[document.getElementById('drum-pattern').value]; const note = pattern[stepNumber];
+      
+      // Enviamos pulso de sincronización en cada semicorchea (paso) para el Pocket Operator
+      playPOSyncPulse(time);
+
       if (!note) return;
       if ([1, 4, 6, 7].includes(note)) playKick(time);
       if ([2, 5, 6, 7].includes(note)) playSnare(time);
@@ -547,7 +563,6 @@
       let currentAttack = isStrum ? 0.05 : synthParams.attack; 
 
       if (inst === 'custom') {
-        // --- MOTOR DE SÍNTESIS FM PERSONALIZADO ---
         const carrier = actx.createOscillator();
         const modulator = actx.createOscillator();
         const modGain = actx.createGain();
@@ -709,11 +724,11 @@
       const container = document.getElementById('keys-container');
       container.className = isChrom ? 'keys-container layout-chromatic' : 'keys-container layout-diatonic';
 
-      if (!isChrom && armedDegree > 6) armedDegree = 0;
+      if (!isChrom && armedDegree > 7) armedDegree = 0;
 
       document.querySelectorAll('.btn-key').forEach(btn => {
         let idx = parseInt(btn.dataset.idx);
-        if (!isChrom && idx > 6) return;
+        if (!isChrom && idx > 7) return;
 
         let midi = isChrom ? (48 + keyOffset + idx) : (48 + keyOffset + scale.intervals[idx]);
         let baseQual = isChrom ? 'maj' : scale.qual[idx];
@@ -794,6 +809,7 @@
       btn.addEventListener('pointerup', releaseBtn); btn.addEventListener('pointercancel', releaseBtn);
     });
 
+    // --- STRUMPLATE 100% ARMONIZADO Y EXTENDIDO A DOS OCTAVAS SIN REPETICIONES ---
     const strumplate = document.getElementById('strumplate'); let lastStrumIdx = -1; let strumVoices = [];
     function handleStrum(e) {
       initAudio(); const elem = document.elementFromPoint(e.clientX, e.clientY);
@@ -808,12 +824,21 @@
           let baseQual = isChrom ? 'maj' : scale.qual[armedDegree];
           
           let intervalData = getIntervalsAndName(baseQual, currentMod);
-          let rawIntervals = intervalData.i.filter(v => v >= 0);
-          if (rawIntervals.length === 0) rawIntervals = [0, 4, 7];
+          let chordTones = intervalData.i.filter(v => v >= 0);
+          if (chordTones.length === 0) chordTones = [0, 4, 7];
           
-          let uniqueScale = [...new Set([...rawIntervals, ...rawIntervals.map(n => n + 12)])].sort((a,b)=>a-b);
-          while(uniqueScale.length < 8) { uniqueScale.push(uniqueScale[uniqueScale.length-1] + 2); }
-          let noteInterval = uniqueScale[idx];
+          // Generador armónico de 8 notas exactas (1ra octava y 2da octava del acorde limpio)
+          let pureHarmonics = [
+            chordTones[0],
+            chordTones[1] || chordTones[0] + 3,
+            chordTones[2] || chordTones[0] + 7,
+            chordTones[3] || chordTones[0] + 10,
+            chordTones[0] + 12,
+            (chordTones[1] || chordTones[0] + 3) + 12,
+            (chordTones[2] || chordTones[0] + 7) + 12,
+            chordTones[0] + 24
+          ];
+          let noteInterval = pureHarmonics[idx];
           
           let voice = playChordNote(midi + noteInterval, currentInst, false, true); 
           strumVoices.push(voice);
