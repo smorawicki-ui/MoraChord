@@ -442,28 +442,7 @@
       navigator.serviceWorker.register('sw.js').catch(()=>{});
     }
 
-    const SCALES = [
-      { name: 'Mayor (Jónica)',           intervals: [0,2,4,5,7,9,11,12], qual: ['maj','min','min','maj','maj','min','dim','maj'], roman: ['I','ii','iii','IV','V','vi','vii°','VIII'] },
-      { name: 'Menor Natural (Eólica)',   intervals: [0,2,3,5,7,8,10,12], qual: ['min','dim','maj','min','min','maj','maj','min'], roman: ['i','ii°','bIII','iv','v','bVI','bVII','VIII'] },
-      { name: 'Menor Armónica',           intervals: [0,2,3,5,7,8,11,12], qual: ['min','dim','aug','min','maj','maj','dim','min'], roman: ['i','ii°','bIII+','iv','V','bVI','vii°','VIII'] },
-      { name: 'Menor Melódica',           intervals: [0,2,3,5,7,9,11,12], qual: ['min','min','aug','maj','maj','dim','dim','min'], roman: ['i','ii','bIII+','IV','V','vi°','vii°','VIII'] },
-      { name: 'Dórica',                  intervals: [0,2,3,5,7,9,10,12], qual: ['min','min','maj','maj','min','dim','maj','min'], roman: ['i','ii','bIII','IV','v','vi°','bVII','VIII'] },
-      { name: 'Frigia',                  intervals: [0,1,3,5,7,8,10,12], qual: ['min','maj','maj','min','dim','maj','min','min'], roman: ['i','bII','bIII','iv','v°','bVI','bvii','VIII'] },
-      { name: 'Lidia',                   intervals: [0,2,4,6,7,9,11,12], qual: ['maj','maj','min','dim','maj','min','min','maj'], roman: ['I','II','iii','#iv°','V','vi','vii','VIII'] },
-      { name: 'Mixolidia',               intervals: [0,2,4,5,7,9,10,12], qual: ['maj','min','dim','maj','min','min','maj','maj'], roman: ['I','ii','iii°','IV','v','vi','bVII','VIII'] },
-      { name: 'Locria',                  intervals: [0,1,3,5,6,8,10,12], qual: ['dim','maj','min','min','maj','maj','min','dim'], roman: ['i°','bII','biii','iv','bV','bVI','bvii','VIII'] },
-      { name: 'Frigia Dominante (Árabe)',intervals: [0,1,4,5,7,8,10,12], qual: ['maj','maj','dim','min','dim','maj','min','maj'], roman: ['I','bII','iii°','iv','v°','bVI','bvii','VIII'] },
-      { name: 'Doble Armónica (Bizantina)',intervals: [0,1,4,5,7,8,11,12], qual: ['maj','maj','min','min','maj','aug','dim','maj'], roman: ['I','bII','iii','iv','V','bVI+','vii°','VIII'] },
-      { name: 'Húngara Menor',            intervals: [0,2,3,6,7,8,11,12], qual: ['min','dim','aug','dim','maj','maj','dim','min'], roman: ['i','ii°','bIII+','#iv°','V','bVI','vii°','VIII'] },
-      { name: 'Japonesa (Hirajoshi)',     intervals: [0,2,3,7,8,12,14,15], qual: ['min','maj','min','min','maj','min','maj','min'], roman: ['i','II','bIII','v','bVI','VIII','IX','bX'] },
-      { name: 'Pentatónica Mayor',        intervals: [0,2,4,7,9,12,14,16], qual: ['maj','min','min','maj','min','maj','min','min'], roman: ['I','ii','iii','V','vi','VIII','IX','X'] },
-      { name: 'Pentatónica Menor',        intervals: [0,3,5,7,10,12,15,17], qual: ['min','maj','min','min','maj','min','maj','min'], roman: ['i','bIII','iv','v','bVII','VIII','bX','XI'] },
-      { name: 'Blues',                   intervals: [0,3,5,6,7,10,12,15], qual: ['min','maj','min','dim','min','maj','min','min'], roman: ['i','bIII','iv','iv#°','v','bVII','VIII','X'] },
-      { name: 'Libre (Cromático 12)',    isChromatic: true }
-    ];
-    let currentScaleIdx = 0;
-
-    // --- DICCIONARIO DE 20 RITMOS COMPLETOS (6 PISTAS) ---
+    // 1. DICCIONARIO DE RITMOS (Declarado al inicio para evitar ReferenceError)
     const PATTERNS = {
       'rock': {
         kick:     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
@@ -635,7 +614,10 @@
       }
     };
 
-    // --- CONFIGURACIONES POR DEFECTO PARA CADA INSTRUMENTO ---
+    // 2. PARÁMETROS GLOBALES DEL SINTETIZADOR
+    const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
+
+    // 3. CONFIGURACIONES ÓPTIMAS POR DEFECTO PARA CADA INSTRUMENTO
     const INST_DEFAULTS = {
       'analog':   { attack: 0.05, release: 1.5, cutoff: 800,  echo: 0.20, glide: 0.05 },
       'strings':  { attack: 0.35, release: 2.2, cutoff: 1600, echo: 0.25, glide: 0.08 },
@@ -676,6 +658,7 @@
       updateLiveCutoff();
     }
 
+    // 4. PASOS ACTIVOS DE BATERÍA (Iniciados en copia limpia de rock)
     let customSteps = JSON.parse(JSON.stringify(PATTERNS.rock));
 
     function buildCustomPads() {
@@ -723,6 +706,28 @@
       customDrumPanel.classList.remove('visible');
     });
 
+    // 5. ESCALAS CON NOMENCLATURA ARMÓNICA EXACTA (I-VIII)
+    const SCALES = [
+      { name: 'Mayor (Jónica)',           intervals: [0,2,4,5,7,9,11,12], qual: ['maj','min','min','maj','maj','min','dim','maj'], roman: ['I','ii','iii','IV','V','vi','vii°','VIII'] },
+      { name: 'Menor Natural (Eólica)',   intervals: [0,2,3,5,7,8,10,12], qual: ['min','dim','maj','min','min','maj','maj','min'], roman: ['i','ii°','bIII','iv','v','bVI','bVII','VIII'] },
+      { name: 'Menor Armónica',           intervals: [0,2,3,5,7,8,11,12], qual: ['min','dim','aug','min','maj','maj','dim','min'], roman: ['i','ii°','bIII+','iv','V','bVI','vii°','VIII'] },
+      { name: 'Menor Melódica',           intervals: [0,2,3,5,7,9,11,12], qual: ['min','min','aug','maj','maj','dim','dim','min'], roman: ['i','ii','bIII+','IV','V','vi°','vii°','VIII'] },
+      { name: 'Dórica',                  intervals: [0,2,3,5,7,9,10,12], qual: ['min','min','maj','maj','min','dim','maj','min'], roman: ['i','ii','bIII','IV','v','vi°','bVII','VIII'] },
+      { name: 'Frigia',                  intervals: [0,1,3,5,7,8,10,12], qual: ['min','maj','maj','min','dim','maj','min','min'], roman: ['i','bII','bIII','iv','v°','bVI','bvii','VIII'] },
+      { name: 'Lidia',                   intervals: [0,2,4,6,7,9,11,12], qual: ['maj','maj','min','dim','maj','min','min','maj'], roman: ['I','II','iii','#iv°','V','vi','vii','VIII'] },
+      { name: 'Mixolidia',               intervals: [0,2,4,5,7,9,10,12], qual: ['maj','min','dim','maj','min','min','maj','maj'], roman: ['I','ii','iii°','IV','v','vi','bVII','VIII'] },
+      { name: 'Locria',                  intervals: [0,1,3,5,6,8,10,12], qual: ['dim','maj','min','min','maj','maj','min','dim'], roman: ['i°','bII','biii','iv','bV','bVI','bvii','VIII'] },
+      { name: 'Frigia Dominante (Árabe)',intervals: [0,1,4,5,7,8,10,12], qual: ['maj','maj','dim','min','dim','maj','min','maj'], roman: ['I','bII','iii°','iv','v°','bVI','bvii','VIII'] },
+      { name: 'Doble Armónica (Bizantina)',intervals: [0,1,4,5,7,8,11,12], qual: ['maj','maj','min','min','maj','aug','dim','maj'], roman: ['I','bII','iii','iv','V','bVI+','vii°','VIII'] },
+      { name: 'Húngara Menor',            intervals: [0,2,3,6,7,8,11,12], qual: ['min','dim','aug','dim','maj','maj','dim','min'], roman: ['i','ii°','bIII+','#iv°','V','bVI','vii°','VIII'] },
+      { name: 'Japonesa (Hirajoshi)',     intervals: [0,2,3,7,8,12,14,15], qual: ['min','maj','min','min','maj','min','maj','min'], roman: ['i','II','bIII','v','bVI','VIII','IX','bX'] },
+      { name: 'Pentatónica Mayor',        intervals: [0,2,4,7,9,12,14,16], qual: ['maj','min','min','maj','min','maj','min','min'], roman: ['I','ii','iii','V','vi','VIII','IX','X'] },
+      { name: 'Pentatónica Menor',        intervals: [0,3,5,7,10,12,15,17], qual: ['min','maj','min','min','maj','min','maj','min'], roman: ['i','bIII','iv','v','bVII','VIII','bX','XI'] },
+      { name: 'Blues',                   intervals: [0,3,5,6,7,10,12,15], qual: ['min','maj','min','dim','min','maj','min','min'], roman: ['i','bIII','iv','iv#°','v','bVII','VIII','X'] },
+      { name: 'Libre (Cromático 12)',    isChromatic: true }
+    ];
+    let currentScaleIdx = 0;
+
     const customParams = { carrierWave: 'sine', modulatorWave: 'sine', fmRatio: 2.0, fmDepth: 300 };
 
     document.getElementById('cf-carrier').addEventListener('change', (e) => { customParams.carrierWave = e.target.value; });
@@ -736,18 +741,16 @@
       document.getElementById('val-fm-depth').innerText = Math.round(customParams.fmDepth) + 'Hz';
     });
 
-    const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
-
     function updateLiveCutoff() {
       if (!actx) return;
       const t = actx.currentTime;
       activeKeys.forEach(voices => {
         voices.forEach(v => {
-          if (v.filterNode) v.filterNode.frequency.setTargetAtTime(synthParams.cutoff, t, 0.05);
+          if (v && v.filterNode) v.filterNode.frequency.setTargetAtTime(synthParams.cutoff, t, 0.05);
         });
       });
-      strumVoices.forEach(s => {
-        if (s.voice && s.voice.filterNode) s.voice.filterNode.frequency.setTargetAtTime(synthParams.cutoff, t, 0.05);
+      strumVoices.forEach(v => {
+        if (v && v.filterNode) v.filterNode.frequency.setTargetAtTime(synthParams.cutoff, t, 0.05);
       });
     }
 
@@ -819,27 +822,72 @@
     let globalNoiseBuffer = null;
     let globalChiptuneNoiseBuffer = null;
 
+    // POOL DE VOCES OPTIMIZADO (Tope de 28 voces simultáneas)
+    const MAX_VOICES = 28;
+    let activeVoicePool = [];
+
+    function cleanVoice(voice) {
+      if (!voice || voice.cleaned) return;
+      voice.cleaned = true;
+      voice.oscillators.forEach(o => {
+        try { o.stop(); } catch(e){}
+        try { o.disconnect(); } catch(e){}
+      });
+      if (voice.filterNode) {
+        try { voice.filterNode.disconnect(); } catch(e){}
+      }
+      if (voice.extraNodes) {
+        voice.extraNodes.forEach(n => { try { n.disconnect(); } catch(e){} });
+      }
+      if (voice.voiceGain) {
+        try { voice.voiceGain.disconnect(); } catch(e){}
+      }
+      const idx = activeVoicePool.indexOf(voice);
+      if (idx !== -1) activeVoicePool.splice(idx, 1);
+    }
+
     function initAudio() {
       if (actx) return;
       try { if (screen.orientation && screen.orientation.lock) { screen.orientation.lock('landscape').catch(()=>{}); } } catch(e) {}
       
-      actx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      try {
+        actx = new AudioCtx({ latencyHint: 'interactive' });
+      } catch(e) {
+        actx = new AudioCtx();
+      }
       
       masterLimiter = actx.createDynamicsCompressor();
-      masterLimiter.threshold.value = -3.0; masterLimiter.knee.value = 0.0;
-      masterLimiter.ratio.value = 20.0; masterLimiter.attack.value = 0.001; masterLimiter.release.value = 0.1;
+      masterLimiter.threshold.value = -6.0;
+      masterLimiter.knee.value = 4.0;
+      masterLimiter.ratio.value = 14.0;
+      masterLimiter.attack.value = 0.002;
+      masterLimiter.release.value = 0.06;
       
-      masterGain = actx.createGain(); masterGain.gain.value = 0.4; 
+      masterGain = actx.createGain(); 
+      masterGain.gain.value = 0.55; 
 
-      delayInputGain = actx.createGain(); delayInputGain.gain.value = synthParams.echo;
-      delayNode = actx.createDelay(); delayNode.delayTime.value = 0.4;
-      const delayFeedback = actx.createGain(); delayFeedback.gain.value = 0.4;
-      const delayFilter = actx.createBiquadFilter(); delayFilter.type = 'lowpass'; delayFilter.frequency.value = 1200;
+      delayInputGain = actx.createGain(); 
+      delayInputGain.gain.value = synthParams.echo;
+      delayNode = actx.createDelay(); 
+      delayNode.delayTime.value = 0.4;
+      const delayFeedback = actx.createGain(); 
+      delayFeedback.gain.value = 0.35;
+      const delayFilter = actx.createBiquadFilter(); 
+      delayFilter.type = 'lowpass'; 
+      delayFilter.frequency.value = 1200;
       
-      delayInputGain.connect(delayNode); delayNode.connect(delayFilter); delayFilter.connect(delayFeedback); delayFeedback.connect(delayNode);
-      masterGain.connect(masterLimiter); delayNode.connect(masterLimiter); masterLimiter.connect(actx.destination);
+      delayInputGain.connect(delayNode); 
+      delayNode.connect(delayFilter); 
+      delayFilter.connect(delayFeedback); 
+      delayFeedback.connect(delayNode);
+      
+      masterGain.connect(masterLimiter); 
+      delayNode.connect(masterLimiter); 
+      masterLimiter.connect(actx.destination);
 
-      drumMasterGain = actx.createGain(); drumMasterGain.gain.value = synthParams.drumVol;
+      drumMasterGain = actx.createGain(); 
+      drumMasterGain.gain.value = synthParams.drumVol;
       drumMasterGain.connect(masterLimiter); 
 
       const size = actx.sampleRate * 2;
@@ -898,81 +946,95 @@
         gain.gain.setValueAtTime(0.8, time); gain.gain.linearRampToValueAtTime(0.01, time + 0.1);
         osc.start(time); osc.stop(time + 0.15);
       } else {
-        osc.frequency.setValueAtTime(150, time); osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.5);
-        gain.gain.setValueAtTime(1, time); gain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
-        osc.start(time); osc.stop(time + 0.5);
+        osc.frequency.setValueAtTime(140, time); osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.45);
+        gain.gain.setValueAtTime(0.9, time); gain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
+        osc.start(time); osc.stop(time + 0.45);
       }
+      osc.onended = () => { try{ osc.disconnect(); gain.disconnect(); }catch(e){} };
     }
     
     function playDeepKick(time) {
       const osc = actx.createOscillator(); const gain = actx.createGain(); 
       osc.connect(gain); gain.connect(drumMasterGain);
       osc.type = 'sine'; 
-      osc.frequency.setValueAtTime(100, time); 
+      osc.frequency.setValueAtTime(95, time); 
       osc.frequency.exponentialRampToValueAtTime(35, time + 0.1);
-      gain.gain.setValueAtTime(1, time); 
-      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.8);
-      osc.start(time); osc.stop(time + 1.0);
+      gain.gain.setValueAtTime(0.9, time); 
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.7);
+      osc.start(time); osc.stop(time + 0.75);
+      osc.onended = () => { try{ osc.disconnect(); gain.disconnect(); }catch(e){} };
     }
 
     function playSnare(time) {
+      if (!globalNoiseBuffer) initAudio();
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       const noise = actx.createBufferSource(); 
       noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
       const noiseGain = actx.createGain();
-      noiseGain.gain.setValueAtTime(isChiptune ? 0.6 : 1, time); 
-      noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+      noiseGain.gain.setValueAtTime(isChiptune ? 0.5 : 0.8, time); 
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.18);
       
       if (isChiptune) {
-        noise.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time); noise.stop(time + 0.2);
+        noise.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time); noise.stop(time + 0.18);
         const osc = actx.createOscillator(); const oscGain = actx.createGain(); osc.type = 'square'; osc.connect(oscGain);
         osc.frequency.setValueAtTime(800, time); osc.frequency.exponentialRampToValueAtTime(200, time + 0.1);
-        oscGain.gain.setValueAtTime(0.5, time); oscGain.gain.linearRampToValueAtTime(0.01, time + 0.15);
+        oscGain.gain.setValueAtTime(0.4, time); oscGain.gain.linearRampToValueAtTime(0.01, time + 0.15);
         oscGain.connect(drumMasterGain); osc.start(time); osc.stop(time + 0.15);
+        osc.onended = () => { try{ osc.disconnect(); oscGain.disconnect(); }catch(e){} };
       } else {
-        const osc = actx.createOscillator(); const oscGain = actx.createGain(); osc.type = 'triangle'; osc.connect(oscGain); osc.frequency.setValueAtTime(250, time);
-        oscGain.gain.setValueAtTime(0.7, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+        const osc = actx.createOscillator(); const oscGain = actx.createGain(); osc.type = 'triangle'; osc.connect(oscGain); osc.frequency.setValueAtTime(230, time);
+        oscGain.gain.setValueAtTime(0.6, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.18);
         const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 1000;
         noise.connect(noiseFilter); noiseFilter.connect(noiseGain); oscGain.connect(drumMasterGain); noiseGain.connect(drumMasterGain);
-        osc.start(time); osc.stop(time + 0.2); noise.start(time); noise.stop(time + 0.2);
+        osc.start(time); osc.stop(time + 0.18); noise.start(time); noise.stop(time + 0.18);
+        osc.onended = () => { try{ osc.disconnect(); oscGain.disconnect(); noiseFilter.disconnect(); noiseGain.disconnect(); }catch(e){} };
       }
     }
     
     function playHiHat(time) {
+      if (!globalNoiseBuffer) initAudio();
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       const noise = actx.createBufferSource(); 
       noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 4000 : 5000;
-      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.1));
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time); noise.stop(time + 0.1);
+      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.35 : 0.28, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.08));
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
+      noise.start(time); noise.stop(time + 0.09);
+      noise.onended = () => { try{ noise.disconnect(); noiseFilter.disconnect(); noiseGain.disconnect(); }catch(e){} };
     }
     
     function playOpenHiHat(time) {
+      if (!globalNoiseBuffer) initAudio();
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       const noise = actx.createBufferSource(); 
       noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 3000 : 4000;
-      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.4 : 0.3, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.2 : 0.4));
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); noise.start(time); noise.stop(time + 0.4);
+      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.35 : 0.28, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.2 : 0.35));
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
+      noise.start(time); noise.stop(time + 0.36);
+      noise.onended = () => { try{ noise.disconnect(); noiseFilter.disconnect(); noiseGain.disconnect(); }catch(e){} };
     }
 
     function playRide(time) {
+      if (!globalNoiseBuffer) initAudio();
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(0.2, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(0.18, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
       noiseGain.connect(drumMasterGain);
 
       const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 6000;
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noise.start(time); noise.stop(time + 0.5);
+      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noise.start(time); noise.stop(time + 0.45);
 
       if (!isChiptune) {
          const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.value = 3200;
          const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = 4800;
-         const oscGain = actx.createGain(); oscGain.gain.setValueAtTime(0.1, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+         const oscGain = actx.createGain(); oscGain.gain.setValueAtTime(0.08, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
          const oscFilter = actx.createBiquadFilter(); oscFilter.type = 'highpass'; oscFilter.frequency.value = 2000;
          osc1.connect(oscFilter); osc2.connect(oscFilter); oscFilter.connect(oscGain); oscGain.connect(drumMasterGain);
-         osc1.start(time); osc2.start(time); osc1.stop(time + 0.6); osc2.stop(time + 0.6);
+         osc1.start(time); osc2.start(time); osc1.stop(time + 0.5); osc2.stop(time + 0.5);
+         osc1.onended = () => { try{ osc1.disconnect(); osc2.disconnect(); oscFilter.disconnect(); oscGain.disconnect(); }catch(e){} };
       }
+      noise.onended = () => { try{ noise.disconnect(); noiseFilter.disconnect(); noiseGain.disconnect(); }catch(e){} };
     }
 
     let isPlayingDrums = false; let currentStep = 0; let nextNoteTime = 0; let timerID;
@@ -1034,21 +1096,37 @@
     }
 
     function playChordNote(midi, inst, isBass, isStrum = false, startTime = null, prevFreq = null) {
+      while (activeVoicePool.length >= MAX_VOICES) {
+        const oldest = activeVoicePool.shift();
+        if (oldest && !oldest.cleaned) {
+          const now = actx.currentTime;
+          oldest.voiceGain.gain.cancelScheduledValues(now);
+          oldest.voiceGain.gain.setValueAtTime(oldest.voiceGain.gain.value, now);
+          oldest.voiceGain.gain.setTargetAtTime(0.0001, now, 0.006);
+          setTimeout(() => cleanVoice(oldest), 25);
+        }
+      }
+
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
       const t = startTime !== null ? startTime : actx.currentTime;
       const voiceGain = actx.createGain();
       const oscillators = [];
-      const currentAttack = isStrum ? 0.04 : Math.max(0.005, synthParams.attack);
+      const extraNodes = [];
+      const currentAttack = isStrum ? 0.035 : Math.max(0.005, synthParams.attack);
 
       const filterNode = actx.createBiquadFilter();
       filterNode.type = 'lowpass';
       filterNode.frequency.setValueAtTime(synthParams.cutoff, t);
 
+      let targetGain = 0.05;
+
       if (inst === 'custom') {
         filterNode.Q.value = 1.0;
+        targetGain = 0.048;
         const carrier = actx.createOscillator();
         const modulator = actx.createOscillator();
         const modGain = actx.createGain();
+        extraNodes.push(modGain);
 
         carrier.type = customParams.carrierWave;
         carrier.frequency.setValueAtTime(prevFreq || freq, t);
@@ -1072,9 +1150,11 @@
         oscillators.push(carrier, modulator);
 
       } else if (inst === 'guitar') {
-        filterNode.Q.value = 3.0;
+        filterNode.Q.value = 2.5;
+        targetGain = 0.042;
         const distortion = actx.createWaveShaper();
         distortion.curve = getDistortionCurve();
+        extraNodes.push(distortion);
 
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 4; osc2.freqMultiplier = 1;
@@ -1089,9 +1169,10 @@
         oscillators.push(osc1, osc2);
 
       } else if (inst === 'acidbass') {
-        filterNode.Q.value = 18.0; 
-        filterNode.frequency.setValueAtTime(Math.min(18000, synthParams.cutoff * 4), t);
-        filterNode.frequency.exponentialRampToValueAtTime(Math.max(100, synthParams.cutoff), t + 0.3);
+        filterNode.Q.value = 16.0; 
+        targetGain = 0.06;
+        filterNode.frequency.setValueAtTime(Math.min(14000, synthParams.cutoff * 3.5), t);
+        filterNode.frequency.exponentialRampToValueAtTime(Math.max(80, synthParams.cutoff), t + 0.3);
 
         const osc = actx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(prevFreq || freq, t); osc.freqMultiplier = 1;
         if (prevFreq && synthParams.glide > 0.005) {
@@ -1102,6 +1183,7 @@
 
       } else if (inst === 'analog') {
         filterNode.Q.value = 0.8;
+        targetGain = 0.048;
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -2; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 2; osc2.freqMultiplier = 1;
         if (prevFreq && synthParams.glide > 0.005) {
@@ -1114,12 +1196,14 @@
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
           if (prevFreq && synthParams.glide > 0.005) sub.frequency.setTargetAtTime(freq / 2, t, synthParams.glide);
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filterNode);
+          const subGain = actx.createGain(); subGain.gain.value = 0.35; sub.connect(subGain); subGain.connect(filterNode);
+          extraNodes.push(subGain);
           oscillators.push(sub);
         }
 
       } else if (inst === 'strings') {
-        filterNode.Q.value = 0.5;
+        filterNode.Q.value = 0.4;
+        targetGain = 0.038;
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -4; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 4; osc2.freqMultiplier = 1;
         const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.setValueAtTime(prevFreq || freq, t); osc3.detune.value = 0; osc3.freqMultiplier = 1;
@@ -1134,12 +1218,14 @@
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'sawtooth'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
           if (prevFreq && synthParams.glide > 0.005) sub.frequency.setTargetAtTime(freq / 2, t, synthParams.glide);
-          const subGain = actx.createGain(); subGain.gain.value = 0.5; sub.connect(subGain); subGain.connect(filterNode);
+          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filterNode);
+          extraNodes.push(subGain);
           oscillators.push(sub);
         }
 
       } else if (inst === 'organ') {
-        filterNode.Q.value = 0.5;
+        filterNode.Q.value = 0.4;
+        targetGain = 0.045;
         const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.freqMultiplier = 1;
         const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2; 
@@ -1148,13 +1234,15 @@
           osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
           osc3.frequency.setTargetAtTime(freq * 2, t, synthParams.glide);
         }
-        const g1 = actx.createGain(); g1.gain.value = 0.6; osc1.connect(g1); g1.connect(filterNode);
-        const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(filterNode);
-        const g3 = actx.createGain(); g3.gain.value = 0.05; osc3.connect(g3); g3.connect(filterNode);
+        const g1 = actx.createGain(); g1.gain.value = 0.55; osc1.connect(g1); g1.connect(filterNode);
+        const g2 = actx.createGain(); g2.gain.value = 0.25; osc2.connect(g2); g2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.04; osc3.connect(g3); g3.connect(filterNode);
+        extraNodes.push(g1, g2, g3);
         oscillators.push(osc1, osc2, osc3);
 
       } else if (inst === '8bit') {
-        filterNode.Q.value = 0.5;
+        filterNode.Q.value = 0.4;
+        targetGain = 0.042;
         const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 2; osc2.freqMultiplier = 1;
         if (prevFreq && synthParams.glide > 0.005) {
@@ -1167,12 +1255,14 @@
         if (isBass && !isStrum) { 
           const sub = actx.createOscillator(); sub.type = 'square'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
           if (prevFreq && synthParams.glide > 0.005) sub.frequency.setTargetAtTime(freq / 2, t, synthParams.glide);
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filterNode);
+          const subGain = actx.createGain(); subGain.gain.value = 0.35; sub.connect(subGain); subGain.connect(filterNode);
+          extraNodes.push(subGain);
           oscillators.push(sub);
         }
 
       } else if (inst === 'crystal') {
-        filterNode.Q.value = 2.0;
+        filterNode.Q.value = 1.6;
+        targetGain = 0.045;
         const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'sine'; osc2.frequency.setValueAtTime((prevFreq || freq) * 2.78, t); osc2.freqMultiplier = 2.78; 
         const osc3 = actx.createOscillator(); osc3.type = 'triangle'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2;
@@ -1182,14 +1272,16 @@
           osc3.frequency.setTargetAtTime(freq * 2, t, synthParams.glide);
         }
         osc1.connect(filterNode);
-        const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(filterNode);
-        const g3 = actx.createGain(); g3.gain.value = 0.2; osc3.connect(g3); g3.connect(filterNode);
+        const g2 = actx.createGain(); g2.gain.value = 0.25; osc2.connect(g2); g2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.18; osc3.connect(g3); g3.connect(filterNode);
+        extraNodes.push(g2, g3);
         oscillators.push(osc1, osc2, osc3);
 
       } else if (inst === 'sweep') {
-        filterNode.Q.value = 8.0; 
-        filterNode.frequency.setValueAtTime(Math.min(18000, synthParams.cutoff * 4), t);
-        filterNode.frequency.exponentialRampToValueAtTime(Math.max(150, synthParams.cutoff), t + currentAttack * 2.5);
+        filterNode.Q.value = 7.0; 
+        targetGain = 0.045;
+        filterNode.frequency.setValueAtTime(Math.min(14000, synthParams.cutoff * 3.5), t);
+        filterNode.frequency.exponentialRampToValueAtTime(Math.max(120, synthParams.cutoff), t + currentAttack * 2.2);
 
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -3; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 3; osc2.freqMultiplier = 1;
@@ -1202,6 +1294,7 @@
 
       } else if (inst === 'alien') {
         filterNode.Q.value = 1.0;
+        targetGain = 0.048;
         const carrier = actx.createOscillator(); carrier.type = 'sine'; carrier.frequency.setValueAtTime(prevFreq || freq, t); carrier.freqMultiplier = 1;
         const modulator = actx.createOscillator(); modulator.type = 'sawtooth'; modulator.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); modulator.freqMultiplier = 0.5;
         if (prevFreq && synthParams.glide > 0.005) {
@@ -1211,6 +1304,7 @@
         const modGain = actx.createGain(); modGain.gain.value = freq * 3; 
         modulator.connect(modGain); modGain.connect(carrier.frequency);
         carrier.connect(filterNode);
+        extraNodes.push(modGain);
         oscillators.push(carrier, modulator);
       }
       
@@ -1219,23 +1313,29 @@
       voiceGain.connect(delayInputGain);
 
       voiceGain.gain.setValueAtTime(0, t);
-      voiceGain.gain.linearRampToValueAtTime(0.09, t + currentAttack);
+      voiceGain.gain.linearRampToValueAtTime(targetGain, t + currentAttack);
 
       oscillators.forEach(o => o.start(t));
-      return { oscillators, voiceGain, filterNode, inst, isBass, startTime: t, freq };
+      const voice = { oscillators, extraNodes, voiceGain, filterNode, inst, isBass, startTime: t, freq, cleaned: false };
+      activeVoicePool.push(voice);
+      return voice;
     }
 
     function stopChordNote(voice) {
-      if (!voice) return;
+      if (!voice || voice.cleaned || voice.isStopping) return;
+      voice.isStopping = true;
       const t = actx.currentTime;
       const rel = synthParams.release; 
-      const stopT = Math.max(t, (voice.startTime || t) + 0.03);
+      const stopT = Math.max(t, (voice.startTime || t) + 0.02);
+      
       voice.voiceGain.gain.cancelScheduledValues(stopT); 
-      voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value || 0.09, stopT);
-      voice.voiceGain.gain.setTargetAtTime(0.0001, stopT, rel / 3);
-      voice.oscillators.forEach(o => {
-        try { o.stop(stopT + rel + 0.1); } catch(e) {}
-      });
+      voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value || 0.05, stopT);
+      voice.voiceGain.gain.setTargetAtTime(0.0001, stopT, Math.max(0.02, rel / 3.5));
+
+      const durationMs = (stopT - t + Math.max(0.08, rel) + 0.05) * 1000;
+      setTimeout(() => {
+        cleanVoice(voice);
+      }, Math.max(40, durationMs));
     }
 
     function updateActiveChordsFrequencies() {
@@ -1251,11 +1351,12 @@
         let intervalData = getIntervalsAndName(baseQual, currentMod);
         
         voices.forEach((voice, index) => {
+          if (!voice || voice.cleaned) return;
           if (index >= intervalData.i.length) {
             voice.voiceGain.gain.setTargetAtTime(0.0001, t, 0.05); return;
           }
           if (voice.voiceGain.gain.value < 0.01) {
-            voice.voiceGain.gain.setTargetAtTime(0.09, t, 0.05);
+            voice.voiceGain.gain.setTargetAtTime(0.05, t, 0.05);
           }
           let newMidi = rootMidi + intervalData.i[index];
           let newFreq = 440 * Math.pow(2, (newMidi - 69) / 12);
@@ -1291,7 +1392,11 @@
         let intervalData = getIntervalsAndName(baseQual, currentMod);
         
         btn.querySelector('.chord-name').innerText = getNoteName(midi) + intervalData.s;
-        if (!isChrom) btn.querySelector('.roman').innerText = scale.roman[idx];
+        if (!isChrom && scale.roman && scale.roman[idx]) {
+          btn.querySelector('.roman').innerText = scale.roman[idx];
+        } else {
+          btn.querySelector('.roman').innerText = '';
+        }
 
         if (idx === armedDegree) btn.classList.add('armed'); else btn.classList.remove('armed');
       });
