@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b1118">
   
-  <!-- Ícono SVG a sangre completa (sin esquinas transparentes) para evitar el marco blanco de Android -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230b1118' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230b1118' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   
@@ -34,7 +33,7 @@
       height: 100dvh; width: 100vw; display: flex; flex-direction: row; overflow: hidden;
     }
     
-    .main-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .main-column { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
     .top-section {
       background: var(--panel);
@@ -73,18 +72,21 @@
     }
     .custom-fm-grid.visible { display: grid; }
 
+    /* SECUENCIADOR FLOTANTE A PANTALLA COMPLETA PARA EDICIÓN CÓMODA */
     .custom-drum-sequencer {
-      display: none; flex-direction: column; gap: 6px; padding: 10px;
-      background: #070d14; border-radius: 12px; border: 1px solid var(--accent); margin-top: 4px;
+      display: none; flex-direction: column; gap: 10px; padding: 16px;
+      background: #0e1622; border-radius: 16px; border: 2px solid var(--accent);
+      position: absolute; top: 10px; left: 16px; right: 16px; bottom: 16px;
+      z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.9); overflow-y: auto;
     }
     .custom-drum-sequencer.visible { display: flex; }
-    .seq-row { display: flex; align-items: center; gap: 6px; }
-    .seq-label { font-size: 0.55rem; font-weight: bold; width: 55px; color: var(--accent-hover); letter-spacing: 0.5px;}
-    .seq-pads { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; flex: 1; }
+    .seq-row { display: flex; align-items: center; gap: 8px; }
+    .seq-label { font-size: 0.7rem; font-weight: bold; width: 65px; color: var(--accent-hover); letter-spacing: 0.5px;}
+    .seq-pads { display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; flex: 1; }
     .seq-pad {
-      height: 22px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+      height: 36px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;
     }
-    .seq-pad.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+    .seq-pad.active { background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
     .param-group { display: flex; flex-direction: column; gap: 4px; }
     .param-group label { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px;}
@@ -324,10 +326,11 @@
         </div>
       </div>
 
+      <!-- SECUENCIADOR FLOTANTE (Aparece superpuesto a pantalla completa para edición cómoda) -->
       <div class="custom-drum-sequencer" id="custom-drum-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
-          <span style="font-size:0.7rem; color:var(--accent); font-weight:bold;">SECUENCIADOR (16 PASOS)</span>
-          <button id="btn-close-seq" class="ctrl-btn" style="padding: 4px 10px; background: var(--bg); border: 1px solid var(--border);">Ocultar ▴</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          <span style="font-size:0.8rem; color:var(--accent-hover); font-weight:bold; letter-spacing:1px;">EDICIÓN DE RITMO (16 PASOS)</span>
+          <button id="btn-close-seq" class="ctrl-btn" style="padding: 6px 14px; background: var(--bg); border: 1px solid var(--accent); color: var(--accent-hover);">✕ Cerrar Editor</button>
         </div>
         <div class="seq-row"><div class="seq-label">KICK</div><div class="seq-pads" id="seq-kick-pads"></div></div>
         <div class="seq-row"><div class="seq-label">DEEP BD</div><div class="seq-pads" id="seq-deepkick-pads"></div></div>
@@ -1065,7 +1068,7 @@
          const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = 4800;
          const oscGain = actx.createGain(); oscGain.gain.setValueAtTime(0.08, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
          const oscFilter = actx.createBiquadFilter(); oscFilter.type = 'highpass'; oscFilter.frequency.value = 2000;
-         osc1.connect(oscFilter); osc2.connect(oscFilter); oscFilter.connect(oscGain); oscGain.connect(drumMasterGain);
+         osc1.connect(oscFilter); osc2.connect(oscFilter); osc2.connect(oscGain); oscGain.connect(drumMasterGain);
          osc1.start(time); osc2.start(time); osc1.stop(time + 0.5); osc2.stop(time + 0.5);
          osc1.onended = () => { try{ osc1.disconnect(); osc2.disconnect(); oscFilter.disconnect(); oscGain.disconnect(); }catch(e){} };
       }
@@ -1144,6 +1147,10 @@
 
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
       const t = startTime !== null ? startTime : actx.currentTime;
+      
+      // Compensación de volumen para notas agudas (evita picos estridentes en el strumplate)[cite: 4]
+      const noteGainCompensation = Math.max(0.4, 1 - ((midi - 48) / 75));
+
       const voiceGain = actx.createGain();
       const oscillators = [];
       const extraNodes = [];
@@ -1331,7 +1338,8 @@
         filterNode.Q.value = 1.0;
         targetGain = 0.048;
         const carrier = actx.createOscillator(); carrier.type = 'sine'; carrier.frequency.setValueAtTime(prevFreq || freq, t); carrier.freqMultiplier = 1;
-        const modulator = actx.createOscillator(); modulator.type = 'sawtooth'; modulator.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); modulator.freqMultiplier = 0.5;
+        const modulator = actx.createOscillator(); modulator.type = 'sawtooth';
+        modulator.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); modulator.freqMultiplier = 0.5;
         if (prevFreq && synthParams.glide > 0.005) {
           carrier.frequency.setTargetAtTime(freq, t, synthParams.glide);
           modulator.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
@@ -1343,6 +1351,8 @@
         oscillators.push(carrier, modulator);
       }
       
+      targetGain *= noteGainCompensation;
+
       filterNode.connect(voiceGain);
       voiceGain.connect(masterGain);
       voiceGain.connect(delayInputGain);
