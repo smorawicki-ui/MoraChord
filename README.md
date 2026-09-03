@@ -1,5 +1,5 @@
 MoraChord  🎹⚡
-MoraChord Pro es una Progressive Web App (PWA) de alto rendimiento y baja latencia desarrollada con la API de Web Audio nativa. Funciona como un sintetizador interactivo, reproductor de acordes modulares y caja de ritmos orientada a la interpretación en vivo y la composición rápida tanto en dispositivos móviles como de escritorio.
+MoraChord es una Progressive Web App (PWA) de alto rendimiento y baja latencia desarrollada con la API de Web Audio nativa. Funciona como un sintetizador interactivo, reproductor de acordes modulares y caja de ritmos orientada a la interpretación en vivo y la composición rápida tanto en dispositivos móviles como de escritorio.
 
 🚀 Características Principales
 Motor de Audio Robusto: Diseñado con gestión estricta de polifonía (Voice Stealing), limpieza automática de nodos en memoria (disconnect()) y un limitador maestro para evitar saturación digital o ruidos de búfer (fritanga).
