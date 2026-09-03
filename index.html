@@ -361,6 +361,7 @@
           <optgroup label="Occidentales & Urbanos">
             <option value="rock">Rock Básico</option>
             <option value="rockalt">Rock Alternativo</option>
+            <option value="french">French Touch</option>
             <option value="disco">Disco / House 909</option>
             <option value="synth">Synthwave 80s</option>
             <option value="hiphop">Hip-Hop Boom Bap</option>
@@ -460,6 +461,14 @@
     }
 
     const PATTERNS = {
+      'french': {
+        kick:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1],
+        hihat:    [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        openhat:  [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        ride:     [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0]
+      },
       'rock': {
         kick:     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
         deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
