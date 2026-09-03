@@ -7,10 +7,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0d141e">
+  <meta name="theme-color" content="#0b1118">
   
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d141e' rx='112' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d141e' rx='112' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
+  <!-- Ícono SVG a sangre completa (sin esquinas transparentes) para evitar el marco blanco de Android -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230b1118' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230b1118' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   
   <link rel="manifest" href="manifest.json">
   
@@ -251,20 +252,20 @@
           <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700; margin-right: 6px;">SONIDO:</span>
           <select id="inst-select" class="inst-select">
             <optgroup label="Clásicos">
-              <option value="analog">:musical_keyboard: Synth Pad</option>
-              <option value="strings">:violin: Cuerdas Caoticas</option>
-              <option value="organ">:musical_keyboard: Órgano Hammond</option>
-              <option value="guitar">:guitar: Guitarra Eléctrica</option>
-              <option value="acidbass">:high_voltage: Bajo Ácido (303)</option>
+              <option value="analog">🎹 Synth Pad</option>
+              <option value="strings">🎻 Cuerdas Caoticas</option>
+              <option value="organ">🎹 Órgano Hammond</option>
+              <option value="guitar">🎸 Guitarra Eléctrica</option>
+              <option value="acidbass">⚡ Bajo Ácido (303)</option>
             </optgroup>
             <optgroup label="Falopa / FX">
-              <option value="8bit">:space_invader: 8-Bit (Chiptune)</option>
-              <option value="crystal">:wine_glass: Cristal Mágico</option>
-              <option value="sweep">:gun: Laser Sweep (Rave)</option>
-              <option value="alien">:flying_saucer: Alienígena (FM)</option>
+              <option value="8bit">👾 8-Bit (Chiptune)</option>
+              <option value="crystal">🍷 Cristal Mágico</option>
+              <option value="sweep">🔫 Laser Sweep (Rave)</option>
+              <option value="alien">🛸 Alienígena (FM)</option>
             </optgroup>
             <optgroup label="Labortaorio">
-              <option value="custom">Custom FM Synth 🎛️</option>
+              <option value="custom">🎛️ Custom FM Synth</option>
             </optgroup>
           </select>
         </div>
@@ -275,7 +276,6 @@
         <div class="param-group"><label><span>Release</span> <span id="val-rel">1.5s</span></label><input type="range" id="p-release" min="0.1" max="4.0" step="0.1" value="1.5"></div>
         <div class="param-group"><label><span>Cutoff</span> <span id="val-cut">800Hz</span></label><input type="range" id="p-cutoff" min="200" max="4000" step="50" value="800"></div>
         
-        <!-- CONTROL DE ECO CON SELECTOR DE SUBDIVISIÓN RÍTMICA -->
         <div class="param-group">
           <label>
             <span style="display:inline-flex; align-items:center; gap:3px;">Echo
@@ -459,7 +459,6 @@
       navigator.serviceWorker.register('sw.js').catch(()=>{});
     }
 
-    // 1. DICCIONARIO DE RITMOS
     const PATTERNS = {
       'rock': {
         kick:     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
@@ -631,10 +630,8 @@
       }
     };
 
-    // 2. PARÁMETROS GLOBALES DEL SINTETIZADOR
     const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
 
-    // 3. CONFIGURACIONES ÓPTIMAS POR DEFECTO PARA CADA INSTRUMENTO
     const INST_DEFAULTS = {
       'analog':   { attack: 0.05, release: 1.5, cutoff: 800,  echo: 0.20, glide: 0.05 },
       'strings':  { attack: 0.35, release: 2.2, cutoff: 1600, echo: 0.25, glide: 0.08 },
@@ -675,7 +672,6 @@
       updateLiveCutoff();
     }
 
-    // 4. PASOS ACTIVOS DE BATERÍA (Iniciados en copia limpia de rock)
     let customSteps = JSON.parse(JSON.stringify(PATTERNS.rock));
 
     function buildCustomPads() {
@@ -723,7 +719,6 @@
       customDrumPanel.classList.remove('visible');
     });
 
-    // 5. ESCALAS CON NOMENCLATURA ARMÓNICA EXACTA (I-VIII)
     const SCALES = [
       { name: 'Mayor (Jónica)',           intervals: [0,2,4,5,7,9,11,12], qual: ['maj','min','min','maj','maj','min','dim','maj'], roman: ['I','ii','iii','IV','V','vi','vii°','VIII'] },
       { name: 'Menor Natural (Eólica)',   intervals: [0,2,3,5,7,8,10,12], qual: ['min','dim','maj','min','min','maj','maj','min'], roman: ['i','ii°','bIII','iv','v','bVI','bVII','VIII'] },
@@ -771,7 +766,6 @@
       });
     }
 
-    // --- CÁLCULO DINÁMICO DEL TIEMPO DE ECO SINCRONIZADO AL BPM ---
     function updateDelayTime() {
       if (!actx || !delayNode) return;
       const beatSec = 60.0 / synthParams.bpm;
@@ -900,7 +894,6 @@
       delayInputGain = actx.createGain(); 
       delayInputGain.gain.value = synthParams.echo;
       
-      // Delay de hasta 3 segundos para soportar tempos lentos
       delayNode = actx.createDelay(3.0); 
       updateDelayTime();
 
