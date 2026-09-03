@@ -141,14 +141,14 @@
         "i ii iii iv";
     }
     .keys-container.layout-diatonic .btn-key.chromatic-only { display: none; }
-    .keys-container.layout-diatonic .btn-key[data-idx="0"] { grid-area: i; border-radius: 20px; }
-    .keys-container.layout-diatonic .btn-key[data-idx="1"] { grid-area: ii; }
-    .keys-container.layout-diatonic .btn-key[data-idx="2"] { grid-area: iii; }
-    .keys-container.layout-diatonic .btn-key[data-idx="3"] { grid-area: iv; }
-    .keys-container.layout-diatonic .btn-key[data-idx="4"] { grid-area: v; }
-    .keys-container.layout-diatonic .btn-key[data-idx="5"] { grid-area: vi; }
-    .keys-container.layout-diatonic .btn-key[data-idx="6"] { grid-area: vii; }
-    .keys-container.layout-diatonic .btn-key[data-idx="7"] { grid-area: viii; }
+    .layout-diatonic .btn-key[data-idx="0"] { grid-area: i; border-radius: 20px; }
+    .layout-diatonic .btn-key[data-idx="1"] { grid-area: ii; }
+    .layout-diatonic .btn-key[data-idx="2"] { grid-area: iii; }
+    .layout-diatonic .btn-key[data-idx="3"] { grid-area: iv; }
+    .layout-diatonic .btn-key[data-idx="4"] { grid-area: v; }
+    .layout-diatonic .btn-key[data-idx="5"] { grid-area: vi; }
+    .layout-diatonic .btn-key[data-idx="6"] { grid-area: vii; }
+    .layout-diatonic .btn-key[data-idx="7"] { grid-area: viii; }
 
     .keys-container.layout-chromatic {
       grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr);
@@ -275,7 +275,7 @@
         <div class="param-group"><label><span>Release</span> <span id="val-rel">1.5s</span></label><input type="range" id="p-release" min="0.1" max="4.0" step="0.1" value="1.5"></div>
         <div class="param-group"><label><span>Cutoff</span> <span id="val-cut">800Hz</span></label><input type="range" id="p-cutoff" min="200" max="4000" step="50" value="800"></div>
         <div class="param-group"><label><span>Echo Vol</span> <span id="val-echo">20%</span></label><input type="range" id="p-echo" min="0" max="0.8" step="0.05" value="0.2"></div>
-        <div class="param-group"><label><span>Glide</span> <span id="val-glide">0.05s</span></label><input type="range" id="p-glide" min="0.01" max="0.5" step="0.01" value="0.05"></div>
+        <div class="param-group"><label><span>Glide</span> <span id="val-glide">0.05s</span></label><input type="range" id="p-glide" min="0.001" max="0.5" step="0.005" value="0.05"></div>
       </div>
 
       <div class="custom-fm-grid" id="custom-fm-panel">
@@ -341,24 +341,41 @@
         </select>
 
         <select id="drum-pattern" class="inst-select" style="background: var(--bg); border: 1px solid var(--border);">
-          <option value="rock">Rock Básico</option>
-          <option value="rockalt">Rock Alternativo</option>
-          <option value="disco">Disco / House</option>
-          <option value="synth">Synthwave</option>
-          <option value="hiphop">Hip-Hop / Boom Bap</option>
-          <option value="trap">Trap</option>
-          <option value="dnb">Drum & Bass</option>
-          <option value="reggaeton">Reggaeton / Dembow</option>
-          <option value="cumbia">Cumbia</option>
-          <option value="salsa">Salsa</option>
-          <option value="bossa">Bossa Nova</option>
-          <option value="reggae">Reggae / Ska</option>
-          <option value="waltz">Waltz (3/4)</option>
-          <option value="swing">Jazz Swing</option>
-          <option value="custom">✏️ Personalizado (16 pasos)</option>
+          <optgroup label="Occidentales & Urbanos">
+            <option value="rock">Rock Básico</option>
+            <option value="rockalt">Rock Alternativo</option>
+            <option value="disco">Disco / House 909</option>
+            <option value="synth">Synthwave 80s</option>
+            <option value="hiphop">Hip-Hop Boom Bap</option>
+            <option value="trap">Trap 808</option>
+            <option value="dnb">Drum & Bass</option>
+            <option value="techno">Techno Berlin</option>
+          </optgroup>
+          <optgroup label="Latinoamérica & Caribe">
+            <option value="reggaeton">Reggaeton / Dembow</option>
+            <option value="cumbia">Cumbia</option>
+            <option value="salsa">Salsa / Clave</option>
+            <option value="bossa">Bossa Nova</option>
+            <option value="reggae">Reggae One Drop</option>
+          </optgroup>
+          <optgroup label="Ritmos del Mundo">
+            <option value="maqsum">Árabe: Maqsum</option>
+            <option value="saidi">Árabe: Saidi</option>
+            <option value="malfuf">Árabe: Malfuf</option>
+            <option value="taiko">Japonés: Taiko</option>
+            <option value="flamenco">Flamenco / Rumba</option>
+            <option value="afrobeats">Afrobeats</option>
+          </optgroup>
+          <optgroup label="Tradicionales">
+            <option value="waltz">Waltz (3/4)</option>
+            <option value="swing">Jazz Swing</option>
+          </optgroup>
+          <optgroup label="Usuario">
+            <option value="custom">✏️ Personalizado (16 pasos)</option>
+          </optgroup>
         </select>
 
-        <button id="btn-edit-seq" class="ctrl-btn" style="display:none; background: var(--bg); border: 1px solid var(--accent);">⚙️ Editar</button>
+        <button id="btn-edit-seq" class="ctrl-btn" style="background: var(--bg); border: 1px solid var(--accent);">⚙️ Editar</button>
 
         <div class="pill-group" title="Tempo BPM">
           <button class="ctrl-btn" id="btn-bpm-down">-</button>
@@ -425,7 +442,6 @@
       navigator.serviceWorker.register('sw.js').catch(()=>{});
     }
 
-    // 16 ESCALAS CON ANÁLISIS ARMÓNICO REAL Y EXACTO (I-VIII)
     const SCALES = [
       { name: 'Mayor (Jónica)',           intervals: [0,2,4,5,7,9,11,12], qual: ['maj','min','min','maj','maj','min','dim','maj'], roman: ['I','ii','iii','IV','V','vi','vii°','VIII'] },
       { name: 'Menor Natural (Eólica)',   intervals: [0,2,3,5,7,8,10,12], qual: ['min','dim','maj','min','min','maj','maj','min'], roman: ['i','ii°','bIII','iv','v','bVI','bVII','VIII'] },
@@ -447,14 +463,220 @@
     ];
     let currentScaleIdx = 0;
 
-    const customSteps = {
-      kick:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
-      deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
-      snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
-      hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
-      openhat:  [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
-      ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+    // --- DICCIONARIO DE 20 RITMOS COMPLETOS (6 PISTAS) ---
+    const PATTERNS = {
+      'rock': {
+        kick:     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'rockalt': {
+        kick:     [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,0,0, 0,0,0,1, 0,0,0,0, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'disco': {
+        kick:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        openhat:  [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'synth': {
+        kick:     [1,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
+        ride:     [1,0,0,0, 0,0,1,0, 1,0,0,0, 0,0,1,0]
+      },
+      'hiphop': {
+        kick:     [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,1,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [1,0,1,1, 1,0,1,0, 1,0,1,1, 1,0,1,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'trap': {
+        kick:     [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
+        snare:    [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,0,1],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'dnb': {
+        kick:     [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0],
+        ride:     [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0]
+      },
+      'techno': {
+        kick:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        deepkick: [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        snare:    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        hihat:    [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        openhat:  [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        ride:     [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1]
+      },
+      'reggaeton': {
+        kick:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,1, 0,0,1,0, 0,0,0,1, 0,0,1,0],
+        hihat:    [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+        openhat:  [0,0,0,1, 0,0,0,0, 0,0,0,1, 0,0,0,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'cumbia': {
+        kick:     [1,0,0,0, 0,0,1,0, 1,0,0,0, 0,0,1,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [0,1,1,0, 1,1,0,1, 1,0,1,1, 0,1,1,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'salsa': {
+        kick:     [0,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [1,0,0,1, 0,0,1,0, 0,0,1,0, 1,0,0,0],
+        hihat:    [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        ride:     [1,0,0,1, 0,0,1,0, 0,1,0,0, 1,0,0,0]
+      },
+      'bossa': {
+        kick:     [1,0,0,0, 0,0,1,0, 1,0,0,0, 0,0,1,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [1,0,0,1, 0,0,1,0, 0,1,0,0, 1,0,0,1],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        ride:     [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0]
+      },
+      'reggae': {
+        kick:     [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        hihat:    [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        openhat:  [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'maqsum': {
+        kick:     [1,0,0,0, 0,0,0,0, 0,0,1,0, 0,0,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        ride:     [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0]
+      },
+      'saidi': {
+        kick:     [1,0,0,0, 0,0,0,0, 1,0,0,0, 1,0,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,1,0],
+        hihat:    [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+        openhat:  [0,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'malfuf': {
+        kick:     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,1, 0,0,1,0, 0,0,0,1, 0,0,1,0],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,0,1, 0,0,1,0, 0,0,0,1, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'taiko': {
+        kick:     [1,0,1,0, 0,0,1,0, 1,0,1,0, 0,0,1,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        ride:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,1,0]
+      },
+      'flamenco': {
+        kick:     [1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,1,0, 1,0,0,1, 0,1,0,0, 1,0,1,0],
+        hihat:    [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,1,0],
+        ride:     [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+      },
+      'afrobeats': {
+        kick:     [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0],
+        deepkick: [1,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0],
+        snare:    [0,0,0,1, 0,0,0,0, 1,0,0,1, 0,0,1,0],
+        hihat:    [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+        openhat:  [0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,0,0],
+        ride:     [1,0,0,1, 0,0,1,0, 0,1,0,0, 1,0,0,0]
+      },
+      'waltz': {
+        kick:     [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0],
+        hihat:    [1,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        ride:     [1,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0]
+      },
+      'swing': {
+        kick:     [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+        deepkick: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        snare:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        hihat:    [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+        openhat:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+        ride:     [1,0,0,1, 0,0,1,0, 1,0,0,1, 0,0,1,0]
+      }
     };
+
+    // --- CONFIGURACIONES POR DEFECTO PARA CADA INSTRUMENTO ---
+    const INST_DEFAULTS = {
+      'analog':   { attack: 0.05, release: 1.5, cutoff: 800,  echo: 0.20, glide: 0.05 },
+      'strings':  { attack: 0.35, release: 2.2, cutoff: 1600, echo: 0.25, glide: 0.08 },
+      'organ':    { attack: 0.01, release: 0.3, cutoff: 3500, echo: 0.10, glide: 0.01 },
+      'guitar':   { attack: 0.01, release: 0.9, cutoff: 2400, echo: 0.15, glide: 0.02 },
+      'acidbass': { attack: 0.01, release: 0.35, cutoff: 550, echo: 0.10, glide: 0.09 },
+      '8bit':     { attack: 0.01, release: 0.15, cutoff: 4000, echo: 0.00, glide: 0.01 },
+      'crystal':  { attack: 0.03, release: 2.8, cutoff: 3000, echo: 0.35, glide: 0.03 },
+      'sweep':    { attack: 0.20, release: 1.8, cutoff: 1900, echo: 0.25, glide: 0.05 },
+      'alien':    { attack: 0.04, release: 1.3, cutoff: 2600, echo: 0.35, glide: 0.04 },
+      'custom':   null
+    };
+
+    const PARAM_INPUT_MAP = {
+      attack:  { input: 'p-attack',  label: 'val-atk',  unit: 's' },
+      release: { input: 'p-release', label: 'val-rel',  unit: 's' },
+      cutoff:  { input: 'p-cutoff',  label: 'val-cut',  unit: 'Hz' },
+      echo:    { input: 'p-echo',    label: 'val-echo', unit: '%' },
+      glide:   { input: 'p-glide',   label: 'val-glide',unit: 's' }
+    };
+
+    function applyInstrumentDefaults(inst) {
+      const def = INST_DEFAULTS[inst];
+      if (!def) return;
+      for (let key in def) {
+        synthParams[key] = def[key];
+        const m = PARAM_INPUT_MAP[key];
+        const inp = document.getElementById(m.input);
+        const lbl = document.getElementById(m.label);
+        if (inp) inp.value = def[key];
+        if (lbl) {
+          if (key === 'echo') lbl.innerText = Math.round(def[key] * 100) + '%';
+          else if (key === 'cutoff') lbl.innerText = Math.round(def[key]) + 'Hz';
+          else lbl.innerText = def[key] + 's';
+        }
+      }
+      if (delayInputGain) delayInputGain.gain.value = synthParams.echo;
+      updateLiveCutoff();
+    }
+
+    let customSteps = JSON.parse(JSON.stringify(PATTERNS.rock));
 
     function buildCustomPads() {
       ['kick', 'deepkick', 'snare', 'hihat', 'openhat', 'ride'].forEach(track => {
@@ -480,17 +702,26 @@
     const btnCloseSeq = document.getElementById('btn-close-seq');
 
     patternSelect.addEventListener('change', (e) => {
-      if (e.target.value === 'custom') {
+      const val = e.target.value;
+      if (val === 'custom') {
         customDrumPanel.classList.add('visible');
-        btnEditSeq.style.display = 'block';
       } else {
+        if (PATTERNS[val]) {
+          customSteps = JSON.parse(JSON.stringify(PATTERNS[val]));
+          buildCustomPads();
+        }
         customDrumPanel.classList.remove('visible');
-        btnEditSeq.style.display = 'none';
       }
     });
 
-    btnEditSeq.addEventListener('pointerdown', () => { customDrumPanel.classList.add('visible'); });
-    btnCloseSeq.addEventListener('pointerdown', () => { customDrumPanel.classList.remove('visible'); });
+    btnEditSeq.addEventListener('pointerdown', () => {
+      patternSelect.value = 'custom';
+      customDrumPanel.classList.add('visible');
+    });
+
+    btnCloseSeq.addEventListener('pointerdown', () => {
+      customDrumPanel.classList.remove('visible');
+    });
 
     const customParams = { carrierWave: 'sine', modulatorWave: 'sine', fmRatio: 2.0, fmDepth: 300 };
 
@@ -506,6 +737,20 @@
     });
 
     const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
+
+    function updateLiveCutoff() {
+      if (!actx) return;
+      const t = actx.currentTime;
+      activeKeys.forEach(voices => {
+        voices.forEach(v => {
+          if (v.filterNode) v.filterNode.frequency.setTargetAtTime(synthParams.cutoff, t, 0.05);
+        });
+      });
+      strumVoices.forEach(s => {
+        if (s.voice && s.voice.filterNode) s.voice.filterNode.frequency.setTargetAtTime(synthParams.cutoff, t, 0.05);
+      });
+    }
+
     function bindParam(inputId, labelId, key, unit) {
       const input = document.getElementById(inputId);
       if (!input) return;
@@ -515,6 +760,7 @@
         synthParams[key] = val;
         if(label) label.innerText = val + unit;
         if(key === 'echo' && delayInputGain) delayInputGain.gain.value = val;
+        if(key === 'cutoff') updateLiveCutoff();
       });
     }
     bindParam('p-attack', 'val-atk', 'attack', 's'); 
@@ -553,6 +799,7 @@
         customPanel.classList.add('visible');
       } else {
         customPanel.classList.remove('visible');
+        applyInstrumentDefaults(currentInst);
       }
     });
 
@@ -728,43 +975,24 @@
       }
     }
 
-    const PATTERNS = {
-      'rock':      [4,3,3,3, 5,3,3,3, 4,3,3,3, 5,3,3,3], 'rockalt':   [4,3,3,1, 5,3,3,3, 4,3,4,3, 5,3,3,3],
-      'disco':     [4,3,5,3, 4,3,5,3, 4,3,5,3, 4,3,5,3], 'hiphop':    [4,3,3,3, 5,3,3,3, 4,3,4,3, 5,3,3,3],
-      'trap':      [4,3,3,3, 5,3,3,3, 3,3,4,3, 5,3,3,3], 'dnb':       [4,3,3,3, 5,3,3,3, 3,3,1,3, 5,3,3,3],
-      'reggaeton': [4,3,3,5, 1,3,5,3, 4,3,3,5, 1,3,5,3], 'cumbia':    [4,3,2,3, 1,3,2,3, 4,3,2,3, 1,3,2,3],
-      'salsa':     [4,3,1,3, 2,3,4,3, 1,3,1,3, 2,3,4,3], 'bossa':     [4,3,3,2, 3,4,2,3, 4,2,3,4, 3,4,2,3],
-      'reggae':    [3,3,3,3, 6,3,3,3, 3,3,3,3, 6,3,3,3], 'synth':     [4,3,5,3, 4,3,5,4, 4,3,5,3, 4,4,5,3],
-      'waltz':     [4,3,3, 2,3,3, 2,3,3, 2,3,3],         'swing':     [4,0,0, 5,0,3, 4,0,0, 5,0,3]
-    };
-
     let isPlayingDrums = false; let currentStep = 0; let nextNoteTime = 0; let timerID;
     function nextNote() {
       const secondsPerBeat = 60.0 / synthParams.bpm; nextNoteTime += 0.25 * secondsPerBeat;
       currentStep++; 
-      const patternKey = document.getElementById('drum-pattern').value;
-      const maxSteps = patternKey === 'custom' ? 16 : PATTERNS[patternKey].length;
-      if (currentStep >= maxSteps) currentStep = 0;
+      if (currentStep >= 16) currentStep = 0;
     }
     function scheduleNote(stepNumber, time) {
-      const patternKey = document.getElementById('drum-pattern').value;
       playPOSyncPulse(time);
 
-      if (patternKey === 'custom') {
-        if (customSteps.kick[stepNumber]) playKick(time);
-        if (customSteps.deepkick[stepNumber]) playDeepKick(time);
-        if (customSteps.snare[stepNumber]) playSnare(time);
-        if (customSteps.hihat[stepNumber]) playHiHat(time);
-        if (customSteps.openhat[stepNumber]) playOpenHiHat(time);
-        if (customSteps.ride[stepNumber]) playRide(time);
-      } else {
-        const pattern = PATTERNS[patternKey];
-        const note = pattern[stepNumber];
-        if (!note) return;
-        if ([1, 4, 6, 7].includes(note)) playKick(time);
-        if ([2, 5, 6, 7].includes(note)) playSnare(time);
-        if ([3, 4, 5, 6].includes(note)) playHiHat(time);
-      }
+      const pKey = document.getElementById('drum-pattern').value;
+      const p = (pKey === 'custom') ? customSteps : (PATTERNS[pKey] || PATTERNS.rock);
+
+      if (p.kick && p.kick[stepNumber]) playKick(time);
+      if (p.deepkick && p.deepkick[stepNumber]) playDeepKick(time);
+      if (p.snare && p.snare[stepNumber]) playSnare(time);
+      if (p.hihat && p.hihat[stepNumber]) playHiHat(time);
+      if (p.openhat && p.openhat[stepNumber]) playOpenHiHat(time);
+      if (p.ride && p.ride[stepNumber]) playRide(time);
     }
     function scheduler() {
       while (nextNoteTime < actx.currentTime + 0.1) { scheduleNote(currentStep, nextNoteTime); nextNote(); }
@@ -805,147 +1033,205 @@
       return { i: i || [b,0,4,7], s }; 
     }
 
-    function playChordNote(midi, inst, isBass, isStrum = false, startTime = null) {
+    function playChordNote(midi, inst, isBass, isStrum = false, startTime = null, prevFreq = null) {
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
       const t = startTime !== null ? startTime : actx.currentTime;
       const voiceGain = actx.createGain();
       const oscillators = [];
-      let currentAttack = isStrum ? 0.05 : synthParams.attack; 
+      const currentAttack = isStrum ? 0.04 : Math.max(0.005, synthParams.attack);
+
+      const filterNode = actx.createBiquadFilter();
+      filterNode.type = 'lowpass';
+      filterNode.frequency.setValueAtTime(synthParams.cutoff, t);
 
       if (inst === 'custom') {
+        filterNode.Q.value = 1.0;
         const carrier = actx.createOscillator();
         const modulator = actx.createOscillator();
         const modGain = actx.createGain();
 
         carrier.type = customParams.carrierWave;
-        carrier.frequency.value = freq;
+        carrier.frequency.setValueAtTime(prevFreq || freq, t);
+        if (prevFreq && synthParams.glide > 0.005) {
+          carrier.frequency.setTargetAtTime(freq, t, synthParams.glide);
+        }
         carrier.freqMultiplier = 1;
 
         modulator.type = customParams.modulatorWave;
-        modulator.frequency.value = freq * customParams.fmRatio;
+        modulator.frequency.setValueAtTime((prevFreq || freq) * customParams.fmRatio, t);
+        if (prevFreq && synthParams.glide > 0.005) {
+          modulator.frequency.setTargetAtTime(freq * customParams.fmRatio, t, synthParams.glide);
+        }
         modulator.freqMultiplier = customParams.fmRatio;
 
         modGain.gain.value = customParams.fmDepth;
         modulator.connect(modGain);
         modGain.connect(carrier.frequency);
 
-        carrier.connect(voiceGain);
+        carrier.connect(filterNode);
         oscillators.push(carrier, modulator);
 
-        voiceGain.gain.setValueAtTime(0, t);
-        voiceGain.gain.linearRampToValueAtTime(0.1, t + currentAttack);
-
       } else if (inst === 'guitar') {
+        filterNode.Q.value = 3.0;
         const distortion = actx.createWaveShaper();
         distortion.curve = getDistortionCurve();
 
-        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 2500;
-        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = freq; osc2.detune.value = 4; osc2.freqMultiplier = 1;
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 4; osc2.freqMultiplier = 1;
         
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+        }
+
         osc1.connect(distortion); osc2.connect(distortion);
-        distortion.connect(filter); filter.connect(voiceGain);
+        distortion.connect(filterNode);
         oscillators.push(osc1, osc2);
 
-        voiceGain.gain.setValueAtTime(0, t);
-        voiceGain.gain.linearRampToValueAtTime(0.09, t + 0.02);
-
       } else if (inst === 'acidbass') {
-        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 18.0; 
-        filter.frequency.setValueAtTime(synthParams.cutoff * 4, t);
-        filter.frequency.exponentialRampToValueAtTime(synthParams.cutoff, t + 0.3);
+        filterNode.Q.value = 18.0; 
+        filterNode.frequency.setValueAtTime(Math.min(18000, synthParams.cutoff * 4), t);
+        filterNode.frequency.exponentialRampToValueAtTime(Math.max(100, synthParams.cutoff), t + 0.3);
 
-        const osc = actx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = freq; osc.freqMultiplier = 1;
-        osc.connect(filter); filter.connect(voiceGain);
+        const osc = actx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(prevFreq || freq, t); osc.freqMultiplier = 1;
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc.frequency.setTargetAtTime(freq, t, synthParams.glide);
+        }
+        osc.connect(filterNode);
         oscillators.push(osc);
 
-        voiceGain.gain.setValueAtTime(0, t);
-        voiceGain.gain.linearRampToValueAtTime(0.15, t + 0.01);
-
       } else if (inst === 'analog') {
-        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.5; filter.frequency.value = synthParams.cutoff;
-        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -2; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.detune.value = 2; osc2.freqMultiplier = 1;
-        osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
-        if (isBass && !isStrum) { 
-          const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filter); oscillators.push(sub);
+        filterNode.Q.value = 0.8;
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -2; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 2; osc2.freqMultiplier = 1;
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
         }
-        filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
+        osc1.connect(filterNode); osc2.connect(filterNode);
+        oscillators.push(osc1, osc2);
+
+        if (isBass && !isStrum) { 
+          const sub = actx.createOscillator(); sub.type = 'sine'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
+          if (prevFreq && synthParams.glide > 0.005) sub.frequency.setTargetAtTime(freq / 2, t, synthParams.glide);
+          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filterNode);
+          oscillators.push(sub);
+        }
 
       } else if (inst === 'strings') {
-        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 0.2; 
-        filter.frequency.setValueAtTime(synthParams.cutoff * 0.4, t); filter.frequency.linearRampToValueAtTime(synthParams.cutoff, t + currentAttack * 1.5); 
-        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -4; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = freq; osc2.detune.value = 4; osc2.freqMultiplier = 1;
-        const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.value = freq; osc3.detune.value = 0; osc3.freqMultiplier = 1;
-        osc1.connect(filter); osc2.connect(filter); osc3.connect(filter); oscillators.push(osc1, osc2, osc3);
-        if (isBass && !isStrum) { 
-          const sub = actx.createOscillator(); sub.type = 'sawtooth'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
-          const subFilter = actx.createBiquadFilter(); subFilter.type = 'lowpass'; subFilter.frequency.value = 600;
-          const subGain = actx.createGain(); subGain.gain.value = 0.5; sub.connect(subFilter); subFilter.connect(subGain); subGain.connect(filter); oscillators.push(sub);
+        filterNode.Q.value = 0.5;
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -4; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 4; osc2.freqMultiplier = 1;
+        const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.setValueAtTime(prevFreq || freq, t); osc3.detune.value = 0; osc3.freqMultiplier = 1;
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc3.frequency.setTargetAtTime(freq, t, synthParams.glide);
         }
-        filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.07, t + currentAttack * 1.5); 
+        osc1.connect(filterNode); osc2.connect(filterNode); osc3.connect(filterNode);
+        oscillators.push(osc1, osc2, osc3);
+
+        if (isBass && !isStrum) { 
+          const sub = actx.createOscillator(); sub.type = 'sawtooth'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
+          if (prevFreq && synthParams.glide > 0.005) sub.frequency.setTargetAtTime(freq / 2, t, synthParams.glide);
+          const subGain = actx.createGain(); subGain.gain.value = 0.5; sub.connect(subGain); subGain.connect(filterNode);
+          oscillators.push(sub);
+        }
 
       } else if (inst === 'organ') {
-        const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.value = freq; osc2.freqMultiplier = 1;
-        const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.value = freq * 2; osc3.freqMultiplier = 2; 
-        const g1 = actx.createGain(); g1.gain.value = 0.6; osc1.connect(g1); g1.connect(voiceGain);
-        const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(voiceGain);
-        const g3 = actx.createGain(); g3.gain.value = 0.05; osc3.connect(g3); g3.connect(voiceGain);
+        filterNode.Q.value = 0.5;
+        const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.freqMultiplier = 1;
+        const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2; 
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc3.frequency.setTargetAtTime(freq * 2, t, synthParams.glide);
+        }
+        const g1 = actx.createGain(); g1.gain.value = 0.6; osc1.connect(g1); g1.connect(filterNode);
+        const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.05; osc3.connect(g3); g3.connect(filterNode);
         oscillators.push(osc1, osc2, osc3);
-        voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.12, t + currentAttack);
 
       } else if (inst === '8bit') {
-        const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = freq; osc2.detune.value = 2; osc2.freqMultiplier = 1;
-        osc1.connect(voiceGain); osc2.connect(voiceGain); oscillators.push(osc1, osc2);
-        if (isBass && !isStrum) { 
-          const sub = actx.createOscillator(); sub.type = 'square'; sub.frequency.value = freq / 2; sub.freqMultiplier = 0.5;
-          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(voiceGain); oscillators.push(sub);
+        filterNode.Q.value = 0.5;
+        const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 2; osc2.freqMultiplier = 1;
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
         }
-        voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.06, t + 0.02); 
+        osc1.connect(filterNode); osc2.connect(filterNode);
+        oscillators.push(osc1, osc2);
+
+        if (isBass && !isStrum) { 
+          const sub = actx.createOscillator(); sub.type = 'square'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
+          if (prevFreq && synthParams.glide > 0.005) sub.frequency.setTargetAtTime(freq / 2, t, synthParams.glide);
+          const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filterNode);
+          oscillators.push(sub);
+        }
 
       } else if (inst === 'crystal') {
-        const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.value = freq; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'sine'; osc2.frequency.value = freq * 2.78; osc2.freqMultiplier = 2.78; 
-        const osc3 = actx.createOscillator(); osc3.type = 'triangle'; osc3.frequency.value = freq * 2; osc3.freqMultiplier = 2;
-        osc1.connect(voiceGain);
-        const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(voiceGain);
-        const g3 = actx.createGain(); g3.gain.value = 0.2; osc3.connect(g3); g3.connect(voiceGain);
+        filterNode.Q.value = 2.0;
+        const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'sine'; osc2.frequency.setValueAtTime((prevFreq || freq) * 2.78, t); osc2.freqMultiplier = 2.78; 
+        const osc3 = actx.createOscillator(); osc3.type = 'triangle'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2;
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq * 2.78, t, synthParams.glide);
+          osc3.frequency.setTargetAtTime(freq * 2, t, synthParams.glide);
+        }
+        osc1.connect(filterNode);
+        const g2 = actx.createGain(); g2.gain.value = 0.3; osc2.connect(g2); g2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.2; osc3.connect(g3); g3.connect(filterNode);
         oscillators.push(osc1, osc2, osc3);
-        voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.1, t + 0.05);
 
       } else if (inst === 'sweep') {
-        const filter = actx.createBiquadFilter(); filter.type = 'lowpass'; filter.Q.value = 8.0; 
-        filter.frequency.setValueAtTime(4000, t); filter.frequency.exponentialRampToValueAtTime(Math.max(synthParams.cutoff, 200), t + currentAttack * 2);
-        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.value = freq; osc1.detune.value = -3; osc1.freqMultiplier = 1;
-        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = freq; osc2.detune.value = 3; osc2.freqMultiplier = 1;
-        osc1.connect(filter); osc2.connect(filter); oscillators.push(osc1, osc2);
-        filter.connect(voiceGain); voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.08, t + currentAttack);
+        filterNode.Q.value = 8.0; 
+        filterNode.frequency.setValueAtTime(Math.min(18000, synthParams.cutoff * 4), t);
+        filterNode.frequency.exponentialRampToValueAtTime(Math.max(150, synthParams.cutoff), t + currentAttack * 2.5);
+
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -3; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 3; osc2.freqMultiplier = 1;
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+        }
+        osc1.connect(filterNode); osc2.connect(filterNode);
+        oscillators.push(osc1, osc2);
 
       } else if (inst === 'alien') {
-        const carrier = actx.createOscillator(); carrier.type = 'sine'; carrier.frequency.value = freq; carrier.freqMultiplier = 1;
-        const modulator = actx.createOscillator(); modulator.type = 'sawtooth'; modulator.frequency.value = freq * 0.5; modulator.freqMultiplier = 0.5;
+        filterNode.Q.value = 1.0;
+        const carrier = actx.createOscillator(); carrier.type = 'sine'; carrier.frequency.setValueAtTime(prevFreq || freq, t); carrier.freqMultiplier = 1;
+        const modulator = actx.createOscillator(); modulator.type = 'sawtooth'; modulator.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); modulator.freqMultiplier = 0.5;
+        if (prevFreq && synthParams.glide > 0.005) {
+          carrier.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          modulator.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
+        }
         const modGain = actx.createGain(); modGain.gain.value = freq * 3; 
         modulator.connect(modGain); modGain.connect(carrier.frequency);
-        carrier.connect(voiceGain); oscillators.push(carrier, modulator);
-        voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(0.12, t + currentAttack);
+        carrier.connect(filterNode);
+        oscillators.push(carrier, modulator);
       }
       
-      voiceGain.connect(masterGain); delayInputGain.gain.value = synthParams.echo; voiceGain.connect(delayInputGain); 
+      filterNode.connect(voiceGain);
+      voiceGain.connect(masterGain);
+      voiceGain.connect(delayInputGain);
+
+      voiceGain.gain.setValueAtTime(0, t);
+      voiceGain.gain.linearRampToValueAtTime(0.09, t + currentAttack);
+
       oscillators.forEach(o => o.start(t));
-      return { oscillators, voiceGain, inst, isBass, startTime: t };
+      return { oscillators, voiceGain, filterNode, inst, isBass, startTime: t, freq };
     }
 
     function stopChordNote(voice) {
       if (!voice) return;
       const t = actx.currentTime;
       const rel = synthParams.release; 
-      const stopT = Math.max(t, (voice.startTime || t) + 0.05);
+      const stopT = Math.max(t, (voice.startTime || t) + 0.03);
       voice.voiceGain.gain.cancelScheduledValues(stopT); 
-      voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value || 0.1, stopT);
+      voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value || 0.09, stopT);
       voice.voiceGain.gain.setTargetAtTime(0.0001, stopT, rel / 3);
       voice.oscillators.forEach(o => {
         try { o.stop(stopT + rel + 0.1); } catch(e) {}
@@ -969,15 +1255,16 @@
             voice.voiceGain.gain.setTargetAtTime(0.0001, t, 0.05); return;
           }
           if (voice.voiceGain.gain.value < 0.01) {
-            voice.voiceGain.gain.setTargetAtTime(0.1, t, 0.05);
+            voice.voiceGain.gain.setTargetAtTime(0.09, t, 0.05);
           }
           let newMidi = rootMidi + intervalData.i[index];
           let newFreq = 440 * Math.pow(2, (newMidi - 69) / 12);
+          voice.freq = newFreq;
           
           voice.oscillators.forEach(osc => {
             if(osc.freqMultiplier !== undefined) {
               let finalFreq = newFreq * osc.freqMultiplier;
-              osc.frequency.setTargetAtTime(finalFreq, t, synthParams.glide);
+              osc.frequency.setTargetAtTime(finalFreq, t, Math.max(0.02, synthParams.glide));
             }
           });
         });
@@ -1047,6 +1334,8 @@
       if (currentMod !== newMod) { currentMod = newMod; updateUI(); }
     }
 
+    let lastNoteFreq = null;
+
     document.querySelectorAll('.btn-key').forEach(btn => {
       btn.addEventListener('pointerdown', (e) => {
         initAudio(); 
@@ -1067,10 +1356,12 @@
 
         maxIntervals.forEach((_, i) => { 
           let voiceMidi = rootMidi + (currentIntervals[i] !== undefined ? currentIntervals[i] : maxIntervals[i]);
-          let voice = playChordNote(voiceMidi, currentInst, i === 0, false, qTime);
+          let voice = playChordNote(voiceMidi, currentInst, i === 0, false, qTime, lastNoteFreq);
           if (currentIntervals[i] === undefined) { voice.voiceGain.gain.setValueAtTime(0, qTime); }
           voices.push(voice); 
         });
+
+        lastNoteFreq = 440 * Math.pow(2, (rootMidi - 69) / 12);
         activeKeys.set(btn, voices);
       });
       function releaseBtn() {
