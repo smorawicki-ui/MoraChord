@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0b1118">
   
+  <!-- Ícono SVG a sangre completa para evitar el marco blanco de Android -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230b1118' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230b1118' /%3E%3Cg fill='%2338bdf8'%3E%3Crect x='140' y='216' width='32' height='80' rx='16' /%3E%3Crect x='188' y='156' width='32' height='200' rx='16' /%3E%3Crect x='236' y='96' width='32' height='320' rx='16' /%3E%3Crect x='284' y='136' width='32' height='240' rx='16' /%3E%3Crect x='332' y='206' width='32' height='100' rx='16' /%3E%3C/g%3E%3C/svg%3E">
   
@@ -72,14 +73,15 @@
     }
     .custom-fm-grid.visible { display: grid; }
 
-    /* SECUENCIADOR FLOTANTE A PANTALLA COMPLETA PARA EDICIÓN CÓMODA */
-    .custom-drum-sequencer {
+    /* PANELES FLOTANTES A PANTALLA COMPLETA */
+    .custom-drum-sequencer, .custom-modal-panel {
       display: none; flex-direction: column; gap: 10px; padding: 16px;
       background: #0e1622; border-radius: 16px; border: 2px solid var(--accent);
       position: absolute; top: 10px; left: 16px; right: 16px; bottom: 16px;
       z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.9); overflow-y: auto;
     }
-    .custom-drum-sequencer.visible { display: flex; }
+    .custom-drum-sequencer.visible, .custom-modal-panel.visible { display: flex; }
+    
     .seq-row { display: flex; align-items: center; gap: 8px; }
     .seq-label { font-size: 0.7rem; font-weight: bold; width: 65px; color: var(--accent-hover); letter-spacing: 0.5px;}
     .seq-pads { display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; flex: 1; }
@@ -266,8 +268,9 @@
               <option value="sweep">🔫 Laser Sweep (Rave)</option>
               <option value="alien">🛸 Alienígena (FM)</option>
             </optgroup>
-            <optgroup label="Labortaorio">
+            <optgroup label="Laboratorio">
               <option value="custom">🎛️ Custom FM Synth</option>
+              <option value="vocal">🤖 Vocoder Daft Punk</option>
             </optgroup>
           </select>
         </div>
@@ -326,7 +329,7 @@
         </div>
       </div>
 
-      <!-- SECUENCIADOR FLOTANTE (Aparece superpuesto a pantalla completa para edición cómoda) -->
+      <!-- SECUENCIADOR FLOTANTE A PANTALLA COMPLETA -->
       <div class="custom-drum-sequencer" id="custom-drum-panel">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
           <span style="font-size:0.8rem; color:var(--accent-hover); font-weight:bold; letter-spacing:1px;">EDICIÓN DE RITMO (16 PASOS)</span>
@@ -338,6 +341,54 @@
         <div class="seq-row"><div class="seq-label">C. HH</div><div class="seq-pads" id="seq-hihat-pads"></div></div>
         <div class="seq-row"><div class="seq-label">O. HH</div><div class="seq-pads" id="seq-openhat-pads"></div></div>
         <div class="seq-row"><div class="seq-label">RIDE</div><div class="seq-pads" id="seq-ride-pads"></div></div>
+      </div>
+
+      <!-- PANEL VOCODER DAFT PUNK -->
+      <div class="custom-modal-panel" id="vocal-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          <span style="font-size:0.85rem; color:var(--accent-hover); font-weight:800; letter-spacing:1px;">🤖 VOCODER LAB (DAFT STYLE)</span>
+          <button id="btn-close-vocal" class="ctrl-btn" style="padding: 6px 14px; background: var(--bg); border: 1px solid var(--accent); color: var(--accent-hover);">✕ Cerrar</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px; padding: 6px 0;">
+          <div style="display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;">
+            <button id="btn-rec-vocal" class="ctrl-btn" style="background:#e11d48; color:#fff; font-size:0.85rem; padding:12px 20px; font-weight:800; border-radius:24px; box-shadow:var(--shadow-out);">
+              🎙️ GRABAR FRASE (MIC)
+            </button>
+            <button id="btn-sync-vocal" class="ctrl-btn" style="background:var(--panel-light); border:1px solid var(--accent); color:var(--accent-hover); font-size:0.75rem; padding:10px 16px;">
+              🔄 SYNC BPM (CALZAR EN BEAT)
+            </button>
+          </div>
+
+          <div id="vocal-status-text" style="text-align:center; font-size:0.75rem; color:var(--accent-hover); font-weight:700;">
+            Muestra activa: Frase Robótica Sintetizada ("MORA-CHORD-RO-BOT")
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; background:rgba(0,0,0,0.3); padding:12px; border-radius:12px; border:1px solid var(--border);">
+            <div class="param-group">
+              <label><span>Velocidad / Stretch</span> <span id="val-vocal-speed">1.00x</span></label>
+              <input type="range" id="vocal-speed" min="0.5" max="2.0" step="0.05" value="1.0">
+            </div>
+
+            <div class="param-group">
+              <label><span>Color Portadora</span></label>
+              <select id="vocal-carrier-type">
+                <option value="dual-saw">Daft Saw (Cuerpo)</option>
+                <option value="bright-pulse">Laser Pulse (Brillante)</option>
+                <option value="pure-robot">Cybernetic RingMod</option>
+              </select>
+            </div>
+
+            <div class="param-group">
+              <label><span>Sensibilidad Modulador</span> <span id="val-vocal-sens">100%</span></label>
+              <input type="range" id="vocal-sens" min="0.5" max="3.0" step="0.1" value="1.5">
+            </div>
+          </div>
+
+          <div style="font-size:0.65rem; color:var(--text-muted); text-align:center; line-height:1.4;">
+            💡 <b>Modo Legato continuo:</b> Toca acordes en el teclado o el strumplate; la frase vocal continúa cantando sin cortarse a medida que cambias de armonía.
+          </div>
+        </div>
       </div>
 
       <div class="drum-row">
@@ -654,6 +705,7 @@
       'crystal':  { attack: 0.03, release: 2.8, cutoff: 3000, echo: 0.35, glide: 0.03 },
       'sweep':    { attack: 0.20, release: 1.8, cutoff: 1900, echo: 0.25, glide: 0.05 },
       'alien':    { attack: 0.04, release: 1.3, cutoff: 2600, echo: 0.35, glide: 0.04 },
+      'vocal':    { attack: 0.02, release: 0.4, cutoff: 2800, echo: 0.20, glide: 0.04 },
       'custom':   null
     };
 
@@ -832,15 +884,27 @@
     let currentInst = 'analog';
     const instSelect = document.getElementById('inst-select');
     const customPanel = document.getElementById('custom-fm-panel');
+    const vocalPanel = document.getElementById('vocal-panel');
+    const btnCloseVocal = document.getElementById('btn-close-vocal');
 
     instSelect.addEventListener('change', (e) => {
       currentInst = e.target.value;
       if (currentInst === 'custom') {
         customPanel.classList.add('visible');
+        vocalPanel.classList.remove('visible');
+      } else if (currentInst === 'vocal') {
+        vocalPanel.classList.add('visible');
+        customPanel.classList.remove('visible');
+        applyInstrumentDefaults('vocal');
       } else {
         customPanel.classList.remove('visible');
+        vocalPanel.classList.remove('visible');
         applyInstrumentDefaults(currentInst);
       }
+    });
+
+    btnCloseVocal.addEventListener('pointerdown', () => {
+      vocalPanel.classList.remove('visible');
     });
 
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
@@ -858,6 +922,189 @@
 
     let globalNoiseBuffer = null;
     let globalChiptuneNoiseBuffer = null;
+
+    // --- VOCODER & ROBOT ENGINE ---
+    let userVocalBuffer = null;
+    let defaultVocalBuffer = null;
+    let vocalSpeed = 1.0;
+    let vocalSens = 1.5;
+    let vocalCarrierType = 'dual-saw';
+    let vocalEnvelopeBus = null;
+    let vocalModSource = null;
+    let vocalIsActiveCount = 0;
+    let vocalRectifierCurve = null;
+
+    function getRectifierCurve() {
+      if (vocalRectifierCurve) return vocalRectifierCurve;
+      const n = 1024;
+      vocalRectifierCurve = new Float32Array(n);
+      for (let i = 0; i < n; i++) {
+        const x = (i * 2) / n - 1;
+        vocalRectifierCurve[i] = Math.max(0, x); // Rectificación de media onda para extraer la envolvente de voz
+      }
+      return vocalRectifierCurve;
+    }
+
+    // Crea un patrón robótico rítmico ("MORA-CHORD-RO-BOT") para que suene de fábrica
+    function createDefaultRobotBuffer() {
+      if (!actx) return null;
+      const sr = actx.sampleRate;
+      const dur = 2.0; // 2 segundos
+      const buf = actx.createBuffer(1, sr * dur, sr);
+      const data = buf.getChannelData(0);
+      const syllables = [
+        { f1: 800, f2: 1250, start: 0.05, len: 0.35 }, // "MO"
+        { f1: 650, f2: 1800, start: 0.50, len: 0.35 }, // "RA"
+        { f1: 500, f2: 900,  start: 1.00, len: 0.35 }, // "CHORD"
+        { f1: 400, f2: 800,  start: 1.50, len: 0.35 }  // "BOT"
+      ];
+      for (let i = 0; i < data.length; i++) {
+        const t = i / sr;
+        let val = 0;
+        syllables.forEach(s => {
+          if (t >= s.start && t < s.start + s.len) {
+            const st = t - s.start;
+            const env = Math.sin((Math.PI * st) / s.len);
+            const pulse = (Math.sin(2 * Math.PI * 130 * st) > 0 ? 1 : -1);
+            const formants = Math.sin(2 * Math.PI * s.f1 * st) * 0.6 + Math.sin(2 * Math.PI * s.f2 * st) * 0.4;
+            val += pulse * formants * env * 0.6;
+          }
+        });
+        data[i] = val;
+      }
+      return buf;
+    }
+
+    function ensureVocalModulator() {
+      if (!actx) return;
+      if (!vocalEnvelopeBus) {
+        vocalEnvelopeBus = actx.createGain();
+        vocalEnvelopeBus.gain.value = vocalSens;
+      }
+      if (!defaultVocalBuffer) {
+        defaultVocalBuffer = createDefaultRobotBuffer();
+      }
+      
+      if (vocalIsActiveCount === 0 || !vocalModSource) {
+        try { if(vocalModSource) vocalModSource.stop(); } catch(e){}
+        
+        const buf = userVocalBuffer || defaultVocalBuffer;
+        vocalModSource = actx.createBufferSource();
+        vocalModSource.buffer = buf;
+        vocalModSource.loop = true;
+        vocalModSource.playbackRate.value = vocalSpeed;
+
+        if (vocalCarrierType === 'pure-robot') {
+          // RingMod directo
+          vocalModSource.connect(vocalEnvelopeBus);
+        } else {
+          // Extractor de envolvente de formantes (Vocoder clásico)
+          const bq = actx.createBiquadFilter();
+          bq.type = 'bandpass';
+          bq.frequency.value = 1100;
+          bq.Q.value = 0.9;
+
+          const shaper = actx.createWaveShaper();
+          shaper.curve = getRectifierCurve();
+
+          const envLp = actx.createBiquadFilter();
+          envLp.type = 'lowpass';
+          envLp.frequency.value = 35; // Suavizado de fonemas
+
+          vocalModSource.connect(bq);
+          bq.connect(shaper);
+          shaper.connect(envLp);
+          envLp.connect(vocalEnvelopeBus);
+        }
+        vocalModSource.start(actx.currentTime);
+      }
+      vocalIsActiveCount++;
+    }
+
+    function releaseVocalModulator() {
+      vocalIsActiveCount = Math.max(0, vocalIsActiveCount - 1);
+      if (vocalIsActiveCount === 0 && vocalModSource) {
+        try {
+          vocalModSource.stop(actx.currentTime + 0.3);
+          vocalModSource = null;
+        } catch(e){}
+      }
+    }
+
+    // Controles del Panel Vocoder
+    const btnRecVocal = document.getElementById('btn-rec-vocal');
+    const vocalStatus = document.getElementById('vocal-status-text');
+    let isRecordingVocal = false;
+    let vocalMediaRecorder = null;
+    let vocalChunks = [];
+
+    btnRecVocal.addEventListener('pointerdown', async () => {
+      initAudio();
+      if (!isRecordingVocal) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          vocalMediaRecorder = new MediaRecorder(stream);
+          vocalChunks = [];
+          vocalMediaRecorder.ondataavailable = e => vocalChunks.push(e.data);
+          vocalMediaRecorder.onstop = async () => {
+            const blob = new Blob(vocalChunks, { type: 'audio/ogg; codecs=opus' });
+            const arrayBuf = await blob.arrayBuffer();
+            userVocalBuffer = await actx.decodeAudioData(arrayBuf);
+            vocalStatus.innerText = `¡Grabado con éxito! Duración: ${userVocalBuffer.duration.toFixed(1)}s`;
+            btnRecVocal.innerText = '🎙️ GRABAR FRASE (MIC)';
+            btnRecVocal.style.background = '#e11d48';
+            isRecordingVocal = false;
+            stream.getTracks().forEach(t => t.stop());
+          };
+          vocalMediaRecorder.start();
+          isRecordingVocal = true;
+          btnRecVocal.innerText = '⏹️ DETENER GRABACIÓN';
+          btnRecVocal.style.background = '#0284c7';
+          vocalStatus.innerText = 'Grabando... habla o canta ahora.';
+        } catch(err) {
+          vocalStatus.innerText = 'Error: no se pudo acceder al micrófono.';
+        }
+      } else {
+        if (vocalMediaRecorder && vocalMediaRecorder.state === 'recording') {
+          vocalMediaRecorder.stop();
+        }
+      }
+    });
+
+    document.getElementById('vocal-speed').addEventListener('input', (e) => {
+      vocalSpeed = parseFloat(e.target.value);
+      document.getElementById('val-vocal-speed').innerText = vocalSpeed.toFixed(2) + 'x';
+      if (vocalModSource) vocalModSource.playbackRate.value = vocalSpeed;
+    });
+
+    document.getElementById('vocal-sens').addEventListener('input', (e) => {
+      vocalSens = parseFloat(e.target.value);
+      document.getElementById('val-vocal-sens').innerText = Math.round(vocalSens * 66) + '%';
+      if (vocalEnvelopeBus) vocalEnvelopeBus.gain.value = vocalSens;
+    });
+
+    document.getElementById('vocal-carrier-type').addEventListener('change', (e) => {
+      vocalCarrierType = e.target.value;
+      if (vocalModSource) {
+        vocalIsActiveCount = 0;
+        try { vocalModSource.stop(); vocalModSource = null; } catch(err){}
+      }
+    });
+
+    // Calcula el multiplicador para encajar exactamente en compases de 4 beats
+    document.getElementById('btn-sync-vocal').addEventListener('pointerdown', () => {
+      const buf = userVocalBuffer || defaultVocalBuffer;
+      if (!buf) return;
+      const beatSec = 60.0 / synthParams.bpm;
+      const barSec = beatSec * 4;
+      let targetBars = Math.max(1, Math.round(buf.duration / barSec));
+      let targetDur = targetBars * barSec;
+      vocalSpeed = Math.min(2.0, Math.max(0.5, buf.duration / targetDur));
+      document.getElementById('vocal-speed').value = vocalSpeed;
+      document.getElementById('val-vocal-speed').innerText = vocalSpeed.toFixed(2) + 'x';
+      if (vocalModSource) vocalModSource.playbackRate.value = vocalSpeed;
+      vocalStatus.innerText = `Sincronizado a ${targetBars} compás(es) de ${synthParams.bpm} BPM`;
+    });
 
     const MAX_VOICES = 28;
     let activeVoicePool = [];
@@ -877,6 +1124,9 @@
       }
       if (voice.voiceGain) {
         try { voice.voiceGain.disconnect(); } catch(e){}
+      }
+      if (voice.inst === 'vocal') {
+        releaseVocalModulator();
       }
       const idx = activeVoicePool.indexOf(voice);
       if (idx !== -1) activeVoicePool.splice(idx, 1);
@@ -1068,7 +1318,7 @@
          const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = 4800;
          const oscGain = actx.createGain(); oscGain.gain.setValueAtTime(0.08, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
          const oscFilter = actx.createBiquadFilter(); oscFilter.type = 'highpass'; oscFilter.frequency.value = 2000;
-         osc1.connect(oscFilter); osc2.connect(oscFilter); osc2.connect(oscGain); oscGain.connect(drumMasterGain);
+         osc1.connect(oscFilter); osc2.connect(oscFilter); oscFilter.connect(oscGain); oscGain.connect(drumMasterGain);
          osc1.start(time); osc2.start(time); osc1.stop(time + 0.5); osc2.stop(time + 0.5);
          osc1.onended = () => { try{ osc1.disconnect(); osc2.disconnect(); oscFilter.disconnect(); oscGain.disconnect(); }catch(e){} };
       }
@@ -1148,7 +1398,7 @@
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
       const t = startTime !== null ? startTime : actx.currentTime;
       
-      // Compensación de volumen para notas agudas (evita picos estridentes en el strumplate)[cite: 4]
+      // Compensación de volumen para agudos
       const noteGainCompensation = Math.max(0.4, 1 - ((midi - 48) / 75));
 
       const voiceGain = actx.createGain();
@@ -1162,7 +1412,60 @@
 
       let targetGain = 0.05;
 
-      if (inst === 'custom') {
+      if (inst === 'vocal') {
+        filterNode.Q.value = 2.0;
+        targetGain = 0.065;
+        ensureVocalModulator();
+
+        const osc1 = actx.createOscillator();
+        const osc2 = actx.createOscillator();
+        const carrierMix = actx.createGain();
+        extraNodes.push(carrierMix);
+
+        if (vocalCarrierType === 'bright-pulse') {
+          osc1.type = 'sawtooth';
+          osc2.type = 'square';
+          osc1.detune.value = -6;
+          osc2.detune.value = 6;
+        } else if (vocalCarrierType === 'pure-robot') {
+          osc1.type = 'square';
+          osc2.type = 'square';
+          osc1.detune.value = -12;
+          osc2.detune.value = 12;
+        } else {
+          // Dual Saw Daft
+          osc1.type = 'sawtooth';
+          osc2.type = 'sawtooth';
+          osc1.detune.value = -7;
+          osc2.detune.value = 7;
+        }
+
+        osc1.frequency.setValueAtTime(prevFreq || freq, t);
+        osc2.frequency.setValueAtTime(prevFreq || freq, t);
+        osc1.freqMultiplier = 1;
+        osc2.freqMultiplier = 1;
+
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+        }
+
+        osc1.connect(carrierMix);
+        osc2.connect(carrierMix);
+        oscillators.push(osc1, osc2);
+
+        // VCA modulado por la voz
+        const vocoderVCA = actx.createGain();
+        vocoderVCA.gain.value = 0.15; // Ganancia base ligera para claridad
+        if (vocalEnvelopeBus) {
+          vocalEnvelopeBus.connect(vocoderVCA.gain);
+        }
+        extraNodes.push(vocoderVCA);
+
+        carrierMix.connect(vocoderVCA);
+        vocoderVCA.connect(filterNode);
+
+      } else if (inst === 'custom') {
         filterNode.Q.value = 1.0;
         targetGain = 0.048;
         const carrier = actx.createOscillator();
