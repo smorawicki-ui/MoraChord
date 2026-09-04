@@ -34,8 +34,7 @@
       background: var(--panel); padding: 8px 14px; display: flex; flex-direction: column; gap: 6px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 10;
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-      overflow-y: auto; max-height: 52dvh;
-      touch-action: pan-y;
+      overflow-y: auto; max-height: 52dvh; touch-action: pan-y;
     }
     .header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .pill-group {
@@ -56,24 +55,23 @@
     select.inst-select option { background: var(--panel); color: var(--text); }
     select.inst-select optgroup { color: var(--text-muted); font-style: italic; }
     .params-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 2px 4px; }
-    .custom-fm-grid {
-      display: none; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 8px;
-      background: #070d14; border-radius: 12px; border: 1px dashed var(--accent); margin-top: 4px;
-    }
-    .custom-fm-grid.visible { display: grid; }
-    .custom-drum-sequencer {
-      display: none; flex-direction: column; gap: 8px; padding: 14px;
+    
+    /* MODALES FLOTANTES (SECUENCIADOR Y LABORATORIO FM) */
+    .modal-overlay-panel {
+      display: none; flex-direction: column; gap: 10px; padding: 14px;
       background: #0e1622; border-radius: 16px; border: 2px solid var(--accent);
       position: absolute; top: 10px; left: 14px; right: 14px; bottom: 14px;
       z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.9); overflow-y: auto;
       touch-action: pan-y;
     }
-    .custom-drum-sequencer.visible { display: flex; }
+    .modal-overlay-panel.visible { display: flex; }
+    
     .seq-row { display: flex; align-items: center; gap: 8px; }
     .seq-label { font-size: 0.68rem; font-weight: bold; width: 62px; color: var(--accent-hover); }
     .seq-pads { display: grid; grid-template-columns: repeat(16, 1fr); gap: 3px; flex: 1; }
     .seq-pad { height: 32px; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; cursor: pointer; }
     .seq-pad.active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+    
     .param-group { display: flex; flex-direction: column; gap: 2px; }
     .param-group label { display: flex; justify-content: space-between; align-items: center; font-size: 0.62rem; font-weight: 600; color: var(--text-muted); }
     .param-group label span:last-child { color: var(--accent-hover); }
@@ -87,6 +85,7 @@
       -webkit-appearance: none; width: 14px; height: 14px; background: var(--panel-light); 
       border-radius: 50%; box-shadow: var(--shadow-out); border: 2px solid var(--accent-hover);
     }
+    
     .drum-row {
       display: flex; align-items: center; gap: 6px; margin-top: 2px; 
       padding-top: 6px; border-top: 1px solid var(--border); flex-wrap: wrap;
@@ -273,13 +272,17 @@
         <div class="pill-group" style="padding-left: 8px; padding-right: 8px;">
           <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700; margin-right: 4px;">SONIDO:</span>
           <select id="inst-select" class="inst-select">
+            
+           </optgroup>
             <optgroup label="Clásicos">
               <option value="analog">🎹 Synth Pad</option>
+              <option value="dx7ep">🎹 DX7 E-Piano 1</option>
               <option value="frenchbass">⚡ Bass Podrido</option>
               <option value="acidbass">⚡ Bajo Ácido (303)</option>
-              <option value="strings">🎻 Cuerdas Caóticas</option>
+              <option value="strings">🎻 Cuerdas Caoticas</option>
               <option value="organ">🎹 Órgano Hammond</option>
               <option value="guitar">🎸 Guitarra Eléctrica</option>
+              <option value="dx7bass">⚡ DX7 Solid Bass</option>
             </optgroup>
             <optgroup label="Falopa / FX">
               <option value="8bit">👾 8-Bit (Chiptune)</option>
@@ -291,6 +294,7 @@
               <option value="custom">🎛️ Custom FM Synth</option>
             </optgroup>
           </select>
+          <button id="btn-open-fm" class="ctrl-btn" style="display:none; padding: 2px 6px; margin-left: 4px; border: 1px solid var(--accent); color: var(--accent-hover);">🎛️ Lab</button>
         </div>
       </div>
       
@@ -316,15 +320,24 @@
         <div class="param-group"><label><span>Glide</span> <span id="val-glide">0.05s</span></label><input type="range" id="p-glide" min="0.001" max="0.5" step="0.005" value="0.05"></div>
       </div>
 
-      <div class="custom-fm-grid" id="custom-fm-panel">
-        <div class="param-group"><label><span>Onda Portadora</span></label><select id="cf-carrier"><option value="sine">Senoidal</option><option value="square">Cuadrada</option><option value="sawtooth">Sierra</option><option value="triangle">Triangular</option></select></div>
-        <div class="param-group"><label><span>Onda Moduladora</span></label><select id="cf-modulator"><option value="sine">Senoidal</option><option value="square">Cuadrada</option><option value="sawtooth">Sierra</option><option value="triangle">Triangular</option></select></div>
-        <div class="param-group"><label><span>Ratio FM</span> <span id="val-fm-ratio">2.0x</span></label><input type="range" id="cf-ratio" min="0.5" max="8.0" step="0.1" value="2.0"></div>
-        <div class="param-group"><label><span>Profundidad FM</span> <span id="val-fm-depth">300Hz</span></label><input type="range" id="cf-depth" min="0" max="1500" step="25" value="300"></div>
+      <!-- LABORATORIO FM DESPLEGABLE / FLOTANTE (NO DEFORMA EL TECLADO) -->
+      <div class="modal-overlay-panel" id="custom-fm-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+          <span style="font-size:0.75rem; color:var(--accent-hover); font-weight:bold; letter-spacing:1px;">🎛️ LABORATORIO DE SÍNTESIS FM</span>
+          <button id="btn-close-fm" class="ctrl-btn" style="padding: 4px 12px; background: var(--bg); border: 1px solid var(--accent); color: var(--accent-hover);">✕ Cerrar</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 4px;">
+          <div class="param-group"><label><span>Onda Portadora (Carrier)</span></label><select id="cf-carrier"><option value="sine">Senoidal</option><option value="square">Cuadrada</option><option value="sawtooth">Sierra</option><option value="triangle">Triangular</option></select></div>
+          <div class="param-group"><label><span>Onda Moduladora</span></label><select id="cf-modulator"><option value="sine">Senoidal</option><option value="square">Cuadrada</option><option value="sawtooth">Sierra</option><option value="triangle">Triangular</option></select></div>
+          <div class="param-group"><label><span>Ratio FM</span> <span id="val-fm-ratio">2.0x</span></label><input type="range" id="cf-ratio" min="0.5" max="14.0" step="0.1" value="2.0"></div>
+          <div class="param-group"><label><span>Profundidad FM (Depth)</span> <span id="val-fm-depth">300Hz</span></label><input type="range" id="cf-depth" min="0" max="2500" step="25" value="300"></div>
+          <div class="param-group"><label><span>Decay Modulador</span> <span id="val-fm-decay">Continuo</span></label><input type="range" id="cf-decay" min="0.05" max="2.0" step="0.05" value="2.0"></div>
+        </div>
       </div>
 
-      <div class="custom-drum-sequencer" id="custom-drum-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+      <!-- SECUENCIADOR FLOTANTE -->
+      <div class="modal-overlay-panel" id="custom-drum-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
           <span style="font-size:0.75rem; color:var(--accent-hover); font-weight:bold; letter-spacing:1px;">EDICIÓN DE RITMO (16 PASOS)</span>
           <button id="btn-close-seq" class="ctrl-btn" style="padding: 4px 12px; background: var(--bg); border: 1px solid var(--accent); color: var(--accent-hover);">✕ Cerrar</button>
         </div>
@@ -399,6 +412,14 @@
             <option value="4x">4x (Negras)</option>
           </select>
         </div>
+        
+        <!-- VOLUMEN INDEPENDIENTE PARA LATCH -->
+        <div class="pill-group" title="Volumen de fondo Latch" style="padding: 2px 6px;">
+          <button class="ctrl-btn" id="btn-lvol-down">-</button>
+          <span id="val-lvol" style="font-size:0.65rem; font-weight:800; min-width:44px; text-align:center; color:#fff;">L: 50%</span>
+          <button class="ctrl-btn" id="btn-lvol-up">+</button>
+        </div>
+
         <button id="btn-stop-latch" class="ctrl-btn" style="display:none; padding:4px 8px; font-size:0.65rem; background:rgba(225,29,72,0.2); border:1px solid #e11d48; color:#f43f5e;">⏹ Parar</button>
         <div id="mini-chords-container" style="display:flex; gap:6px; flex:1;"></div>
       </div>
@@ -412,7 +433,7 @@
           </div>
         </div>
         <div class="kb-tool-group">
-          <span style="font-size:0.62rem; color:var(--text-muted);">↕ Arrastra: Brillo | ↔ Desliza: Barrido</span>
+          <span style="font-size:0.62rem; color:var(--text-muted);">↕ Brillo | ↔ Glissando</span>
           <div class="pill-group">
             <button class="ctrl-btn active" id="btn-kb-piano">🎹 Piano</button>
             <button class="ctrl-btn" id="btn-kb-scale">🎯 Escala</button>
@@ -469,6 +490,8 @@
 
     const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
     const INST_DEFAULTS = {
+      dx7ep: { attack: 0.005, release: 2.2, cutoff: 3600, echo: 0.25, glide: 0.01 },
+      dx7bass: { attack: 0.005, release: 0.45, cutoff: 2400, echo: 0.05, glide: 0.02 },
       analog: { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.20, glide: 0.05 },
       frenchbass: { attack: 0.01, release: 0.45, cutoff: 1800, echo: 0.05, glide: 0.02 },
       acidbass: { attack: 0.01, release: 0.35, cutoff: 550, echo: 0.10, glide: 0.09 },
@@ -569,7 +592,8 @@
     ];
     let currentScaleIdx = 0;
 
-    const customParams = { carrierWave: 'sine', modulatorWave: 'sine', fmRatio: 2.0, fmDepth: 300 };
+    // LABORATORIO FM PARÁMETROS
+    const customParams = { carrierWave: 'sine', modulatorWave: 'sine', fmRatio: 2.0, fmDepth: 300, modDecay: 2.0 };
     document.getElementById('cf-carrier').addEventListener('change', (e) => { customParams.carrierWave = e.target.value; });
     document.getElementById('cf-modulator').addEventListener('change', (e) => { customParams.modulatorWave = e.target.value; });
     document.getElementById('cf-ratio').addEventListener('input', (e) => {
@@ -580,6 +604,16 @@
       customParams.fmDepth = parseFloat(e.target.value);
       document.getElementById('val-fm-depth').innerText = Math.round(customParams.fmDepth) + 'Hz';
     });
+    document.getElementById('cf-decay').addEventListener('input', (e) => {
+      customParams.modDecay = parseFloat(e.target.value);
+      document.getElementById('val-fm-decay').innerText = customParams.modDecay >= 2.0 ? 'Continuo' : customParams.modDecay.toFixed(2) + 's';
+    });
+
+    const customFmPanel = document.getElementById('custom-fm-panel');
+    const btnOpenFm = document.getElementById('btn-open-fm');
+    const btnCloseFm = document.getElementById('btn-close-fm');
+    btnOpenFm.addEventListener('pointerdown', () => customFmPanel.classList.add('visible'));
+    btnCloseFm.addEventListener('pointerdown', () => customFmPanel.classList.remove('visible'));
 
     function updateLiveCutoff() {
       if (!actx) return;
@@ -647,14 +681,17 @@
       if (drumMasterGain) drumMasterGain.gain.value = synthParams.drumVol;
     });
 
-    let currentInst = 'analog';
+    let currentInst = 'dx7ep';
     const instSelect = document.getElementById('inst-select');
-    const customPanel = document.getElementById('custom-fm-panel');
+    instSelect.value = 'dx7ep';
     instSelect.addEventListener('change', (e) => {
       currentInst = e.target.value;
-      if (currentInst === 'custom') customPanel.classList.add('visible');
-      else {
-        customPanel.classList.remove('visible');
+      if (currentInst === 'custom') {
+        btnOpenFm.style.display = 'inline-block';
+        customFmPanel.classList.add('visible');
+      } else {
+        btnOpenFm.style.display = 'none';
+        customFmPanel.classList.remove('visible');
         applyInstrumentDefaults(currentInst);
       }
     });
@@ -672,6 +709,21 @@
     drumKitSelect.addEventListener('change', (e) => { cachedDrumKit = e.target.value; });
 
     let cachedDrumPattern = 'rock';
+
+    // CANAL DE AUDIO DEDICADO AL VOLUMEN DEL LATCH
+    let latchVol = 0.5;
+    let latchMasterGain = null;
+
+    document.getElementById('btn-lvol-down').addEventListener('pointerdown', () => {
+      latchVol = Math.max(0.05, Math.round((latchVol - 0.05) * 100) / 100);
+      document.getElementById('val-lvol').innerText = 'L: ' + Math.round(latchVol * 100) + '%';
+      if (latchMasterGain && actx) latchMasterGain.gain.setTargetAtTime(latchVol, actx.currentTime, 0.04);
+    });
+    document.getElementById('btn-lvol-up').addEventListener('pointerdown', () => {
+      latchVol = Math.min(1.0, Math.round((latchVol + 0.05) * 100) / 100);
+      document.getElementById('val-lvol').innerText = 'L: ' + Math.round(latchVol * 100) + '%';
+      if (latchMasterGain && actx) latchMasterGain.gain.setTargetAtTime(latchVol, actx.currentTime, 0.04);
+    });
 
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
     let distortionCurve = null;
@@ -699,7 +751,6 @@
       return frenchbassCurve;
     }
 
-    let globalNoiseBuffer = null, globalChiptuneNoiseBuffer = null;
     const MAX_VOICES = 32;
     let activeVoicePool = [];
 
@@ -728,6 +779,8 @@
       setTimeout(() => cleanVoice(voice), 15);
     }
 
+    let globalNoiseBuffer = null, globalChiptuneNoiseBuffer = null;
+
     function initAudio() {
       if (actx) return;
       try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(()=>{}); } catch(e) {}
@@ -749,6 +802,12 @@
 
       drumMasterGain = actx.createGain(); drumMasterGain.gain.value = synthParams.drumVol;
       drumMasterGain.connect(masterLimiter); 
+
+      // Nodo de volumen maestro para voces de Latch
+      latchMasterGain = actx.createGain();
+      latchMasterGain.gain.value = latchVol;
+      latchMasterGain.connect(masterGain);
+      latchMasterGain.connect(delayInputGain);
 
       const size = actx.sampleRate * 2;
       globalNoiseBuffer = actx.createBuffer(1, size, actx.sampleRate);
@@ -849,7 +908,7 @@
     function playOpenHiHat(time) {
       if (!globalNoiseBuffer) initAudio();
       const isChiptune = cachedDrumKit === 'chiptune';
-      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
+      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 3000 : 4000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.35 : 0.28, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.2 : 0.35));
       noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
@@ -877,7 +936,6 @@
       noise.onended = () => { try{ noise.disconnect(); noiseFilter.disconnect(); noiseGain.disconnect(); }catch(e){} };
     }
 
-    // RELOJ CENTRAL Y SECUENCIADOR SINCRONIZADO
     let isClockRunning = false, isPlayingDrums = false, currentStep = 0, nextNoteTime = 0, timerID = null;
 
     function ensureClock() {
@@ -915,7 +973,6 @@
         if (p.ride && p.ride[stepNumber]) playRide(time);
       }
 
-      // DISPARO RÍTMICO DE ACORDES LATCH (1x, 2x, 4x)
       if (currentLatchedChord && ['1x', '2x', '4x'].includes(cachedLatchMode)) {
         const beatDur = 60.0 / synthParams.bpm;
         let shouldTrigger = false;
@@ -983,7 +1040,7 @@
       return { i: i || [b,0,4,7], s }; 
     }
 
-    function playChordNote(midi, inst, isBass, isStrum = false, startTime = null, prevFreq = null) {
+    function playChordNote(midi, inst, isBass, isStrum = false, startTime = null, prevFreq = null, isLatch = false) {
       while (activeVoicePool.length >= MAX_VOICES) {
         const oldest = activeVoicePool.shift();
         if (oldest && !oldest.cleaned) forceStopVoice(oldest);
@@ -1003,7 +1060,79 @@
 
       let targetGain = 0.05;
 
-      if (inst === 'frenchbass') {
+      // 1. SÍNTESIS YAMAHA DX7 E-PIANO 1
+      if (inst === 'dx7ep') {
+        targetGain = 0.052;
+        const carrier = actx.createOscillator();
+        carrier.type = 'sine';
+        carrier.frequency.setValueAtTime(prevFreq || freq, t);
+        carrier.freqMultiplier = 1;
+
+        // Modulador 1: Campana / Ataque metálico (14.0x con caída rápida)
+        const modTine = actx.createOscillator();
+        modTine.type = 'sine';
+        modTine.frequency.setValueAtTime((prevFreq || freq) * 14.0, t);
+        modTine.freqMultiplier = 14.0;
+        const modTineGain = actx.createGain();
+        modTineGain.gain.setValueAtTime(freq * 3.2, t);
+        modTineGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+
+        // Modulador 2: Cuerpo cálido del piano (1.0x)
+        const modBody = actx.createOscillator();
+        modBody.type = 'sine';
+        modBody.frequency.setValueAtTime(prevFreq || freq, t);
+        modBody.freqMultiplier = 1.0;
+        const modBodyGain = actx.createGain();
+        modBodyGain.gain.setValueAtTime(freq * 1.6, t);
+        modBodyGain.gain.exponentialRampToValueAtTime(freq * 0.1, t + 1.8);
+
+        if (prevFreq && synthParams.glide > 0.005) {
+          carrier.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          modTine.frequency.setTargetAtTime(freq * 14.0, t, synthParams.glide);
+          modBody.frequency.setTargetAtTime(freq, t, synthParams.glide);
+        }
+
+        modTine.connect(modTineGain);
+        modTineGain.connect(carrier.frequency);
+        modBody.connect(modBodyGain);
+        modBodyGain.connect(carrier.frequency);
+
+        carrier.connect(filterNode);
+        extraNodes.push(modTineGain, modBodyGain);
+        oscillators.push(carrier, modTine, modBody);
+
+      // 2. SÍNTESIS YAMAHA DX7 SOLID BASS
+      } else if (inst === 'dx7bass') {
+        targetGain = 0.08;
+        const carrier = actx.createOscillator();
+        carrier.type = 'sine';
+        carrier.frequency.setValueAtTime((prevFreq || freq) * 0.5, t);
+        carrier.freqMultiplier = 0.5;
+
+        // Modulador percusivo rápido con onda Sawtooth
+        const mod = actx.createOscillator();
+        mod.type = 'sawtooth';
+        mod.frequency.setValueAtTime(prevFreq || freq, t);
+        mod.freqMultiplier = 1.0;
+
+        const modGain = actx.createGain();
+        modGain.gain.setValueAtTime(freq * 4.2, t);
+        modGain.gain.exponentialRampToValueAtTime(freq * 0.15, t + 0.24);
+
+        if (prevFreq && synthParams.glide > 0.005) {
+          carrier.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
+          mod.frequency.setTargetAtTime(freq, t, synthParams.glide);
+        }
+
+        mod.connect(modGain);
+        modGain.connect(carrier.frequency);
+        carrier.connect(filterNode);
+
+        extraNodes.push(modGain);
+        oscillators.push(carrier, mod);
+
+      // 3. FRENCH BASS (JUSTICE OVERDRIVE RECALIBRADO)
+      } else if (inst === 'frenchbass') {
         targetGain = 0.09;
 
         const driveGain = actx.createGain();
@@ -1055,6 +1184,7 @@
         extraNodes.push(driveGain, shaper, subGain);
         oscillators.push(osc1, osc2, subOsc);
 
+      // 4. CUSTOM FM SYNTH (CON CONTROL DE DECAY EN MODULADOR)
       } else if (inst === 'custom') {
         filterNode.Q.value = 1.0; targetGain = 0.048;
         const carrier = actx.createOscillator(), modulator = actx.createOscillator(), modGain = actx.createGain();
@@ -1065,7 +1195,12 @@
         modulator.type = customParams.modulatorWave; modulator.frequency.setValueAtTime((prevFreq || freq) * customParams.fmRatio, t);
         if (prevFreq && synthParams.glide > 0.005) modulator.frequency.setTargetAtTime(freq * customParams.fmRatio, t, synthParams.glide);
         modulator.freqMultiplier = customParams.fmRatio;
-        modGain.gain.value = customParams.fmDepth;
+        
+        modGain.gain.setValueAtTime(customParams.fmDepth, t);
+        if (customParams.modDecay < 1.95) {
+          modGain.gain.exponentialRampToValueAtTime(0.01, t + customParams.modDecay);
+        }
+
         modulator.connect(modGain); modGain.connect(carrier.frequency); carrier.connect(filterNode);
         oscillators.push(carrier, modulator);
 
@@ -1105,7 +1240,7 @@
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -4; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 4; osc2.freqMultiplier = 1;
         const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.setValueAtTime(prevFreq || freq, t); osc3.detune.value = 0; osc3.freqMultiplier = 1;
-        if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq, t, synthParams.glide); osc3.frequency.setTargetAtTime(freq, t, synthParams.glide); }
+        if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq, t, synthParams.glide); }
         osc1.connect(filterNode); osc2.connect(filterNode); osc3.connect(filterNode); oscillators.push(osc1, osc2, osc3);
         if (isBass && !isStrum) {
           const sub = actx.createOscillator(); sub.type = 'sawtooth'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
@@ -1119,7 +1254,7 @@
         const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.freqMultiplier = 1;
         const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2; 
-        if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq, t, synthParams.glide); osc3.frequency.setTargetAtTime(freq * 2, t, synthParams.glide); }
+        if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq, t, synthParams.glide); }
         const g1 = actx.createGain(); g1.gain.value = 0.55; osc1.connect(g1); g1.connect(filterNode);
         const g2 = actx.createGain(); g2.gain.value = 0.25; osc2.connect(g2); g2.connect(filterNode);
         const g3 = actx.createGain(); g3.gain.value = 0.04; osc3.connect(g3); g3.connect(filterNode);
@@ -1143,7 +1278,7 @@
         const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'sine'; osc2.frequency.setValueAtTime((prevFreq || freq) * 2.78, t); osc2.freqMultiplier = 2.78; 
         const osc3 = actx.createOscillator(); osc3.type = 'triangle'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2;
-        if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq * 2.78, t, synthParams.glide); osc3.frequency.setTargetAtTime(freq * 2, t, synthParams.glide); }
+        if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq * 2.78, t, synthParams.glide); }
         osc1.connect(filterNode);
         const g2 = actx.createGain(); g2.gain.value = 0.25; osc2.connect(g2); g2.connect(filterNode);
         const g3 = actx.createGain(); g3.gain.value = 0.18; osc3.connect(g3); g3.connect(filterNode);
@@ -1169,8 +1304,18 @@
       }
       
       targetGain *= noteGainCompensation;
-      filterNode.connect(voiceGain); voiceGain.connect(masterGain); voiceGain.connect(delayInputGain);
-      voiceGain.gain.setValueAtTime(0, t); voiceGain.gain.linearRampToValueAtTime(targetGain, t + currentAttack);
+      filterNode.connect(voiceGain);
+
+      // Si es una nota de Latch va al canal Latch, sino va al canal principal
+      if (isLatch && latchMasterGain) {
+        voiceGain.connect(latchMasterGain);
+      } else {
+        voiceGain.connect(masterGain);
+        voiceGain.connect(delayInputGain);
+      }
+
+      voiceGain.gain.setValueAtTime(0, t);
+      voiceGain.gain.linearRampToValueAtTime(targetGain, t + currentAttack);
       oscillators.forEach(o => o.start(t));
 
       const voice = { oscillators, extraNodes, voiceGain, filterNode, inst, isBass, startTime: t, freq, targetGain, cleaned: false };
@@ -1324,7 +1469,7 @@
       const intervals = getIntervalsAndName(baseQual, currentMod).i;
       intervals.forEach((iv, i) => {
         const voiceMidi = rootMidi + iv;
-        const v = playChordNote(voiceMidi, currentInst, i === 0, false, time, null);
+        const v = playChordNote(voiceMidi, currentInst, i === 0, false, time, null, true);
         stopChordNote(v, time + dur);
       });
     }
@@ -1335,7 +1480,7 @@
       const now = actx.currentTime;
       intervals.forEach((iv, i) => {
         const voiceMidi = rootMidi + iv;
-        const v = playChordNote(voiceMidi, currentInst, i === 0, false, now, null);
+        const v = playChordNote(voiceMidi, currentInst, i === 0, false, now, null, true);
         voices.push(v);
       });
       return voices;
@@ -1368,7 +1513,7 @@
             const voices = [];
             const now = actx.currentTime;
             intervals.forEach((iv, idx) => {
-              voices.push(playChordNote(midi + iv, currentInst, idx === 0, false, now, null));
+              voices.push(playChordNote(midi + iv, currentInst, idx === 0, false, now, null, false));
             });
             btn.setPointerCapture(e.pointerId);
             const stopMe = () => {
@@ -1390,7 +1535,6 @@
             currentPadVoices = triggerPadVoices(midi, baseQual);
 
           } else {
-            // RÍTMICOS 1x, 2x, 4x
             if (currentLatchedChord && currentLatchedChord.rootMidi === midi) {
               stopAllLatchedChords(); return;
             }
@@ -1435,7 +1579,7 @@
       const relY = Math.max(0, Math.min(1, 1 - ((e.clientY - rect.top) / rect.height)));
 
       keyElem.classList.add('active');
-      const voice = playChordNote(midi, currentInst, false, false, actx.currentTime, lastLeadFreq);
+      const voice = playChordNote(midi, currentInst, false, false, actx.currentTime, lastLeadFreq, false);
       lastLeadFreq = voice.freq;
       applyVerticalModulation(voice, relY);
 
@@ -1458,7 +1602,7 @@
         stopChordNote(current.voice);
 
         keyElem.classList.add('active');
-        const newVoice = playChordNote(midi, currentInst, false, true, actx.currentTime, lastLeadFreq);
+        const newVoice = playChordNote(midi, currentInst, false, true, actx.currentTime, lastLeadFreq, false);
         lastLeadFreq = newVoice.freq;
         applyVerticalModulation(newVoice, relY);
 
@@ -1621,7 +1765,7 @@
 
         maxIntervals.forEach((_, i) => { 
           let voiceMidi = rootMidi + (currentIntervals[i] !== undefined ? currentIntervals[i] : maxIntervals[i]);
-          let voice = playChordNote(voiceMidi, currentInst, i === 0, false, qTime, lastNoteFreq);
+          let voice = playChordNote(voiceMidi, currentInst, i === 0, false, qTime, lastNoteFreq, false);
           if (currentIntervals[i] === undefined) voice.voiceGain.gain.setValueAtTime(0, qTime);
           voices.push(voice); 
         });
@@ -1655,7 +1799,7 @@
             (chordTones[2] || chordTones[0] + 7) + 12, chordTones[0] + 24
           ];
           let qTime = getQuantizedTime();
-          let voice = playChordNote(midi + extendedHarmonics[idx], currentInst, false, true, qTime); 
+          let voice = playChordNote(midi + extendedHarmonics[idx], currentInst, false, true, qTime, null, false); 
           strumVoices.push(voice);
         }
       }
