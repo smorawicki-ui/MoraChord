@@ -273,10 +273,11 @@
           <select id="inst-select" class="inst-select">
             <optgroup label="Clásicos">
               <option value="analog">🎹 Synth Pad</option>
+              <option value="frenchbass">💥 Bass Podrido (Justice)</option>
+              <option value="acidbass">⚡ Bajo Ácido (303)</option>
               <option value="strings">🎻 Cuerdas Caoticas</option>
               <option value="organ">🎹 Órgano Hammond</option>
               <option value="guitar">🎸 Guitarra Eléctrica</option>
-              <option value="acidbass">⚡ Bajo Ácido (303)</option>
             </optgroup>
             <optgroup label="Falopa / FX">
               <option value="8bit">👾 8-Bit (Chiptune)</option>
@@ -351,7 +352,6 @@
       </div>
     </div>
 
-    <!-- VISTA ACORDES -->
     <div class="middle-section" id="chords-mode-view">
       <div class="joystick-container">
         <div class="joy-wrapper">
@@ -383,7 +383,6 @@
       </div>
     </div>
 
-    <!-- VISTA TECLADO LEAD -->
     <div class="keyboard-mode-view" id="keyboard-mode-view">
       <div class="mini-chords-strip">
         <div class="pill-group" style="padding: 2px 6px;">
@@ -467,10 +466,11 @@
     const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.6 };
     const INST_DEFAULTS = {
       analog: { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.20, glide: 0.05 },
+      frenchbass: { attack: 0.01, release: 0.45, cutoff: 1800, echo: 0.05, glide: 0.02 },
+      acidbass: { attack: 0.01, release: 0.35, cutoff: 550, echo: 0.10, glide: 0.09 },
       strings: { attack: 0.35, release: 2.2, cutoff: 1600, echo: 0.25, glide: 0.08 },
       organ: { attack: 0.01, release: 0.3, cutoff: 3500, echo: 0.10, glide: 0.01 },
       guitar: { attack: 0.01, release: 0.9, cutoff: 2400, echo: 0.15, glide: 0.02 },
-      acidbass: { attack: 0.01, release: 0.35, cutoff: 550, echo: 0.10, glide: 0.09 },
       '8bit': { attack: 0.01, release: 0.15, cutoff: 4000, echo: 0.00, glide: 0.01 },
       crystal: { attack: 0.03, release: 2.8, cutoff: 3000, echo: 0.35, glide: 0.03 },
       sweep: { attack: 0.20, release: 1.8, cutoff: 1900, echo: 0.25, glide: 0.05 },
@@ -788,7 +788,7 @@
     function playHiHat(time) {
       if (!globalNoiseBuffer) initAudio();
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
+      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 4000 : 5000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.35 : 0.28, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.08));
       noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
@@ -799,7 +799,7 @@
     function playOpenHiHat(time) {
       if (!globalNoiseBuffer) initAudio();
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
+      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 3000 : 4000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.35 : 0.28, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.2 : 0.35));
       noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
@@ -812,7 +812,7 @@
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(0.18, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
       noiseGain.connect(drumMasterGain);
-      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
+      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 6000;
       noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noise.start(time); noise.stop(time + 0.45);
       if (!isChiptune) {
@@ -956,7 +956,66 @@
 
       let targetGain = 0.05;
 
-      if (inst === 'custom') {
+      if (inst === 'frenchbass') {
+        targetGain = 0.09;
+
+        const driveGain = actx.createGain();
+        driveGain.gain.setValueAtTime(35.0, t);
+
+        const shaper = actx.createWaveShaper();
+        const curve = new Float32Array(2048);
+        for (let i = 0; i < 2048; i++) {
+          let x = (i * 2) / 2048 - 1;
+          if (x > 0.28) curve[i] = 0.85 + 0.15 * Math.sin((x - 0.28) * 4);
+          else if (x < -0.22) curve[i] = -0.75;
+          else curve[i] = x * 3.2;
+        }
+        shaper.curve = curve;
+        shaper.oversample = '4x';
+
+        const osc1 = actx.createOscillator();
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime((prevFreq || freq) * 0.5, t);
+        osc1.detune.value = -12;
+        osc1.freqMultiplier = 0.5;
+
+        const osc2 = actx.createOscillator();
+        osc2.type = 'square';
+        osc2.frequency.setValueAtTime((prevFreq || freq) * 0.5, t);
+        osc2.detune.value = 12;
+        osc2.freqMultiplier = 0.5;
+
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
+        }
+
+        const subOsc = actx.createOscillator();
+        subOsc.type = 'triangle';
+        const subFreq = (prevFreq || freq) * 0.25;
+        subOsc.frequency.setValueAtTime(subFreq, t);
+        if (prevFreq && synthParams.glide > 0.005) {
+          subOsc.frequency.setTargetAtTime(freq * 0.25, t, synthParams.glide);
+        }
+        subOsc.freqMultiplier = 0.25;
+
+        const subGain = actx.createGain();
+        subGain.gain.setValueAtTime(1.4, t);
+
+        osc1.connect(driveGain);
+        osc2.connect(driveGain);
+        driveGain.connect(shaper);
+        shaper.connect(filterNode);
+
+        subOsc.connect(subGain);
+        subGain.connect(voiceGain);
+
+        filterNode.Q.value = 3.0;
+
+        extraNodes.push(driveGain, shaper, subGain);
+        oscillators.push(osc1, osc2, subOsc);
+
+      } else if (inst === 'custom') {
         filterNode.Q.value = 1.0; targetGain = 0.048;
         const carrier = actx.createOscillator(), modulator = actx.createOscillator(), modGain = actx.createGain();
         extraNodes.push(modGain);
@@ -1310,7 +1369,7 @@
 
     // MOTOR DE BARRIDO / GLISSANDO Y EXPRESIÓN VERTICAL EN EL TECLADO
     const touchKeyboard = document.getElementById('touch-keyboard');
-    let activePointers = new Map(); // pointerId -> { midi, keyElem, voice }
+    let activePointers = new Map();
 
     function getKeyFromCoords(x, y) {
       const el = document.elementFromPoint(x, y);
@@ -1348,7 +1407,6 @@
       const relY = Math.max(0, Math.min(1, 1 - ((e.clientY - rect.top) / rect.height)));
 
       if (midi !== current.midi) {
-        // BARRIDO / GLISSANDO: El dedo cambió de tecla arrastrándose
         current.keyElem.classList.remove('active');
         stopChordNote(current.voice);
 
@@ -1359,7 +1417,6 @@
 
         activePointers.set(e.pointerId, { midi, keyElem, voice: newVoice });
       } else {
-        // Misma tecla: modulamos filtro Cutoff según altura vertical
         applyVerticalModulation(current.voice, relY);
       }
     });
