@@ -35,6 +35,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.4); z-index: 10;
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
       overflow-y: auto; max-height: 52dvh;
+      touch-action: pan-y;
     }
     .header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .pill-group {
@@ -65,6 +66,7 @@
       background: #0e1622; border-radius: 16px; border: 2px solid var(--accent);
       position: absolute; top: 10px; left: 14px; right: 14px; bottom: 14px;
       z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.9); overflow-y: auto;
+      touch-action: pan-y;
     }
     .custom-drum-sequencer.visible { display: flex; }
     .seq-row { display: flex; align-items: center; gap: 8px; }
@@ -273,9 +275,9 @@
           <select id="inst-select" class="inst-select">
             <optgroup label="Clásicos">
               <option value="analog">🎹 Synth Pad</option>
-              <option value="frenchbass">💥 Bajo Fondo</option>
+              <option value="frenchbass">⚡ Bass Podrido</option>
               <option value="acidbass">⚡ Bajo Ácido (303)</option>
-              <option value="strings">🎻 Cuerdas Caoticas</option>
+              <option value="strings">🎻 Cuerdas Caóticas</option>
               <option value="organ">🎹 Órgano Hammond</option>
               <option value="guitar">🎸 Guitarra Eléctrica</option>
             </optgroup>
@@ -285,7 +287,7 @@
               <option value="sweep">🔫 Laser Sweep (Rave)</option>
               <option value="alien">🛸 Alienígena (FM)</option>
             </optgroup>
-            <optgroup label="Labortaorio">
+            <optgroup label="Laboratorio">
               <option value="custom">🎛️ Custom FM Synth</option>
             </optgroup>
           </select>
@@ -352,6 +354,7 @@
       </div>
     </div>
 
+    <!-- VISTA ACORDES -->
     <div class="middle-section" id="chords-mode-view">
       <div class="joystick-container">
         <div class="joy-wrapper">
@@ -383,6 +386,7 @@
       </div>
     </div>
 
+    <!-- VISTA TECLADO LEAD -->
     <div class="keyboard-mode-view" id="keyboard-mode-view">
       <div class="mini-chords-strip">
         <div class="pill-group" style="padding: 2px 6px;">
@@ -530,13 +534,18 @@
 
     patternSelect.addEventListener('change', (e) => {
       const val = e.target.value;
+      cachedDrumPattern = val;
       if (val === 'custom') customDrumPanel.classList.add('visible');
       else {
         if (PATTERNS[val]) { customSteps = JSON.parse(JSON.stringify(PATTERNS[val])); buildCustomPads(); }
         customDrumPanel.classList.remove('visible');
       }
     });
-    btnEditSeq.addEventListener('pointerdown', () => { patternSelect.value = 'custom'; customDrumPanel.classList.add('visible'); });
+    btnEditSeq.addEventListener('pointerdown', () => { 
+      patternSelect.value = 'custom'; 
+      cachedDrumPattern = 'custom';
+      customDrumPanel.classList.add('visible'); 
+    });
     btnCloseSeq.addEventListener('pointerdown', () => customDrumPanel.classList.remove('visible'));
 
     const SCALES = [
@@ -588,9 +597,7 @@
     function updateDelayTime() {
       if (!actx || !delayNode) return;
       const beatSec = 60.0 / synthParams.bpm;
-      const subdivEl = document.getElementById('echo-subdiv');
-      const subdiv = subdivEl ? parseFloat(subdivEl.value) : 0.75;
-      const calculatedDelay = Math.min(Math.max(0.02, beatSec * subdiv), 2.8);
+      const calculatedDelay = Math.min(Math.max(0.02, beatSec * cachedEchoSubdiv), 2.8);
       delayNode.delayTime.setTargetAtTime(calculatedDelay, actx.currentTime, 0.05);
     }
 
@@ -611,7 +618,13 @@
     bindParam('p-cutoff', 'val-cut', 'cutoff', 'Hz');
     bindParam('p-echo', 'val-echo', 'echo', '%');
     bindParam('p-glide', 'val-glide', 'glide', 's');
-    document.getElementById('echo-subdiv').addEventListener('change', updateDelayTime);
+
+    let cachedEchoSubdiv = 0.75;
+    const echoSubdivSelect = document.getElementById('echo-subdiv');
+    echoSubdivSelect.addEventListener('change', (e) => {
+      cachedEchoSubdiv = parseFloat(e.target.value);
+      updateDelayTime();
+    });
 
     document.getElementById('btn-bpm-down').addEventListener('pointerdown', () => {
       synthParams.bpm = Math.max(40, synthParams.bpm - 1);
@@ -646,6 +659,20 @@
       }
     });
 
+    let cachedQuantize = 'off';
+    const quantizeSelect = document.getElementById('quantize-select');
+    quantizeSelect.addEventListener('change', (e) => { cachedQuantize = e.target.value; });
+
+    let cachedPOSync = 'off';
+    const poSyncSelect = document.getElementById('po-sync-select');
+    poSyncSelect.addEventListener('change', (e) => { cachedPOSync = e.target.value; });
+
+    let cachedDrumKit = 'classic';
+    const drumKitSelect = document.getElementById('drum-kit');
+    drumKitSelect.addEventListener('change', (e) => { cachedDrumKit = e.target.value; });
+
+    let cachedDrumPattern = 'rock';
+
     let actx = null, masterGain = null, delayNode = null, delayInputGain = null, masterLimiter = null, drumMasterGain = null;
     let distortionCurve = null;
     function getDistortionCurve() {
@@ -657,6 +684,19 @@
         distortionCurve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
       }
       return distortionCurve;
+    }
+
+    let frenchbassCurve = null;
+    function getFrenchbassCurve() {
+      if (frenchbassCurve) return frenchbassCurve;
+      frenchbassCurve = new Float32Array(2048);
+      for (let i = 0; i < 2048; i++) {
+        let x = (i * 2) / 2048 - 1;
+        if (x > 0.28) frenchbassCurve[i] = 0.85 + 0.15 * Math.sin((x - 0.28) * 4);
+        else if (x < -0.22) frenchbassCurve[i] = -0.75;
+        else frenchbassCurve[i] = x * 3.2;
+      }
+      return frenchbassCurve;
     }
 
     let globalNoiseBuffer = null, globalChiptuneNoiseBuffer = null;
@@ -675,6 +715,17 @@
       if (voice.voiceGain) { try { voice.voiceGain.disconnect(); } catch(e){} }
       const idx = activeVoicePool.indexOf(voice);
       if (idx !== -1) activeVoicePool.splice(idx, 1);
+    }
+
+    function forceStopVoice(voice) {
+      if (!voice || voice.cleaned) return;
+      try {
+        const now = actx.currentTime;
+        voice.voiceGain.gain.cancelScheduledValues(now);
+        voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value, now);
+        voice.voiceGain.gain.linearRampToValueAtTime(0.0001, now + 0.008);
+      } catch(e) {}
+      setTimeout(() => cleanVoice(voice), 15);
     }
 
     function initAudio() {
@@ -711,9 +762,8 @@
 
     function getQuantizedTime() {
       if (!actx) return 0;
-      const quant = document.getElementById('quantize-select').value;
-      if (quant === 'off') return actx.currentTime;
-      const divSteps = quant === '4' ? 4 : (quant === '8' ? 2 : 1);
+      if (cachedQuantize === 'off') return actx.currentTime;
+      const divSteps = cachedQuantize === '4' ? 4 : (cachedQuantize === '8' ? 2 : 1);
       const stepDur = 0.25 * (60.0 / synthParams.bpm);
       if (isClockRunning) {
         let stepsUntil = (divSteps - (currentStep % divSteps)) % divSteps;
@@ -729,7 +779,7 @@
     }
 
     function playPOSyncPulse(time) {
-      if (document.getElementById('po-sync-select').value !== 'on') return;
+      if (cachedPOSync !== 'on') return;
       const osc = actx.createOscillator(); const gain = actx.createGain();
       osc.type = 'square'; osc.frequency.setValueAtTime(1000, time);
       gain.gain.setValueAtTime(1.0, time); gain.gain.linearRampToValueAtTime(0.01, time + 0.01);
@@ -738,7 +788,7 @@
     }
 
     function playKick(time) {
-      const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
+      const isChiptune = cachedDrumKit === 'chiptune';
       const osc = actx.createOscillator(); const gain = actx.createGain(); 
       osc.connect(gain); gain.connect(drumMasterGain);
       if (isChiptune) {
@@ -764,7 +814,7 @@
 
     function playSnare(time) {
       if (!globalNoiseBuffer) initAudio();
-      const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
+      const isChiptune = cachedDrumKit === 'chiptune';
       const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.5 : 0.8, time); 
       noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.18);
@@ -787,8 +837,8 @@
     
     function playHiHat(time) {
       if (!globalNoiseBuffer) initAudio();
-      const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
+      const isChiptune = cachedDrumKit === 'chiptune';
+      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 4000 : 5000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.35 : 0.28, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.05 : 0.08));
       noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
@@ -798,8 +848,8 @@
     
     function playOpenHiHat(time) {
       if (!globalNoiseBuffer) initAudio();
-      const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
+      const isChiptune = cachedDrumKit === 'chiptune';
+      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
       const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = isChiptune ? 3000 : 4000;
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(isChiptune ? 0.35 : 0.28, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + (isChiptune ? 0.2 : 0.35));
       noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(drumMasterGain); 
@@ -809,7 +859,7 @@
 
     function playRide(time) {
       if (!globalNoiseBuffer) initAudio();
-      const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
+      const isChiptune = cachedDrumKit === 'chiptune';
       const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(0.18, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
       noiseGain.connect(drumMasterGain);
       const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer; 
@@ -839,8 +889,7 @@
     }
 
     function checkStopClock() {
-      const mode = document.getElementById('latch-mode-select') ? document.getElementById('latch-mode-select').value : 'off';
-      const needsClock = isPlayingDrums || (currentLatchedChord && ['1x', '2x', '4x'].includes(mode));
+      const needsClock = isPlayingDrums || (currentLatchedChord && ['1x', '2x', '4x'].includes(cachedLatchMode));
       if (!needsClock && isClockRunning) {
         isClockRunning = false;
         if (timerID) { window.clearTimeout(timerID); timerID = null; }
@@ -857,8 +906,7 @@
     function scheduleNote(stepNumber, time) {
       if (isPlayingDrums) {
         playPOSyncPulse(time);
-        const pKey = document.getElementById('drum-pattern').value;
-        const p = (pKey === 'custom') ? customSteps : (PATTERNS[pKey] || PATTERNS.rock);
+        const p = (cachedDrumPattern === 'custom') ? customSteps : (PATTERNS[cachedDrumPattern] || PATTERNS.rock);
         if (p.kick && p.kick[stepNumber]) playKick(time);
         if (p.deepkick && p.deepkick[stepNumber]) playDeepKick(time);
         if (p.snare && p.snare[stepNumber]) playSnare(time);
@@ -868,17 +916,16 @@
       }
 
       // DISPARO RÍTMICO DE ACORDES LATCH (1x, 2x, 4x)
-      const curMode = document.getElementById('latch-mode-select') ? document.getElementById('latch-mode-select').value : 'off';
-      if (currentLatchedChord && ['1x', '2x', '4x'].includes(curMode)) {
+      if (currentLatchedChord && ['1x', '2x', '4x'].includes(cachedLatchMode)) {
         const beatDur = 60.0 / synthParams.bpm;
         let shouldTrigger = false;
         let gate = beatDur * 0.75;
 
-        if (curMode === '1x' && stepNumber === 0) {
+        if (cachedLatchMode === '1x' && stepNumber === 0) {
           shouldTrigger = true; gate = beatDur * 3.4;
-        } else if (curMode === '2x' && (stepNumber === 0 || stepNumber === 8)) {
+        } else if (cachedLatchMode === '2x' && (stepNumber === 0 || stepNumber === 8)) {
           shouldTrigger = true; gate = beatDur * 1.7;
-        } else if (curMode === '4x' && (stepNumber % 4 === 0)) {
+        } else if (cachedLatchMode === '4x' && (stepNumber % 4 === 0)) {
           shouldTrigger = true; gate = beatDur * 0.75;
         }
 
@@ -939,7 +986,7 @@
     function playChordNote(midi, inst, isBass, isStrum = false, startTime = null, prevFreq = null) {
       while (activeVoicePool.length >= MAX_VOICES) {
         const oldest = activeVoicePool.shift();
-        if (oldest && !oldest.cleaned) cleanVoice(oldest);
+        if (oldest && !oldest.cleaned) forceStopVoice(oldest);
       }
 
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
@@ -963,14 +1010,7 @@
         driveGain.gain.setValueAtTime(35.0, t);
 
         const shaper = actx.createWaveShaper();
-        const curve = new Float32Array(2048);
-        for (let i = 0; i < 2048; i++) {
-          let x = (i * 2) / 2048 - 1;
-          if (x > 0.28) curve[i] = 0.85 + 0.15 * Math.sin((x - 0.28) * 4);
-          else if (x < -0.22) curve[i] = -0.75;
-          else curve[i] = x * 3.2;
-        }
-        shaper.curve = curve;
+        shaper.curve = getFrenchbassCurve();
         shaper.oversample = '4x';
 
         const osc1 = actx.createOscillator();
@@ -1147,8 +1187,12 @@
       const stopT = Math.max(t, (voice.startTime || t) + 0.02);
       
       try {
-        voice.voiceGain.gain.cancelScheduledValues(stopT);
-        voice.voiceGain.gain.setValueAtTime(voice.targetGain || 0.05, stopT);
+        if (typeof voice.voiceGain.gain.cancelAndHoldAtTime === 'function') {
+          voice.voiceGain.gain.cancelAndHoldAtTime(stopT);
+        } else {
+          voice.voiceGain.gain.cancelScheduledValues(stopT);
+          voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value, stopT);
+        }
         voice.voiceGain.gain.setTargetAtTime(0.0001, stopT, Math.max(0.02, rel / 3.0));
       } catch(e) {}
 
@@ -1198,6 +1242,8 @@
     const latchSelect = document.getElementById('latch-mode-select');
     const btnStopLatch = document.getElementById('btn-stop-latch');
 
+    let cachedLatchMode = 'off';
+
     function setAppMode(mode) {
       currentAppMode = mode;
       if (mode === 'chords') {
@@ -1228,6 +1274,7 @@
 
     latchSelect.addEventListener('change', (e) => {
       const mode = e.target.value;
+      cachedLatchMode = mode;
       if (mode === 'off') {
         stopAllLatchedChords();
       } else if (mode === 'pad') {
@@ -1315,9 +1362,8 @@
         btn.addEventListener('pointerdown', (e) => {
           initAudio();
           if (actx.state === 'suspended') actx.resume();
-          const mode = document.getElementById('latch-mode-select').value;
 
-          if (mode === 'off') {
+          if (cachedLatchMode === 'off') {
             const intervals = getIntervalsAndName(baseQual, currentMod).i;
             const voices = [];
             const now = actx.currentTime;
@@ -1333,7 +1379,7 @@
             btn.addEventListener('pointerup', stopMe);
             btn.addEventListener('pointercancel', stopMe);
 
-          } else if (mode === 'pad') {
+          } else if (cachedLatchMode === 'pad') {
             if (currentLatchedChord && currentLatchedChord.rootMidi === midi) {
               stopAllLatchedChords(); return;
             }
@@ -1357,8 +1403,8 @@
             ensureClock();
             const beatDur = 60.0 / synthParams.bpm;
             let gate = beatDur * 0.75;
-            if (mode === '1x') gate = beatDur * 3.4;
-            else if (mode === '2x') gate = beatDur * 1.7;
+            if (cachedLatchMode === '1x') gate = beatDur * 3.4;
+            else if (cachedLatchMode === '2x') gate = beatDur * 1.7;
             playChordStab(midi, baseQual, actx.currentTime, gate);
           }
         });
@@ -1397,6 +1443,7 @@
     });
 
     touchKeyboard.addEventListener('pointermove', (e) => {
+      if (actx && actx.state === 'suspended') actx.resume();
       if (!activePointers.has(e.pointerId)) return;
       const current = activePointers.get(e.pointerId);
       const keyElem = getKeyFromCoords(e.clientX, e.clientY);
@@ -1440,6 +1487,11 @@
     }
 
     function buildTouchKeyboard() {
+      activePointers.forEach(p => {
+        if (p && p.voice) stopChordNote(p.voice);
+      });
+      activePointers.clear();
+
       touchKeyboard.innerHTML = '';
       const scale = SCALES[currentScaleIdx];
       const rootPitch = (keyboardOctave * 12) + keyOffset;
