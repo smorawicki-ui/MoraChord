@@ -54,13 +54,15 @@
       box-shadow: var(--panel-shadow); z-index: 10;
       border-bottom: 1px solid var(--panel-border);
       border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
-      overflow-y: auto; max-height: 52dvh; flex-shrink: 0;
+      overflow-y: auto; max-height: 85dvh; flex-shrink: 0;
+      touch-action: pan-y !important; -webkit-overflow-scrolling: touch;
       transition: padding 0.15s ease, max-height 0.15s ease;
     }
     .top-section.collapsed-mode {
       padding: 6px 10px;
       max-height: none;
       overflow: visible;
+      touch-action: none;
     }
     .transport-bar {
       display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
@@ -198,10 +200,11 @@
     }
     .custom-fm-grid.visible { display: grid; }
     .custom-drum-sequencer {
-      display: none; flex-direction: column; gap: 8px; padding: 14px;
+      display: none; flex-direction: column; gap: 8px; padding: 14px 14px 36px 14px;
       background: rgba(10, 16, 26, 0.98); backdrop-filter: blur(20px); border-radius: 16px; border: 2px solid var(--accent);
       position: fixed; top: 10px; left: 14px; right: 14px; bottom: 14px;
       z-index: 100; box-shadow: 0 20px 50px rgba(0,0,0,0.95); overflow-y: auto;
+      touch-action: pan-y !important; -webkit-overflow-scrolling: touch;
     }
     .custom-drum-sequencer.visible { display: flex; }
     .seq-row { display: flex; align-items: center; gap: 8px; }
@@ -369,6 +372,14 @@
       .joystick-container { flex: 0 0 110px; }
       .strum-section { width: 115px; padding: 6px 4px; }
       .touch-keyboard { flex: 1; min-height: 180px; }
+      .custom-drum-sequencer {
+        top: 6px; left: 6px; right: 6px; bottom: 6px;
+        padding: 10px 8px 40px 8px;
+        gap: 6px;
+      }
+      .seq-row { gap: 4px; }
+      .seq-label { font-size: 0.62rem; width: 50px; }
+      .seq-pad { height: 26px; }
     }
   </style>
 </head>
