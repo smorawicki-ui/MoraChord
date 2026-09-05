@@ -880,9 +880,9 @@
         <div class="pill-group" style="padding: 2px 6px;">
           <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; margin-right:4px;">INST LATCH:</span>
           <select id="latch-inst-select" class="inst-select" style="background:transparent; border:none; color:var(--accent-hover); font-size:0.72rem; font-weight:800; cursor:pointer; max-width:115px;">
-            <option value="dx7bass" selected>⚡ DX7 Solid Bass</option>
-            <option value="analog">🎹 Synth Pad</option>
+            <option value="analog" selected>🎹 Synth Pad</option>
             <option value="dx7ep">🎹 DX7 E-Piano 1</option>
+            <option value="dx7bass">⚡ DX7 Solid Bass</option>
             <option value="acidbass">⚡ Bajo Ácido (303)</option>
             <option value="strings">🎻 Cuerdas Caoticas</option>
             <option value="organ">🎹 Órgano Hammond</option>
@@ -1304,6 +1304,19 @@
     const customPanel = document.getElementById('custom-fm-panel');
     instSelect.addEventListener('change', (e) => {
       currentInst = e.target.value;
+      latchInst = currentInst;
+      const latchSel = document.getElementById('latch-inst-select');
+      if (latchSel) latchSel.value = currentInst;
+      if (currentLatchedChord) {
+        if (currentPadVoices.length > 0) {
+          currentPadVoices.forEach(v => stopChordNote(v));
+          currentPadVoices = [];
+        }
+        const mode = document.getElementById('latch-mode-select') ? document.getElementById('latch-mode-select').value : 'off';
+        if (mode === 'pad') {
+          currentPadVoices = triggerPadVoices(currentLatchedChord.rootMidi, currentLatchedChord.baseQual);
+        }
+      }
       if (currentInst === 'custom') customPanel.classList.add('visible');
       else {
         customPanel.classList.remove('visible');
@@ -1346,22 +1359,13 @@
     function cleanVoice(voice) {
       if (!voice || voice.cleaned) return;
       voice.cleaned = true;
-      if (voice.voiceGain && actx) {
-        try {
-          const t = actx.currentTime;
-          voice.voiceGain.gain.cancelScheduledValues(t);
-          voice.voiceGain.gain.setValueAtTime(voice.voiceGain.gain.value, t);
-          voice.voiceGain.gain.linearRampToValueAtTime(0.00001, t + 0.015);
-        } catch(e){}
-      }
-      setTimeout(() => {
-        if (voice.oscillators) voice.oscillators.forEach(o => {
-          try { o.stop(); o.disconnect(); } catch(e){}
-        });
-        if (voice.filterNode) { try { voice.filterNode.disconnect(); } catch(e){} }
-        if (voice.extraNodes) { voice.extraNodes.forEach(n => { try { n.disconnect(); } catch(e){} }); }
-        if (voice.voiceGain) { try { voice.voiceGain.disconnect(); } catch(e){} }
-      }, 20);
+      if (voice.oscillators) voice.oscillators.forEach(o => {
+        try { o.stop(); } catch(e){}
+        try { o.disconnect(); } catch(e){}
+      });
+      if (voice.filterNode) { try { voice.filterNode.disconnect(); } catch(e){} }
+      if (voice.extraNodes) { voice.extraNodes.forEach(n => { try { n.disconnect(); } catch(e){} }); }
+      if (voice.voiceGain) { try { voice.voiceGain.disconnect(); } catch(e){} }
       const idx = activeVoicePool.indexOf(voice);
       if (idx !== -1) activeVoicePool.splice(idx, 1);
     }
@@ -1373,10 +1377,10 @@
       try { actx = new AudioCtx({ latencyHint: 'interactive' }); } catch(e) { actx = new AudioCtx(); }
       
       masterLimiter = actx.createDynamicsCompressor();
-      masterLimiter.threshold.value = -3.0; masterLimiter.knee.value = 10.0;
-      masterLimiter.ratio.value = 6.0; masterLimiter.attack.value = 0.008; masterLimiter.release.value = 0.10;
+      masterLimiter.threshold.value = -6.0; masterLimiter.knee.value = 4.0;
+      masterLimiter.ratio.value = 14.0; masterLimiter.attack.value = 0.002; masterLimiter.release.value = 0.06;
       
-      masterGain = actx.createGain(); masterGain.gain.value = 0.75; 
+      masterGain = actx.createGain(); masterGain.gain.value = 0.55; 
       delayInputGain = actx.createGain(); delayInputGain.gain.value = synthParams.echo;
       delayNode = actx.createDelay(3.0); updateDelayTime();
 
@@ -1771,20 +1775,20 @@
 
       const freq = 440 * Math.pow(2, (midi - 69) / 12);
       const t = startTime !== null ? startTime : actx.currentTime;
-      const noteGainCompensation = Math.max(0.70, 1 - ((midi - 48) / 120));
+      const noteGainCompensation = Math.max(0.65, 1 - ((midi - 48) / 95));
 
       const voiceGain = actx.createGain();
       const oscillators = [], extraNodes = [];
-      const currentAttack = isStrum ? 0.025 : Math.max(0.005, synthParams.attack);
+      const currentAttack = (isStrum || startTime !== null) ? Math.min(0.015, synthParams.attack) : Math.max(0.005, synthParams.attack);
 
       const filterNode = actx.createBiquadFilter();
       filterNode.type = 'lowpass';
       filterNode.frequency.setValueAtTime(synthParams.cutoff, t);
 
-      let targetGain = 0.07;
+      let targetGain = 0.048;
 
       if (inst === 'custom') {
-        filterNode.Q.value = 1.0; targetGain = 0.068;
+        filterNode.Q.value = 1.0; targetGain = 0.048;
         const carrier = actx.createOscillator(), modulator = actx.createOscillator(), modGain = actx.createGain();
         extraNodes.push(modGain);
         carrier.type = customParams.carrierWave; carrier.frequency.setValueAtTime(prevFreq || freq, t);
@@ -1798,7 +1802,7 @@
         oscillators.push(carrier, modulator);
 
       } else if (inst === 'guitar') {
-        filterNode.Q.value = 2.5; targetGain = 0.065;
+        filterNode.Q.value = 2.5; targetGain = 0.042;
         const distortion = actx.createWaveShaper(); distortion.curve = getDistortionCurve();
         extraNodes.push(distortion);
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
@@ -1808,7 +1812,7 @@
         oscillators.push(osc1, osc2);
 
       } else if (inst === 'acidbass') {
-        filterNode.Q.value = 16.0; targetGain = 0.09;
+        filterNode.Q.value = 14.0; targetGain = 0.06;
         filterNode.frequency.setValueAtTime(Math.min(14000, synthParams.cutoff * 3.5), t);
         filterNode.frequency.exponentialRampToValueAtTime(Math.max(80, synthParams.cutoff), t + 0.3);
         const osc = actx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(prevFreq || freq, t); osc.freqMultiplier = 1;
@@ -1816,7 +1820,7 @@
         osc.connect(filterNode); oscillators.push(osc);
 
       } else if (inst === 'analog') {
-        filterNode.Q.value = 0.8; targetGain = 0.07;
+        filterNode.Q.value = 0.8; targetGain = 0.048;
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -2; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 2; osc2.freqMultiplier = 1;
         if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq, t, synthParams.glide); }
@@ -1829,7 +1833,7 @@
         }
 
       } else if (inst === 'strings') {
-        filterNode.Q.value = 0.4; targetGain = 0.06;
+        filterNode.Q.value = 0.4; targetGain = 0.038;
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -4; osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 4; osc2.freqMultiplier = 1;
         const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.setValueAtTime(prevFreq || freq, t); osc3.detune.value = 0; osc3.freqMultiplier = 1;
@@ -1843,7 +1847,7 @@
         }
 
       } else if (inst === 'organ') {
-        filterNode.Q.value = 0.4; targetGain = 0.07;
+        filterNode.Q.value = 0.4; targetGain = 0.045;
         const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.freqMultiplier = 1;
         const osc3 = actx.createOscillator(); osc3.type = 'square'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2; 
@@ -1854,7 +1858,7 @@
         extraNodes.push(g1, g2, g3); oscillators.push(osc1, osc2, osc3);
 
       } else if (inst === '8bit') {
-        filterNode.Q.value = 0.4; targetGain = 0.06;
+        filterNode.Q.value = 0.4; targetGain = 0.042;
         const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 2; osc2.freqMultiplier = 1;
         if (prevFreq && synthParams.glide > 0.005) { osc1.frequency.setTargetAtTime(freq, t, synthParams.glide); osc2.frequency.setTargetAtTime(freq, t, synthParams.glide); }
@@ -1867,7 +1871,7 @@
         }
 
       } else if (inst === 'crystal') {
-        filterNode.Q.value = 1.6; targetGain = 0.065;
+        filterNode.Q.value = 1.6; targetGain = 0.045;
         const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
         const osc2 = actx.createOscillator(); osc2.type = 'sine'; osc2.frequency.setValueAtTime((prevFreq || freq) * 2.78, t); osc2.freqMultiplier = 2.78; 
         const osc3 = actx.createOscillator(); osc3.type = 'triangle'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2;
@@ -1878,7 +1882,7 @@
         extraNodes.push(g2, g3); oscillators.push(osc1, osc2, osc3);
 
       } else if (inst === 'sweep') {
-        filterNode.Q.value = 7.0; targetGain = 0.068;
+        filterNode.Q.value = 7.0; targetGain = 0.045;
         filterNode.frequency.setValueAtTime(Math.min(14000, synthParams.cutoff * 3.5), t);
         filterNode.frequency.exponentialRampToValueAtTime(Math.max(120, synthParams.cutoff), t + currentAttack * 2.2);
         const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -3; osc1.freqMultiplier = 1;
@@ -1887,7 +1891,7 @@
         osc1.connect(filterNode); osc2.connect(filterNode); oscillators.push(osc1, osc2);
 
       } else if (inst === 'alien') {
-        filterNode.Q.value = 1.0; targetGain = 0.07;
+        filterNode.Q.value = 1.0; targetGain = 0.048;
         const carrier = actx.createOscillator(); carrier.type = 'sine'; carrier.frequency.setValueAtTime(prevFreq || freq, t); carrier.freqMultiplier = 1;
         const modulator = actx.createOscillator(); modulator.type = 'sawtooth'; modulator.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); modulator.freqMultiplier = 0.5;
         if (prevFreq && synthParams.glide > 0.005) { carrier.frequency.setTargetAtTime(freq, t, synthParams.glide); modulator.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide); }
@@ -1897,7 +1901,7 @@
 
       // YAMAHA DX7 E-PIANO 1 (FM dual: campana metálica + cuerpo)
       } else if (inst === 'dx7ep') {
-        targetGain = 0.08;
+        targetGain = 0.052;
         const carrier = actx.createOscillator();
         carrier.type = 'sine';
         carrier.frequency.setValueAtTime(prevFreq || freq, t);
@@ -1909,7 +1913,7 @@
         modTine.frequency.setValueAtTime((prevFreq || freq) * 14.0, t);
         modTine.freqMultiplier = 14.0;
         const modTineGain = actx.createGain();
-        modTineGain.gain.setValueAtTime(freq * 3.2, t);
+        modTineGain.gain.setValueAtTime(freq * 2.5, t);
         modTineGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
 
         // Modulador 2: Cuerpo armónico del piano (Ratio 1x sostenido)
@@ -1918,7 +1922,7 @@
         modBody.frequency.setValueAtTime(prevFreq || freq, t);
         modBody.freqMultiplier = 1.0;
         const modBodyGain = actx.createGain();
-        modBodyGain.gain.setValueAtTime(freq * 1.6, t);
+        modBodyGain.gain.setValueAtTime(freq * 1.4, t);
         modBodyGain.gain.exponentialRampToValueAtTime(freq * 0.1, t + 1.8);
 
         if (prevFreq && synthParams.glide > 0.005) {
@@ -1938,7 +1942,7 @@
 
       // YAMAHA DX7 SOLID BASS (Lately Bass: ataque percusivo en diente de sierra)
       } else if (inst === 'dx7bass') {
-        targetGain = 0.10;
+        targetGain = 0.065;
         const carrier = actx.createOscillator();
         carrier.type = 'sine';
         carrier.frequency.setValueAtTime((prevFreq || freq) * 0.5, t);
@@ -1951,8 +1955,8 @@
         mod.freqMultiplier = 1.0;
 
         const modGain = actx.createGain();
-        modGain.gain.setValueAtTime(freq * 4.2, t);
-        modGain.gain.exponentialRampToValueAtTime(freq * 0.15, t + 0.24);
+        modGain.gain.setValueAtTime(freq * 2.2, t);
+        modGain.gain.exponentialRampToValueAtTime(freq * 0.1, t + 0.2);
 
         if (prevFreq && synthParams.glide > 0.005) {
           carrier.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
@@ -1981,17 +1985,14 @@
     function stopChordNote(voice, atTime = null) {
       if (!voice || voice.cleaned || voice.isStopping) return;
       voice.isStopping = true;
-      const now = actx.currentTime;
+      const now = actx ? actx.currentTime : 0;
       const t = atTime !== null ? Math.max(now, atTime) : now;
       const rel = Math.max(0.04, synthParams.release); 
-      const stopT = Math.max(t, (voice.startTime || t) + 0.02);
+      const stopT = Math.max(t, (voice.startTime || t) + 0.015);
       
       try {
         voice.voiceGain.gain.cancelScheduledValues(stopT);
-        const curValue = voice.voiceGain.gain.value;
-        const startReleaseVal = (curValue > 0.0001) ? curValue : (voice.targetGain || 0.05);
-        voice.voiceGain.gain.setValueAtTime(startReleaseVal, stopT);
-        voice.voiceGain.gain.setTargetAtTime(0.0001, stopT, Math.max(0.02, rel / 3.0));
+        voice.voiceGain.gain.setTargetAtTime(0.0001, stopT, Math.max(0.015, rel / 3.0));
       } catch(e) {}
 
       const durationMs = Math.max(40, (stopT - now + rel + 0.1) * 1000);
@@ -2254,11 +2255,21 @@
       });
     }
 
-    let latchInst = 'dx7bass';
+    let latchInst = 'analog';
     const latchInstSelect = document.getElementById('latch-inst-select');
     if (latchInstSelect) {
       latchInstSelect.addEventListener('change', (e) => {
         latchInst = e.target.value;
+        if (currentLatchedChord) {
+          if (currentPadVoices.length > 0) {
+            currentPadVoices.forEach(v => stopChordNote(v));
+            currentPadVoices = [];
+          }
+          const mode = document.getElementById('latch-mode-select') ? document.getElementById('latch-mode-select').value : 'off';
+          if (mode === 'pad') {
+            currentPadVoices = triggerPadVoices(currentLatchedChord.rootMidi, currentLatchedChord.baseQual);
+          }
+        }
       });
     }
 
