@@ -382,6 +382,50 @@
       .seq-pad { height: 26px; }
     }
 
+    /* 3RD MAIN TAB: MATRIX & SYNTH LAB */
+    .matrix-mode-view {
+      display: none; flex: 1; flex-direction: column; padding: 8px 12px; gap: 8px; overflow-y: auto;
+      touch-action: pan-y !important; -webkit-overflow-scrolling: touch;
+    }
+    .matrix-mode-view.active { display: flex; }
+    .matrix-header-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+      background: rgba(7, 11, 16, 0.7); padding: 6px 12px; border-radius: 14px; border: 1px solid var(--panel-border);
+    }
+    .matrix-title-group { display: flex; align-items: center; gap: 6px; }
+    .matrix-body-grid { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .matrix-lfo-card { background: rgba(15, 23, 36, 0.85); border: 1px solid rgba(14, 165, 233, 0.25); }
+    .matrix-steps-card { background: rgba(10, 16, 26, 0.9); flex: 1; display: flex; flex-direction: column; overflow-x: auto; }
+    
+    .matrix-steps-container {
+      display: grid; grid-template-columns: repeat(16, 1fr); gap: 4px; padding: 6px 0; flex: 1; min-width: 620px;
+    }
+    .matrix-step-col {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; background: rgba(255,255,255,0.02);
+      border: 1px solid var(--panel-border); border-radius: 10px; padding: 6px 2px; position: relative; transition: all 0.15s;
+    }
+    .matrix-step-col.active-step {
+      border-color: var(--accent); background: rgba(14, 165, 233, 0.15); box-shadow: 0 0 10px var(--accent-glow);
+    }
+    .matrix-step-col.active-step .step-num { color: var(--accent-hover); font-weight: 900; }
+    
+    .step-num { font-size: 0.58rem; font-weight: 800; color: var(--text-dim); }
+    .step-pitch-slider {
+      writing-mode: bt-lr; -webkit-appearance: slider-vertical; width: 14px; height: 95px;
+      outline: none; cursor: pointer; accent-color: var(--accent-hover);
+    }
+    .step-pitch-val { font-size: 0.6rem; font-weight: 800; color: var(--accent-hover); font-family: 'Outfit', sans-serif; }
+    .step-gate-btn {
+      width: 26px; height: 22px; background: rgba(255,255,255,0.04); border: 1px solid var(--panel-border);
+      border-radius: 6px; font-size: 0.58rem; font-weight: 800; color: var(--text-muted); cursor: pointer; outline: none;
+    }
+    .step-gate-btn.on { background: var(--accent); color: #fff; border-color: var(--accent-hover); box-shadow: 0 0 8px var(--accent-glow); }
+    .step-slide-btn {
+      width: 26px; height: 18px; background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border);
+      border-radius: 4px; font-size: 0.52rem; font-weight: 700; color: var(--text-dim); cursor: pointer; outline: none;
+    }
+    .step-slide-btn.on { background: var(--accent-amber); color: #000; border-color: var(--accent-amber); font-weight: 800; }
+
     /* =========================================
        SISTEMA DE TEMAS VISUALES POR ÉPOCAS (THEMES)
        ========================================= */
@@ -603,6 +647,7 @@
         <div class="pill-group">
           <button class="ctrl-btn active" id="btn-mode-chords">🎼 Acordes</button>
           <button class="ctrl-btn" id="btn-mode-keyboard">🎹 Teclado Lead</button>
+          <button class="ctrl-btn" id="btn-mode-matrix">🌀 Matrix / Lab</button>
         </div>
 
         <div class="pill-group presets-group">
@@ -795,6 +840,30 @@
             <option value="1x">1x (Redonda)</option>
             <option value="2x">2x (Blancas)</option>
             <option value="4x">4x (Negras)</option>
+            <optgroup label="Arpegiador (Arp)">
+              <option value="arp_up">⚡ Arp Subida (1/16)</option>
+              <option value="arp_down">⚡ Arp Bajada (1/16)</option>
+              <option value="arp_updown">⚡ Arp Subida/Bajada</option>
+              <option value="arp_random">👾 Arp Random S&H</option>
+              <option value="on_the_run">🌀 On The Run (8-Step)</option>
+              <option value="custom_lab">🧪 Secuencia Lab (16-Pasos)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="pill-group" style="padding: 2px 6px;">
+          <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; margin-right:4px;">INST LATCH:</span>
+          <select id="latch-inst-select" class="inst-select" style="background:transparent; border:none; color:var(--accent-hover); font-size:0.72rem; font-weight:800; cursor:pointer; max-width:115px;">
+            <option value="dx7bass" selected>⚡ DX7 Solid Bass</option>
+            <option value="analog">🎹 Synth Pad</option>
+            <option value="dx7ep">🎹 DX7 E-Piano 1</option>
+            <option value="acidbass">⚡ Bajo Ácido (303)</option>
+            <option value="strings">🎻 Cuerdas Caoticas</option>
+            <option value="organ">🎹 Órgano Hammond</option>
+            <option value="guitar">🎸 Guitarra Eléctrica</option>
+            <option value="8bit">👾 8-Bit Chiptune</option>
+            <option value="crystal">🍷 Cristal Mágico</option>
+            <option value="sweep">🔫 Laser Sweep</option>
+            <option value="alien">🛸 Alienígena</option>
           </select>
         </div>
         <div class="pill-group" style="padding: 2px 6px;">
@@ -821,6 +890,93 @@
       </div>
 
       <div class="touch-keyboard style-piano" id="touch-keyboard"></div>
+    </div>
+
+    <!-- VISTA 3ª PESTAÑA: MATRIX & SYNTH LAB (SECUENCIADOR ANALÓGICO & LFO) -->
+    <div class="matrix-mode-view" id="matrix-mode-view">
+      <div class="matrix-header-bar">
+        <div class="matrix-title-group">
+          <span style="font-size:0.9rem;">🌀</span>
+          <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:0.8rem; letter-spacing:1px; color:var(--accent-hover);">ANALOG MATRIX & SYNTH LAB</span>
+        </div>
+
+        <div class="pill-group">
+          <button class="ctrl-btn play-beat-btn" id="btn-matrix-run" style="padding: 4px 12px !important;" title="Encender / Detener bucle en segundo plano">
+            <span class="led-dot"></span>
+            <span class="btn-label">▶ RUN MATRIX</span>
+          </button>
+          <div class="pill-divider"></div>
+          <button class="ctrl-btn" id="btn-matrix-rand" title="Generar patrón aleatorio">🎲 Random</button>
+          <button class="ctrl-btn" id="btn-matrix-reset" title="Reiniciar pasos">↺ Reset</button>
+        </div>
+
+        <div class="pill-group">
+          <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; margin-right:4px;">INST MATRIX:</span>
+          <select id="matrix-inst-select" class="inst-select" style="max-width:120px;">
+            <option value="acidbass" selected>⚡ Bajo Ácido (303)</option>
+            <option value="dx7bass">⚡ DX7 Solid Bass</option>
+            <option value="analog">🎹 Synth Pad</option>
+            <option value="dx7ep">🎹 DX7 E-Piano 1</option>
+            <option value="strings">🎻 Cuerdas Caoticas</option>
+            <option value="organ">🎹 Órgano Hammond</option>
+            <option value="guitar">🎸 Guitarra Eléctrica</option>
+            <option value="8bit">👾 8-Bit Chiptune</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="matrix-body-grid">
+        <!-- SECCIÓN LFO SWEEP & FILTER RESONANCE -->
+        <div class="rack-card matrix-lfo-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">🌊</span>
+              <span class="card-title">MODULACIÓN LFO & FILTER SWEEP (PINK FLOYD LAB)</span>
+            </div>
+          </div>
+          <div class="params-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="param-group">
+              <label><span>Onda LFO</span></label>
+              <select id="matrix-lfo-wave" class="subdiv-select" style="height:24px; font-size:0.68rem; font-weight:800;">
+                <option value="sample_hold" selected>Sample & Hold (Aleatorio S&H)</option>
+                <option value="triangle">Triangular (Sweeper)</option>
+                <option value="sine">Senoidal (Suave)</option>
+                <option value="sawtooth">Diente de Sierra</option>
+                <option value="square">Cuadrada (Trémolo)</option>
+              </select>
+            </div>
+            <div class="param-group">
+              <label><span>Velocidad Rate</span> <span id="val-matrix-lfo-rate">1/16</span></label>
+              <select id="matrix-lfo-subdiv" class="subdiv-select" style="height:24px; font-size:0.68rem; font-weight:800;">
+                <option value="0.25" selected>1/16 Semicorchea</option>
+                <option value="0.5">1/8 Corchea</option>
+                <option value="1.0">1/4 Negra</option>
+                <option value="2.0">1/2 Blanca</option>
+                <option value="4.0">1 Compás</option>
+              </select>
+            </div>
+            <div class="param-group">
+              <label><span>Barrido Depth</span> <span id="val-matrix-lfo-depth">75%</span></label>
+              <input type="range" id="p-matrix-lfo-depth" min="0" max="1" step="0.05" value="0.75">
+            </div>
+            <div class="param-group">
+              <label><span>Resonancia Q</span> <span id="val-matrix-q">6.0</span></label>
+              <input type="range" id="p-matrix-q" min="0.5" max="18" step="0.5" value="6.0">
+            </div>
+          </div>
+        </div>
+
+        <!-- MATRIX STEPS GRID (16 PASOS) -->
+        <div class="rack-card matrix-steps-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-icon">🎚️</span>
+              <span class="card-title">MATRIZ DE PASOS (STEP PITCH, GATE & SLIDE)</span>
+            </div>
+          </div>
+          <div class="matrix-steps-container" id="matrix-steps-container"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1363,7 +1519,7 @@
 
     function checkStopClock() {
       const mode = document.getElementById('latch-mode-select') ? document.getElementById('latch-mode-select').value : 'off';
-      const needsClock = isPlayingDrums || (currentLatchedChord && ['1x', '2x', '4x'].includes(mode));
+      const needsClock = isPlayingDrums || isMatrixRunning || (currentLatchedChord && (['1x', '2x', '4x'].includes(mode) || mode.startsWith('arp_') || mode === 'on_the_run' || mode === 'custom_lab'));
       if (!needsClock && isClockRunning) {
         isClockRunning = false;
         if (timerID) { window.clearTimeout(timerID); timerID = null; }
@@ -1399,23 +1555,123 @@
         if (p.ride && p.ride[stepNumber]) playRide(time);
       }
 
-      // DISPARO RÍTMICO DE ACORDES LATCH (1x, 2x, 4x)
+      // DISPARO RÍTMICO DE ACORDES LATCH & ARPEGIADOR (Arp Up, Down, Random, On The Run, Custom Lab)
       const curMode = document.getElementById('latch-mode-select') ? document.getElementById('latch-mode-select').value : 'off';
-      if (currentLatchedChord && ['1x', '2x', '4x'].includes(curMode)) {
+      if (currentLatchedChord) {
         const beatDur = 60.0 / synthParams.bpm;
         let shouldTrigger = false;
         let gate = beatDur * 0.75;
+        let arpMidi = null;
 
-        if (curMode === '1x' && stepNumber === 0) {
-          shouldTrigger = true; gate = beatDur * 3.4;
-        } else if (curMode === '2x' && (stepNumber === 0 || stepNumber === 8)) {
-          shouldTrigger = true; gate = beatDur * 1.7;
-        } else if (curMode === '4x' && (stepNumber % 4 === 0)) {
-          shouldTrigger = true; gate = beatDur * 0.75;
+        if (['1x', '2x', '4x'].includes(curMode)) {
+          if (curMode === '1x' && stepNumber === 0) { shouldTrigger = true; gate = beatDur * 3.4; }
+          else if (curMode === '2x' && (stepNumber === 0 || stepNumber === 8)) { shouldTrigger = true; gate = beatDur * 1.7; }
+          else if (curMode === '4x' && (stepNumber % 4 === 0)) { shouldTrigger = true; gate = beatDur * 0.75; }
+
+          if (shouldTrigger) {
+            playChordStab(currentLatchedChord.rootMidi, currentLatchedChord.baseQual, time, gate);
+          }
+        } else if (curMode.startsWith('arp_') || curMode === 'on_the_run' || curMode === 'custom_lab') {
+          const chordTones = getIntervalsAndName(currentLatchedChord.baseQual, currentMod).i;
+          const lVol = (synthParams.latchVol !== undefined) ? synthParams.latchVol : 1.0;
+          gate = beatDur * 0.22;
+
+          if (curMode === 'arp_up') {
+            const stepIdx = stepNumber % chordTones.length;
+            arpMidi = currentLatchedChord.rootMidi + chordTones[stepIdx];
+          } else if (curMode === 'arp_down') {
+            const revIdx = (chordTones.length - 1 - (stepNumber % chordTones.length));
+            arpMidi = currentLatchedChord.rootMidi + chordTones[revIdx];
+          } else if (curMode === 'arp_updown') {
+            const cycleLen = Math.max(1, (chordTones.length * 2) - 2);
+            const pos = stepNumber % cycleLen;
+            const idx = pos < chordTones.length ? pos : cycleLen - pos;
+            arpMidi = currentLatchedChord.rootMidi + chordTones[idx];
+          } else if (curMode === 'arp_random') {
+            const rndIdx = Math.floor(Math.random() * chordTones.length);
+            arpMidi = currentLatchedChord.rootMidi + chordTones[rndIdx];
+          } else if (curMode === 'on_the_run') {
+            // Secuenciador EMS Synthi (Pink Floyd On The Run 8-Step)
+            const onTheRunPattern = [0, 3, 7, 12, 10, 7, 15, 12];
+            const pIdx = stepNumber % 8;
+            arpMidi = currentLatchedChord.rootMidi + onTheRunPattern[pIdx];
+          } else if (curMode === 'custom_lab') {
+            // Secuenciador de la 3ª pestaña Matrix / Lab transponible por el acorde latcheado
+            const step = matrixSteps[stepNumber % 16];
+            if (step && step.gate) {
+              arpMidi = currentLatchedChord.rootMidi + step.pitch;
+              if (step.slide) gate = beatDur * 0.48;
+            }
+          }
+
+          if (arpMidi !== null) {
+            const v = playChordNote(arpMidi, latchInst, false, false, time, null, lVol);
+            if (curMode === 'custom_lab' && v && v.filterNode) {
+              const lfoWave = document.getElementById('matrix-lfo-wave') ? document.getElementById('matrix-lfo-wave').value : 'sample_hold';
+              const lfoDepth = document.getElementById('p-matrix-lfo-depth') ? parseFloat(document.getElementById('p-matrix-lfo-depth').value) : 0.75;
+              const qVal = document.getElementById('p-matrix-q') ? parseFloat(document.getElementById('p-matrix-q').value) : 6.0;
+
+              v.filterNode.Q.setValueAtTime(qVal, time);
+              let targetCutoff = synthParams.cutoff;
+              if (lfoWave === 'sample_hold') {
+                const rndMult = 0.35 + (Math.random() * 2.8 * lfoDepth);
+                targetCutoff = Math.min(14000, Math.max(120, synthParams.cutoff * rndMult));
+                v.filterNode.frequency.setValueAtTime(targetCutoff, time);
+              } else if (lfoWave === 'triangle' || lfoWave === 'sine') {
+                const phase = (stepNumber % 8) / 8;
+                const factor = 0.5 + 2.5 * Math.sin(phase * Math.PI) * lfoDepth;
+                targetCutoff = Math.min(14000, Math.max(120, synthParams.cutoff * factor));
+                v.filterNode.frequency.setTargetAtTime(targetCutoff, time, 0.05);
+              } else if (lfoWave === 'sawtooth') {
+                v.filterNode.frequency.setValueAtTime(Math.min(14000, synthParams.cutoff * (1 + 3 * lfoDepth)), time);
+                v.filterNode.frequency.exponentialRampToValueAtTime(Math.max(100, synthParams.cutoff * 0.5), time + gate);
+              }
+            }
+            stopChordNote(v, time + gate);
+          }
         }
+      }
 
-        if (shouldTrigger) {
-          playChordStab(currentLatchedChord.rootMidi, currentLatchedChord.baseQual, time, gate);
+      // 3. SECUENCIADOR ANALÓGICO MATRIX & LFO SWEEP (SEGUNDO PLANO)
+      if (isMatrixRunning) {
+        const step = matrixSteps[stepNumber % 16];
+        setTimeout(() => {
+          document.querySelectorAll('.matrix-step-col').forEach(c => c.classList.remove('active-step'));
+          const col = document.getElementById('matrix-step-col-' + (stepNumber % 16));
+          if (col) col.classList.add('active-step');
+        }, Math.max(0, (time - actx.currentTime) * 1000));
+
+        if (step && step.gate) {
+          const beatDur = 60.0 / synthParams.bpm;
+          const rootMidi = 48 + keyOffset;
+          const midi = rootMidi + step.pitch;
+          const lVol = (synthParams.latchVol !== undefined) ? synthParams.latchVol : 1.0;
+          const gateDur = step.slide ? beatDur * 0.48 : beatDur * 0.24;
+
+          const lfoWave = document.getElementById('matrix-lfo-wave') ? document.getElementById('matrix-lfo-wave').value : 'sample_hold';
+          const lfoDepth = document.getElementById('p-matrix-lfo-depth') ? parseFloat(document.getElementById('p-matrix-lfo-depth').value) : 0.75;
+          const qVal = document.getElementById('p-matrix-q') ? parseFloat(document.getElementById('p-matrix-q').value) : 6.0;
+
+          const voice = playChordNote(midi, matrixInst, false, false, time, null, lVol);
+          if (voice && voice.filterNode) {
+            voice.filterNode.Q.setValueAtTime(qVal, time);
+            
+            let targetCutoff = synthParams.cutoff;
+            if (lfoWave === 'sample_hold') {
+              const rndMult = 0.35 + (Math.random() * 2.8 * lfoDepth);
+              targetCutoff = Math.min(14000, Math.max(120, synthParams.cutoff * rndMult));
+              voice.filterNode.frequency.setValueAtTime(targetCutoff, time);
+            } else if (lfoWave === 'triangle' || lfoWave === 'sine') {
+              const phase = (stepNumber % 8) / 8;
+              const factor = 0.5 + 2.5 * Math.sin(phase * Math.PI) * lfoDepth;
+              targetCutoff = Math.min(14000, Math.max(120, synthParams.cutoff * factor));
+              voice.filterNode.frequency.setTargetAtTime(targetCutoff, time, 0.05);
+            } else if (lfoWave === 'sawtooth') {
+              voice.filterNode.frequency.setValueAtTime(Math.min(14000, synthParams.cutoff * (1 + 3 * lfoDepth)), time);
+              voice.filterNode.frequency.exponentialRampToValueAtTime(Math.max(100, synthParams.cutoff * 0.5), time + gateDur);
+            }
+          }
+          stopChordNote(voice, time + gateDur);
         }
       }
     }
@@ -1744,30 +2000,170 @@
     let currentLatchedChord = null, currentPadVoices = [];
     let lastLeadFreq = null;
 
+    // ESTADO MATRIX SEQUENCER & SYNTH LAB (3ª PESTAÑA)
+    let isMatrixRunning = false;
+    let matrixInst = 'acidbass';
+    let matrixSteps = [];
+    const DEFAULT_MATRIX_PATTERN = [0, 3, 7, 12, 10, 7, 15, 12, 0, 3, 5, 7, 10, 8, 7, 3];
+    for (let i = 0; i < 16; i++) {
+      matrixSteps.push({
+        pitch: DEFAULT_MATRIX_PATTERN[i],
+        gate: true,
+        slide: i % 4 === 2
+      });
+    }
+
     const btnModeChords = document.getElementById('btn-mode-chords');
     const btnModeKeyboard = document.getElementById('btn-mode-keyboard');
+    const btnModeMatrix = document.getElementById('btn-mode-matrix');
     const chordsModeView = document.getElementById('chords-mode-view');
     const keyboardModeView = document.getElementById('keyboard-mode-view');
+    const matrixModeView = document.getElementById('matrix-mode-view');
     const strumSection = document.getElementById('strum-section');
     const latchSelect = document.getElementById('latch-mode-select');
     const btnStopLatch = document.getElementById('btn-stop-latch');
 
     function setAppMode(mode) {
       currentAppMode = mode;
+      btnModeChords.classList.remove('active');
+      btnModeKeyboard.classList.remove('active');
+      if (btnModeMatrix) btnModeMatrix.classList.remove('active');
+
+      chordsModeView.style.display = 'none';
+      keyboardModeView.classList.remove('active');
+      if (matrixModeView) matrixModeView.classList.remove('active');
+      strumSection.style.display = 'none';
+
       if (mode === 'chords') {
-        btnModeChords.classList.add('active'); btnModeKeyboard.classList.remove('active');
-        chordsModeView.style.display = 'flex'; keyboardModeView.classList.remove('active');
+        btnModeChords.classList.add('active');
+        chordsModeView.style.display = 'flex';
         strumSection.style.display = 'flex';
-      } else {
-        btnModeKeyboard.classList.add('active'); btnModeChords.classList.remove('active');
-        chordsModeView.style.display = 'none'; keyboardModeView.classList.add('active');
-        strumSection.style.display = 'none'; buildTouchKeyboard();
+      } else if (mode === 'keyboard') {
+        btnModeKeyboard.classList.add('active');
+        keyboardModeView.classList.add('active');
+        buildTouchKeyboard();
+      } else if (mode === 'matrix') {
+        if (btnModeMatrix) btnModeMatrix.classList.add('active');
+        if (matrixModeView) matrixModeView.classList.add('active');
+        renderMatrixGrid();
       }
       updateUI();
     }
 
     btnModeChords.addEventListener('pointerdown', () => setAppMode('chords'));
     btnModeKeyboard.addEventListener('pointerdown', () => setAppMode('keyboard'));
+    if (btnModeMatrix) btnModeMatrix.addEventListener('pointerdown', () => setAppMode('matrix'));
+
+    function renderMatrixGrid() {
+      const container = document.getElementById('matrix-steps-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (let i = 0; i < 16; i++) {
+        const step = matrixSteps[i];
+        const col = document.createElement('div');
+        col.className = 'matrix-step-col' + (currentStep === i && isMatrixRunning ? ' active-step' : '');
+        col.id = 'matrix-step-col-' + i;
+
+        col.innerHTML = `
+          <span class="step-num">${i + 1}</span>
+          <span class="step-pitch-val" id="step-pitch-val-${i}">${step.pitch >= 0 ? '+' + step.pitch : step.pitch}</span>
+          <input type="range" class="step-pitch-slider" id="step-pitch-slider-${i}" min="-12" max="24" step="1" value="${step.pitch}">
+          <button class="step-gate-btn ${step.gate ? 'on' : ''}" id="step-gate-btn-${i}">${step.gate ? 'ON' : 'OFF'}</button>
+          <button class="step-slide-btn ${step.slide ? 'on' : ''}" id="step-slide-btn-${i}">${step.slide ? 'SLIDE' : 'FIX'}</button>
+        `;
+
+        container.appendChild(col);
+
+        const slider = col.querySelector(`#step-pitch-slider-${i}`);
+        const valSpan = col.querySelector(`#step-pitch-val-${i}`);
+        const gateBtn = col.querySelector(`#step-gate-btn-${i}`);
+        const slideBtn = col.querySelector(`#step-slide-btn-${i}`);
+
+        slider.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value);
+          matrixSteps[i].pitch = val;
+          valSpan.innerText = val >= 0 ? '+' + val : val;
+        });
+
+        gateBtn.addEventListener('pointerdown', () => {
+          matrixSteps[i].gate = !matrixSteps[i].gate;
+          gateBtn.classList.toggle('on', matrixSteps[i].gate);
+          gateBtn.innerText = matrixSteps[i].gate ? 'ON' : 'OFF';
+        });
+
+        slideBtn.addEventListener('pointerdown', () => {
+          matrixSteps[i].slide = !matrixSteps[i].slide;
+          slideBtn.classList.toggle('on', matrixSteps[i].slide);
+          slideBtn.innerText = matrixSteps[i].slide ? 'SLIDE' : 'FIX';
+        });
+      }
+    }
+
+    function toggleRunMatrix() {
+      initAudio();
+      isMatrixRunning = !isMatrixRunning;
+      const bRun = document.getElementById('btn-matrix-run');
+      if (isMatrixRunning) {
+        if (actx.state === 'suspended') actx.resume();
+        if (bRun) { bRun.innerHTML = '<span class="led-dot"></span><span class="btn-label">■ STOP MATRIX</span>'; bRun.classList.add('playing'); }
+        ensureClock();
+      } else {
+        if (bRun) { bRun.innerHTML = '<span class="led-dot"></span><span class="btn-label">▶ RUN MATRIX</span>'; bRun.classList.remove('playing'); }
+        checkStopClock();
+      }
+    }
+
+    const btnMatrixRun = document.getElementById('btn-matrix-run');
+    if (btnMatrixRun) btnMatrixRun.addEventListener('pointerdown', toggleRunMatrix);
+
+    const btnMatrixRand = document.getElementById('btn-matrix-rand');
+    if (btnMatrixRand) {
+      btnMatrixRand.addEventListener('pointerdown', () => {
+        const intervals = [0, 3, 5, 7, 10, 12, 14, 15, 17, 19];
+        for (let i = 0; i < 16; i++) {
+          matrixSteps[i].pitch = intervals[Math.floor(Math.random() * intervals.length)];
+          matrixSteps[i].gate = Math.random() > 0.15;
+          matrixSteps[i].slide = Math.random() > 0.7;
+        }
+        renderMatrixGrid();
+      });
+    }
+
+    const btnMatrixReset = document.getElementById('btn-matrix-reset');
+    if (btnMatrixReset) {
+      btnMatrixReset.addEventListener('pointerdown', () => {
+        for (let i = 0; i < 16; i++) {
+          matrixSteps[i].pitch = DEFAULT_MATRIX_PATTERN[i];
+          matrixSteps[i].gate = true;
+          matrixSteps[i].slide = (i % 4 === 2);
+        }
+        renderMatrixGrid();
+      });
+    }
+
+    const matrixInstSelect = document.getElementById('matrix-inst-select');
+    if (matrixInstSelect) {
+      matrixInstSelect.addEventListener('change', (e) => { matrixInst = e.target.value; });
+    }
+
+    const pMatrixDepth = document.getElementById('p-matrix-lfo-depth');
+    if (pMatrixDepth) {
+      updateSliderFill(pMatrixDepth);
+      pMatrixDepth.addEventListener('input', (e) => {
+        updateSliderFill(e.target);
+        document.getElementById('val-matrix-lfo-depth').innerText = Math.round(parseFloat(e.target.value) * 100) + '%';
+      });
+    }
+
+    const pMatrixQ = document.getElementById('p-matrix-q');
+    if (pMatrixQ) {
+      updateSliderFill(pMatrixQ);
+      pMatrixQ.addEventListener('input', (e) => {
+        updateSliderFill(e.target);
+        document.getElementById('val-matrix-q').innerText = parseFloat(e.target.value).toFixed(1);
+      });
+    }
 
     function stopAllLatchedChords() {
       if (currentPadVoices.length > 0) {
@@ -1826,12 +2222,20 @@
       });
     }
 
+    let latchInst = 'dx7bass';
+    const latchInstSelect = document.getElementById('latch-inst-select');
+    if (latchInstSelect) {
+      latchInstSelect.addEventListener('change', (e) => {
+        latchInst = e.target.value;
+      });
+    }
+
     function playChordStab(rootMidi, baseQual, time, dur) {
       const intervals = getIntervalsAndName(baseQual, currentMod).i;
       const lVol = (synthParams.latchVol !== undefined) ? synthParams.latchVol : 1.0;
       intervals.forEach((iv, i) => {
         const voiceMidi = rootMidi + iv;
-        const v = playChordNote(voiceMidi, currentInst, i === 0, false, time, null, lVol);
+        const v = playChordNote(voiceMidi, latchInst, i === 0, false, time, null, lVol);
         stopChordNote(v, time + dur);
       });
     }
@@ -1843,7 +2247,7 @@
       const lVol = (synthParams.latchVol !== undefined) ? synthParams.latchVol : 1.0;
       intervals.forEach((iv, i) => {
         const voiceMidi = rootMidi + iv;
-        const v = playChordNote(voiceMidi, currentInst, i === 0, false, now, null, lVol);
+        const v = playChordNote(voiceMidi, latchInst, i === 0, false, now, null, lVol);
         voices.push(v);
       });
       return voices;
@@ -2205,6 +2609,7 @@
     function getPresetData() {
       return {
         inst: currentInst,
+        latchInst: latchInst,
         theme: document.getElementById('theme-select') ? document.getElementById('theme-select').value : 'cyber',
         scaleIdx: currentScaleIdx,
         keyOffset,
@@ -2227,11 +2632,17 @@
     function applyPresetData(d) {
       if (!d) return;
       if (d.theme) applyTheme(d.theme);
-      // Instrumento
+      // Instrumento Teclado
       currentInst = d.inst || 'analog';
       document.getElementById('inst-select').value = currentInst;
       if (currentInst === 'custom') document.getElementById('custom-fm-panel').classList.add('visible');
       else { document.getElementById('custom-fm-panel').classList.remove('visible'); applyInstrumentDefaults(currentInst); }
+      // Instrumento Latch
+      if (d.latchInst) {
+        latchInst = d.latchInst;
+        const sel = document.getElementById('latch-inst-select');
+        if (sel) sel.value = latchInst;
+      }
       // Escala y tono
       if (d.scaleIdx !== undefined) currentScaleIdx = d.scaleIdx;
       if (d.keyOffset !== undefined) keyOffset = d.keyOffset;
