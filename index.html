@@ -690,7 +690,13 @@
           <button class="ctrl-btn" id="btn-svol-up">+</button>
         </div>
 
-        <button class="ctrl-btn play-beat-btn" id="btn-top-beat" style="padding: 4px 10px !important;" title="Iniciar / Detener Ritmo">
+        <div class="pill-group">
+          <button class="ctrl-btn btn-bpm-down">-</button>
+          <span class="val-bpm val-badge">120 BPM</span>
+          <button class="ctrl-btn btn-bpm-up">+</button>
+        </div>
+
+        <button class="ctrl-btn play-beat-btn btn-top-beat" style="padding: 4px 10px !important;" title="Iniciar / Detener Ritmo">
           <span class="led-dot"></span>
           <span class="btn-label">▶ BEAT</span>
         </button>
@@ -793,7 +799,7 @@
               </div>
               <div class="pill-group">
                 <button class="ctrl-btn" id="btn-dvol-down">-</button>
-                <span id="val-dvol" class="val-badge">60%</span>
+                <span id="val-dvol" class="val-badge">10%</span>
                 <button class="ctrl-btn" id="btn-dvol-up">+</button>
               </div>
             </div>
@@ -859,6 +865,19 @@
     <!-- VISTA TECLADO LEAD -->
     <div class="keyboard-mode-view" id="keyboard-mode-view">
       <div class="kb-top-bar">
+        <div class="pill-group" style="padding: 2px 6px; border-color: rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.08);">
+          <button class="ctrl-btn play-beat-btn btn-top-beat" style="padding: 3px 8px !important; font-size:0.68rem;" title="Iniciar / Detener Ritmo">
+            <span class="led-dot"></span>
+            <span class="btn-label">▶ BEAT</span>
+          </button>
+          <button class="btn-stop-latch ctrl-btn" style="display:none; padding:3px 8px; font-size:0.68rem; background:rgba(225,29,72,0.25); border:1px solid #e11d48; color:#f43f5e; font-weight:800;" title="Detener Acorde / Arpegiador Latcheado">
+            ⏹ STOP LATCH
+          </button>
+          <button class="btn-stop-all ctrl-btn" style="padding:3px 6px; font-size:0.65rem; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fbbf24; font-weight:800;" title="Silenciar todo (Stop All)">
+            🛑 STOP ALL
+          </button>
+        </div>
+
         <div class="pill-group" style="padding: 2px 6px;">
           <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; margin-right:4px;">LATCH:</span>
           <select id="latch-mode-select" class="inst-select" style="background:transparent; border:none; color:var(--accent-hover); font-size:0.72rem; font-weight:800; cursor:pointer;">
@@ -877,6 +896,7 @@
             </optgroup>
           </select>
         </div>
+
         <div class="pill-group" style="padding: 2px 6px;">
           <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; margin-right:4px;">INST LATCH:</span>
           <select id="latch-inst-select" class="inst-select" style="background:transparent; border:none; color:var(--accent-hover); font-size:0.72rem; font-weight:800; cursor:pointer; max-width:115px;">
@@ -893,18 +913,25 @@
             <option value="alien">🛸 Alienígena</option>
           </select>
         </div>
+
+        <div class="pill-group" style="padding: 2px 6px;">
+          <button class="ctrl-btn btn-bpm-down">-</button>
+          <span class="val-bpm val-badge">120 BPM</span>
+          <button class="ctrl-btn btn-bpm-up">+</button>
+        </div>
+
         <div class="pill-group" style="padding: 2px 6px;">
           <button class="ctrl-btn" id="btn-lvol-down">-</button>
           <span id="val-lvol" style="font-size:0.68rem; font-weight:800; min-width:38px; text-align:center; color:#fff;">75% 🎹</span>
           <button class="ctrl-btn" id="btn-lvol-up">+</button>
         </div>
+
         <div class="pill-group" style="padding: 2px 6px;">
           <button class="ctrl-btn" id="btn-oct-down">- OCT</button>
           <span id="val-oct-display" style="font-size:0.72rem; font-weight:800; min-width:28px; text-align:center; color:#fff;">C4</span>
           <button class="ctrl-btn" id="btn-oct-up">+ OCT</button>
         </div>
         <button class="ctrl-btn active" id="btn-toggle-scale-guide" title="Resaltar las teclas recomendadas para la escala elegida y atenuar las notas ajenas">✨ Escala Guiada</button>
-        <button id="btn-stop-latch" class="ctrl-btn" style="display:none; padding:4px 8px; font-size:0.65rem; background:rgba(225,29,72,0.2); border:1px solid #e11d48; color:#f43f5e;">⏹ Parar</button>
       </div>
 
       <div id="mini-chords-container" class="mini-chords-row"></div>
@@ -921,10 +948,20 @@
         </div>
 
         <div class="pill-group">
+          <button class="ctrl-btn play-beat-btn btn-top-beat" style="padding: 4px 10px !important;" title="Iniciar / Detener Ritmo">
+            <span class="led-dot"></span>
+            <span class="btn-label">▶ BEAT</span>
+          </button>
           <button class="ctrl-btn play-beat-btn" id="btn-matrix-run" style="padding: 4px 12px !important;" title="Encender / Detener bucle en segundo plano">
             <span class="led-dot"></span>
             <span class="btn-label">▶ RUN MATRIX</span>
           </button>
+          <div class="pill-divider"></div>
+          <button class="ctrl-btn btn-bpm-down">-</button>
+          <span class="val-bpm val-badge">120 BPM</span>
+          <button class="ctrl-btn btn-bpm-up">+</button>
+          <div class="pill-divider"></div>
+          <button class="btn-stop-all ctrl-btn" style="padding:3px 6px; font-size:0.65rem; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fbbf24; font-weight:800;" title="Silenciar todo (Stop All)">🛑 STOP ALL</button>
           <div class="pill-divider"></div>
           <button class="ctrl-btn" id="btn-matrix-rand" title="Generar patrón aleatorio">🎲 Random</button>
           <button class="ctrl-btn" id="btn-matrix-reset" title="Reiniciar pasos">↺ Reset</button>
@@ -1043,7 +1080,7 @@
       swing: { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], deepkick:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], openhat:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], ride:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0] }
     };
 
-    const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.65, synthVol: 0.75, latchVol: 0.75 };
+    const synthParams = { attack: 0.05, release: 1.5, cutoff: 800, echo: 0.2, glide: 0.05, bpm: 120, drumVol: 0.10, synthVol: 0.75, latchVol: 0.75 };
     const INST_DEFAULTS = {
       dx7ep: { attack: 0.005, release: 2.2, cutoff: 3600, echo: 0.25, glide: 0.01 },
       dx7bass: { attack: 0.005, release: 0.45, cutoff: 2400, echo: 0.05, glide: 0.02 },
@@ -1225,7 +1262,32 @@
       if (reverbGain) reverbGain.gain.value = synthParams.reverb;
     });
 
-    // Long-press helper para botones de incremento
+    function setBPM(val) {
+      synthParams.bpm = Math.max(40, Math.min(260, val));
+      document.querySelectorAll('.val-bpm').forEach(el => {
+        el.innerText = synthParams.bpm + ' BPM';
+      });
+      const bBadge = document.getElementById('val-bpm');
+      if (bBadge) bBadge.innerText = synthParams.bpm + ' BPM';
+      updateDelayTime();
+    }
+
+    function makeLongPressForClass(className, onTick) {
+      document.querySelectorAll('.' + className).forEach(btn => {
+        let holdTimer = null, repeatTimer = null;
+        const start = () => {
+          onTick();
+          holdTimer = setTimeout(() => { repeatTimer = setInterval(onTick, 80); }, 500);
+        };
+        const stop = () => { clearTimeout(holdTimer); clearInterval(repeatTimer); holdTimer = null; repeatTimer = null; };
+        btn.addEventListener('pointerdown', start);
+        btn.addEventListener('pointerup', stop);
+        btn.addEventListener('pointercancel', stop);
+        btn.addEventListener('pointerleave', stop);
+      });
+    }
+
+    // Long-press helper para botones de incremento por ID
     function makeLongPress(btnId, onTick) {
       const btn = document.getElementById(btnId);
       if (!btn) return;
@@ -1241,16 +1303,10 @@
       btn.addEventListener('pointerleave', stop);
     }
 
-    makeLongPress('btn-bpm-down', () => {
-      synthParams.bpm = Math.max(40, synthParams.bpm - 1);
-      document.getElementById('val-bpm').innerText = synthParams.bpm + ' BPM';
-      updateDelayTime();
-    });
-    makeLongPress('btn-bpm-up', () => {
-      synthParams.bpm = Math.min(260, synthParams.bpm + 1);
-      document.getElementById('val-bpm').innerText = synthParams.bpm + ' BPM';
-      updateDelayTime();
-    });
+    makeLongPressForClass('btn-bpm-down', () => setBPM(synthParams.bpm - 1));
+    makeLongPressForClass('btn-bpm-up', () => setBPM(synthParams.bpm + 1));
+    makeLongPress('btn-bpm-down', () => setBPM(synthParams.bpm - 1));
+    makeLongPress('btn-bpm-up', () => setBPM(synthParams.bpm + 1));
     makeLongPress('btn-dvol-down', () => {
       synthParams.drumVol = Math.max(0, Math.round((synthParams.drumVol - 0.05) * 100) / 100);
       document.getElementById('val-dvol').innerText = Math.round(synthParams.drumVol * 100) + '%';
@@ -1510,21 +1566,80 @@
     function playRide(time) {
       if (!globalNoiseBuffer) initAudio();
       const isChiptune = document.getElementById('drum-kit').value === 'chiptune';
-      const noiseGain = actx.createGain(); noiseGain.gain.setValueAtTime(0.18, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
-      noiseGain.connect(drumMasterGain);
-      const noise = actx.createBufferSource(); noise.buffer = isChiptune ? globalChiptuneNoiseBuffer : globalNoiseBuffer;
-      const noiseFilter = actx.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 6000;
-      noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noise.start(time); noise.stop(time + 0.45);
-      if (!isChiptune) {
-        const osc1 = actx.createOscillator(); osc1.type = 'square'; osc1.frequency.value = 3200;
-        const osc2 = actx.createOscillator(); osc2.type = 'square'; osc2.frequency.value = 4800;
-        const oscGain = actx.createGain(); oscGain.gain.setValueAtTime(0.08, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
-        const oscFilter = actx.createBiquadFilter(); oscFilter.type = 'highpass'; oscFilter.frequency.value = 2000;
-        osc1.connect(oscFilter); osc2.connect(oscFilter); osc2.connect(oscGain); oscGain.connect(drumMasterGain);
-        osc1.start(time); osc2.start(time); osc1.stop(time + 0.5); osc2.stop(time + 0.5);
-        osc1.onended = () => { try{ osc1.disconnect(); osc2.disconnect(); oscFilter.disconnect(); oscGain.disconnect(); }catch(e){} };
+      
+      if (isChiptune) {
+        const noiseGain = actx.createGain(); 
+        noiseGain.gain.setValueAtTime(0.2, time); 
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+        noiseGain.connect(drumMasterGain);
+        const noise = actx.createBufferSource(); 
+        noise.buffer = globalChiptuneNoiseBuffer;
+        const noiseFilter = actx.createBiquadFilter(); 
+        noiseFilter.type = 'highpass'; 
+        noiseFilter.frequency.value = 3500;
+        noise.connect(noiseFilter); noiseFilter.connect(noiseGain); 
+        noise.start(time); noise.stop(time + 0.14);
+        noise.onended = () => { try{ noise.disconnect(); noiseFilter.disconnect(); noiseGain.disconnect(); }catch(e){} };
+        return;
       }
-      noise.onended = () => { try{ noise.disconnect(); noiseFilter.disconnect(); noiseGain.disconnect(); }catch(e){} };
+
+      // RIDE REAL APAGADO, CORTO Y DE BAJO VOLUMEN
+      // 1. Ruido metálico suave y amortiguado (decay 0.14s, volumen muy suave 0.05)
+      const noiseGain = actx.createGain();
+      noiseGain.gain.setValueAtTime(0.05, time);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.14);
+
+      const noise = actx.createBufferSource();
+      noise.buffer = globalNoiseBuffer;
+
+      // Filtro de banda suavizada entre 3200Hz y 7500Hz (sin agudos estridentes ni frecuencias graves raras)
+      const hpFilter = actx.createBiquadFilter();
+      hpFilter.type = 'highpass';
+      hpFilter.frequency.value = 3200;
+
+      const lpFilter = actx.createBiquadFilter();
+      lpFilter.type = 'lowpass';
+      lpFilter.frequency.value = 7500;
+
+      noise.connect(hpFilter);
+      hpFilter.connect(lpFilter);
+      lpFilter.connect(noiseGain);
+      noiseGain.connect(drumMasterGain);
+
+      noise.start(time);
+      noise.stop(time + 0.15);
+
+      // 2. Armónicos inarmónicos de platillo metálico (matados y de volumen muy bajo 0.025)
+      const cymFreqs = [540, 800, 1080, 1430, 1760, 2150];
+      const cymOscsGains = [];
+      const metalGain = actx.createGain();
+      metalGain.gain.setValueAtTime(0.025, time);
+      metalGain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+
+      const metalBandpass = actx.createBiquadFilter();
+      metalBandpass.type = 'highpass';
+      metalBandpass.frequency.value = 2800;
+
+      cymFreqs.forEach(f => {
+        const osc = actx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.value = f;
+        osc.connect(metalBandpass);
+        osc.start(time);
+        osc.stop(time + 0.13);
+        cymOscsGains.push(osc);
+      });
+
+      metalBandpass.connect(metalGain);
+      metalGain.connect(drumMasterGain);
+
+      noise.onended = () => {
+        try {
+          noise.disconnect(); hpFilter.disconnect(); lpFilter.disconnect(); noiseGain.disconnect();
+          metalBandpass.disconnect(); metalGain.disconnect();
+          cymOscsGains.forEach(o => { try{ o.disconnect(); }catch(e){} });
+        } catch(e) {}
+      };
     }
 
     // RELOJ CENTRAL Y SECUENCIADOR SINCRONIZADO
@@ -1721,16 +1836,22 @@
     function togglePlayDrums() {
       initAudio();
       isPlayingDrums = !isPlayingDrums;
-      const bTop = document.getElementById('btn-top-beat');
+      const bTops = document.querySelectorAll('.btn-top-beat');
       const bCard = document.getElementById('btn-drum-play');
 
       if (isPlayingDrums) {
         if (actx.state === 'suspended') actx.resume();
-        if (bTop) { bTop.innerHTML = '<span class="led-dot"></span><span class="btn-label">■ BEAT</span>'; bTop.classList.add('playing'); }
+        bTops.forEach(b => {
+          b.innerHTML = '<span class="led-dot"></span><span class="btn-label">■ BEAT</span>';
+          b.classList.add('playing');
+        });
         if (bCard) { bCard.innerHTML = '<span class="led-dot"></span><span class="btn-label">■ STOP BEAT</span>'; bCard.classList.add('playing'); }
         ensureClock();
       } else {
-        if (bTop) { bTop.innerHTML = '<span class="led-dot"></span><span class="btn-label">▶ BEAT</span>'; bTop.classList.remove('playing'); }
+        bTops.forEach(b => {
+          b.innerHTML = '<span class="led-dot"></span><span class="btn-label">▶ BEAT</span>';
+          b.classList.remove('playing');
+        });
         if (bCard) { bCard.innerHTML = '<span class="led-dot"></span><span class="btn-label">▶ PLAY BEAT</span>'; bCard.classList.remove('playing'); }
         checkStopClock();
       }
@@ -1738,8 +1859,7 @@
 
     const btnDrumPlay = document.getElementById('btn-drum-play');
     if (btnDrumPlay) btnDrumPlay.addEventListener('pointerdown', togglePlayDrums);
-    const btnTopBeat = document.getElementById('btn-top-beat');
-    if (btnTopBeat) btnTopBeat.addEventListener('pointerdown', togglePlayDrums);
+    document.querySelectorAll('.btn-top-beat').forEach(b => b.addEventListener('pointerdown', togglePlayDrums));
 
     const NOTE_NAMES = ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
     let keyOffset = 0, currentMod = 'center', armedDegree = 0, activeKeys = new Map(); 
@@ -2198,6 +2318,10 @@
       });
     }
 
+    function setStopLatchDisplay(disp) {
+      document.querySelectorAll('.btn-stop-latch').forEach(b => b.style.display = disp);
+    }
+
     function stopAllLatchedChords() {
       if (currentPadVoices.length > 0) {
         currentPadVoices.forEach(v => stopChordNote(v));
@@ -2205,8 +2329,16 @@
       }
       currentLatchedChord = null;
       document.querySelectorAll('.mini-chord-btn').forEach(b => b.classList.remove('latched'));
-      btnStopLatch.style.display = 'none';
+      setStopLatchDisplay('none');
       checkStopClock();
+    }
+
+    function stopAllAudio() {
+      stopAllLatchedChords();
+      if (isPlayingDrums) togglePlayDrums();
+      if (isMatrixRunning) toggleRunMatrix();
+      activeVoicePool.forEach(v => cleanVoice(v));
+      activeVoicePool = [];
     }
 
     latchSelect.addEventListener('change', (e) => {
@@ -2216,7 +2348,7 @@
       } else if (mode === 'pad') {
         checkStopClock();
         if (currentLatchedChord) {
-          btnStopLatch.style.display = 'inline-block';
+          setStopLatchDisplay('inline-block');
           if (currentPadVoices.length > 0) currentPadVoices.forEach(v => stopChordNote(v));
           currentPadVoices = triggerPadVoices(currentLatchedChord.rootMidi, currentLatchedChord.baseQual);
         }
@@ -2226,13 +2358,14 @@
           currentPadVoices = [];
         }
         if (currentLatchedChord) {
-          btnStopLatch.style.display = 'inline-block';
+          setStopLatchDisplay('inline-block');
           ensureClock();
         }
       }
     });
 
-    btnStopLatch.addEventListener('pointerdown', stopAllLatchedChords);
+    document.querySelectorAll('.btn-stop-latch').forEach(b => b.addEventListener('pointerdown', stopAllLatchedChords));
+    document.querySelectorAll('.btn-stop-all').forEach(b => b.addEventListener('pointerdown', stopAllAudio));
 
     document.getElementById('btn-oct-down').addEventListener('pointerdown', () => {
       keyboardOctave = Math.max(2, keyboardOctave - 1);
@@ -2342,7 +2475,7 @@
             stopAllLatchedChords();
             currentLatchedChord = { rootMidi: midi, baseQual, btn };
             btn.classList.add('latched');
-            btnStopLatch.style.display = 'inline-block';
+            setStopLatchDisplay('inline-block');
             currentPadVoices = triggerPadVoices(midi, baseQual);
 
           } else {
@@ -2354,7 +2487,7 @@
             if (currentPadVoices.length > 0) { currentPadVoices.forEach(v => stopChordNote(v)); currentPadVoices = []; }
             currentLatchedChord = { rootMidi: midi, baseQual, btn };
             btn.classList.add('latched');
-            btnStopLatch.style.display = 'inline-block';
+            setStopLatchDisplay('inline-block');
 
             ensureClock();
             const beatDur = 60.0 / synthParams.bpm;
