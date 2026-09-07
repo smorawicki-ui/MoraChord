@@ -243,6 +243,22 @@
       box-shadow: 0 0 12px var(--accent-glow), 0 4px 8px rgba(0,0,0,0.5);
     }
 
+    /* JOYSTICK MOD LOCK */
+    .joy-lock-btn {
+      position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+      background: transparent; border: 1px solid var(--panel-border);
+      border-radius: 6px; color: var(--text-dim); font-size: 0.55rem;
+      padding: 2px 7px; cursor: pointer; outline: none; white-space: nowrap;
+      transition: all 0.15s; font-weight: 700; letter-spacing: 0.5px; font-family: inherit;
+      z-index: 2;
+    }
+    .joy-lock-btn:hover { color: var(--text-muted); border-color: rgba(255,255,255,0.2); }
+    .joy-lock-btn.locked {
+      border-color: var(--accent-amber); color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.12);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+    }
+
     /* CHORD KEYS GRID */
     .keys-container { flex: 1; display: grid; gap: 10px; }
     .keys-container.layout-diatonic {
@@ -793,9 +809,9 @@
 
             <div class="drum-mix-container">
               <div class="pill-group">
-                <button class="ctrl-btn" id="btn-bpm-down">-</button>
+                <button class="ctrl-btn btn-bpm-down" id="btn-bpm-down">-</button>
                 <span id="val-bpm" class="val-badge">120 BPM</span>
-                <button class="ctrl-btn" id="btn-bpm-up">+</button>
+                <button class="ctrl-btn btn-bpm-up" id="btn-bpm-up">+</button>
               </div>
               <div class="pill-group">
                 <button class="ctrl-btn" id="btn-dvol-down">-</button>
@@ -844,6 +860,7 @@
           <div class="lbl" style="grid-column:2; grid-row:3;" id="lbl-sus4">↓<br>Sus4</div>
           <div class="lbl" style="grid-column:3; grid-row:3;" id="lbl-9th">↘<br>9th</div>
         </div>
+        <button class="joy-lock-btn" id="btn-joy-lock" title="Fijar/liberar el modificador de acorde activo">🔒 LOCK</button>
       </div>
 
       <div class="keys-container layout-diatonic" id="keys-container">
@@ -1305,8 +1322,6 @@
 
     makeLongPressForClass('btn-bpm-down', () => setBPM(synthParams.bpm - 1));
     makeLongPressForClass('btn-bpm-up', () => setBPM(synthParams.bpm + 1));
-    makeLongPress('btn-bpm-down', () => setBPM(synthParams.bpm - 1));
-    makeLongPress('btn-bpm-up', () => setBPM(synthParams.bpm + 1));
     makeLongPress('btn-dvol-down', () => {
       synthParams.drumVol = Math.max(0, Math.round((synthParams.drumVol - 0.05) * 100) / 100);
       document.getElementById('val-dvol').innerText = Math.round(synthParams.drumVol * 100) + '%';
@@ -1320,6 +1335,7 @@
 
     // Volumen master del sintetizador
     synthParams.synthVol = 0.55;
+    document.getElementById('val-svol').innerText = '55% 🔊'; // BUG-01: sincronizar display con valor real inicial
     makeLongPress('btn-svol-down', () => {
       synthParams.synthVol = Math.max(0, Math.round((synthParams.synthVol - 0.05) * 100) / 100);
       document.getElementById('val-svol').innerText = Math.round(synthParams.synthVol * 100) + '% 🔊';
@@ -2577,6 +2593,15 @@
     }
 
     function buildTouchKeyboard() {
+      // F4: limpiar punteros activos antes de destruir el DOM para evitar voces huérfanas
+      if (activePointers.size > 0) {
+        activePointers.forEach((data) => {
+          if (data.keyElem) data.keyElem.classList.remove('active');
+          if (data.voice) stopChordNote(data.voice);
+        });
+        activePointers.clear();
+        lastLeadFreq = null;
+      }
       touchKeyboard.innerHTML = '';
       const scale = SCALES[currentScaleIdx];
       const rootPitch = (keyboardOctave * 12) + keyOffset;
@@ -2691,11 +2716,36 @@
 
     // JOYSTICK
     const joyCenter = document.getElementById('joyCenter'), joyStick = document.getElementById('joyStick');
-    let joyPointerId = null;
+    let joyPointerId = null, isModLocked = false;
     joyCenter.addEventListener('pointerdown', (e) => { joyPointerId = e.pointerId; joyCenter.setPointerCapture(joyPointerId); handleJoy(e); });
     joyCenter.addEventListener('pointermove', (e) => { if (e.pointerId === joyPointerId) handleJoy(e); });
-    function releaseJoy(e) { if (e.pointerId !== joyPointerId) return; joyPointerId = null; joyStick.style.transform = `translate(0px, 0px)`; currentMod = 'center'; updateUI(); }
+    function releaseJoy(e) {
+      if (e.pointerId !== joyPointerId) return;
+      joyPointerId = null;
+      // M7: si el mod está bloqueado, no volvemos al centro al soltar el joystick
+      if (!isModLocked) {
+        joyStick.style.transform = `translate(0px, 0px)`;
+        currentMod = 'center';
+        updateUI();
+      }
+    }
     joyCenter.addEventListener('pointerup', releaseJoy); joyCenter.addEventListener('pointercancel', releaseJoy);
+
+    // M7: botón LOCK del joystick — fija el modificador actual
+    const btnJoyLock = document.getElementById('btn-joy-lock');
+    if (btnJoyLock) {
+      btnJoyLock.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        isModLocked = !isModLocked;
+        btnJoyLock.classList.toggle('locked', isModLocked);
+        if (!isModLocked && joyPointerId === null) {
+          // Al desbloquear sin joy activo: regresar al centro
+          joyStick.style.transform = `translate(0px, 0px)`;
+          currentMod = 'center';
+          updateUI();
+        }
+      });
+    }
 
     function handleJoy(e) {
       const rect = joyCenter.getBoundingClientRect();
@@ -2738,8 +2788,18 @@
         activeKeys.set(btn, voices);
       });
       function releaseBtn() {
-        btn.classList.remove('active'); 
-        if (activeKeys.has(btn)) { activeKeys.get(btn).forEach(v => stopChordNote(v)); activeKeys.delete(btn); }
+        btn.classList.remove('active');
+        if (activeKeys.has(btn)) {
+          activeKeys.get(btn).forEach(v => {
+            // F5: si la nota está programada en el futuro (cuantización), garantizar gate mínimo audible
+            if (actx && v.startTime > actx.currentTime + 0.02) {
+              stopChordNote(v, v.startTime + 0.18);
+            } else {
+              stopChordNote(v);
+            }
+          });
+          activeKeys.delete(btn);
+        }
       }
       btn.addEventListener('pointerup', releaseBtn); btn.addEventListener('pointercancel', releaseBtn);
     });
@@ -2863,7 +2923,10 @@
       // BPM
       if (d.bpm !== undefined) {
         synthParams.bpm = d.bpm;
-        document.getElementById('val-bpm').innerText = d.bpm + ' BPM';
+        // BUG-02: sincronizar todos los displays de BPM (transport, teclado, matrix, cajón)
+        document.querySelectorAll('.val-bpm').forEach(el => el.innerText = d.bpm + ' BPM');
+        const bpmById = document.getElementById('val-bpm');
+        if (bpmById) bpmById.innerText = d.bpm + ' BPM';
         updateDelayTime();
       }
       // Drum vol
