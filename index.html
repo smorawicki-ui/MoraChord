@@ -391,19 +391,36 @@
 
     /* 3RD MAIN TAB: MATRIX & SYNTH LAB */
     .matrix-mode-view {
-      display: none; flex: 1; flex-direction: column; padding: 6px 10px; gap: 6px; overflow: hidden; min-height: 0;
+      display: none; flex: 1; flex-direction: column; padding: 4px 8px; gap: 4px; overflow: hidden; min-height: 0;
     }
     .matrix-mode-view.active { display: flex; }
-    .matrix-header-bar {
-      display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;
-      background: rgba(7, 11, 16, 0.7); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--panel-border); flex-shrink: 0;
+
+    /* Barra de control compacta de la Matrix (todo en dos filas) */
+    .matrix-ctrl-bar {
+      display: flex; flex-direction: column; gap: 3px; flex-shrink: 0;
+      background: rgba(7, 11, 16, 0.75); border: 1px solid var(--panel-border);
+      border-radius: 12px; padding: 5px 10px;
     }
-    .matrix-title-group { display: flex; align-items: center; gap: 6px; }
-    .matrix-body-grid { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; overflow: hidden; }
-    .matrix-lfo-card { background: rgba(15, 23, 36, 0.85); border: 1px solid rgba(14, 165, 233, 0.25); padding: 6px 10px; flex-shrink: 0; }
+    .matrix-ctrl-row {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .matrix-ctrl-divider { width: 1px; height: 14px; background: var(--panel-border); flex-shrink: 0; }
+    .matrix-lfo-label {
+      font-size: 0.58rem; font-weight: 800; color: var(--text-dim); letter-spacing: 0.8px;
+      text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+
+    .matrix-body-grid { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; overflow: hidden; }
     .matrix-steps-card {
-      background: rgba(10, 16, 26, 0.9); flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; padding: 6px 10px;
-      border-radius: 14px; border: 1px solid var(--panel-border);
+      background: rgba(10, 16, 26, 0.9); flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; padding: 5px 8px;
+      border-radius: 12px; border: 1px solid var(--panel-border);
+    }
+    .matrix-steps-card-header {
+      display: flex; align-items: center; gap: 5px; margin-bottom: 3px; flex-shrink: 0;
+    }
+    .matrix-steps-card-title {
+      font-family: 'Outfit', sans-serif; font-size: 0.6rem; font-weight: 800;
+      color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase;
     }
     
     .matrix-steps-container {
@@ -956,37 +973,37 @@
       <div class="touch-keyboard style-piano" id="touch-keyboard"></div>
     </div>
 
-    <!-- VISTA 3ª PESTAÑA: MATRIX & SYNTH LAB (SECUENCIADOR ANALÓGICO & LFO) -->
+    <!-- VISTA 3ª PESTAÑA: MATRIX & SYNTH LAB -->
     <div class="matrix-mode-view" id="matrix-mode-view">
-      <div class="matrix-header-bar">
-        <div class="matrix-title-group">
-          <span style="font-size:0.9rem;">🌀</span>
-          <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:0.8rem; letter-spacing:1px; color:var(--accent-hover);">ANALOG MATRIX & SYNTH LAB</span>
-        </div>
 
-        <div class="pill-group">
-          <button class="ctrl-btn play-beat-btn btn-top-beat" style="padding: 4px 10px !important;" title="Iniciar / Detener Ritmo">
+      <!-- BARRA COMPACTA UNIFICADA: transporte + LFO + inst en dos filas -->
+      <div class="matrix-ctrl-bar">
+
+        <!-- FILA 1: Título + Transporte + Instrumento -->
+        <div class="matrix-ctrl-row">
+          <span style="font-size:0.75rem;">🌀</span>
+          <span style="font-family:'Outfit',sans-serif; font-weight:800; font-size:0.72rem; letter-spacing:1px; color:var(--accent-hover); white-space:nowrap;">MATRIX LAB</span>
+          <div class="matrix-ctrl-divider"></div>
+          <button class="ctrl-btn play-beat-btn btn-top-beat" style="padding: 3px 8px !important; font-size:0.68rem;" title="Iniciar / Detener Ritmo">
             <span class="led-dot"></span>
             <span class="btn-label">▶ BEAT</span>
           </button>
-          <button class="ctrl-btn play-beat-btn" id="btn-matrix-run" style="padding: 4px 12px !important;" title="Encender / Detener bucle en segundo plano">
+          <button class="ctrl-btn play-beat-btn" id="btn-matrix-run" style="padding: 3px 10px !important; font-size:0.68rem;" title="Encender / Detener bucle">
             <span class="led-dot"></span>
-            <span class="btn-label">▶ RUN MATRIX</span>
+            <span class="btn-label">▶ RUN</span>
           </button>
-          <div class="pill-divider"></div>
-          <button class="ctrl-btn btn-bpm-down">-</button>
-          <span class="val-bpm val-badge">120 BPM</span>
-          <button class="ctrl-btn btn-bpm-up">+</button>
-          <div class="pill-divider"></div>
-          <button class="btn-stop-all ctrl-btn" style="padding:3px 6px; font-size:0.65rem; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fbbf24; font-weight:800;" title="Silenciar todo (Stop All)">🛑 STOP ALL</button>
-          <div class="pill-divider"></div>
-          <button class="ctrl-btn" id="btn-matrix-rand" title="Generar patrón aleatorio">🎲 Random</button>
-          <button class="ctrl-btn" id="btn-matrix-reset" title="Reiniciar pasos">↺ Reset</button>
-        </div>
-
-        <div class="pill-group">
-          <span style="font-size:0.65rem; color:var(--text-muted); font-weight:700; margin-right:4px;">INST MATRIX:</span>
-          <select id="matrix-inst-select" class="inst-select" style="max-width:120px;">
+          <div class="matrix-ctrl-divider"></div>
+          <button class="ctrl-btn btn-bpm-down" style="padding:3px 7px;">-</button>
+          <span class="val-bpm val-badge" style="font-size:0.68rem; min-width:52px;">120 BPM</span>
+          <button class="ctrl-btn btn-bpm-up" style="padding:3px 7px;">+</button>
+          <div class="matrix-ctrl-divider"></div>
+          <button class="btn-stop-all ctrl-btn" style="padding:2px 6px; font-size:0.62rem; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; color:#fbbf24; font-weight:800;" title="Silenciar todo">🛑 STOP ALL</button>
+          <div class="matrix-ctrl-divider"></div>
+          <button class="ctrl-btn" id="btn-matrix-rand" style="padding:2px 7px; font-size:0.65rem;" title="Patrón aleatorio">🎲 Rand</button>
+          <button class="ctrl-btn" id="btn-matrix-reset" style="padding:2px 7px; font-size:0.65rem;" title="Reiniciar">↺ Reset</button>
+          <div class="matrix-ctrl-divider"></div>
+          <span class="matrix-lfo-label">Inst:</span>
+          <select id="matrix-inst-select" class="inst-select" style="max-width:115px; font-size:0.68rem;">
             <option value="acidbass" selected>⚡ Bajo Ácido (303)</option>
             <option value="dx7bass">⚡ DX7 Solid Bass</option>
             <option value="analog">🎹 Synth Pad</option>
@@ -997,60 +1014,49 @@
             <option value="8bit">👾 8-Bit Chiptune</option>
           </select>
         </div>
-      </div>
 
-      <div class="matrix-body-grid">
-        <!-- SECCIÓN LFO SWEEP & FILTER RESONANCE -->
-        <div class="rack-card matrix-lfo-card">
-          <div class="card-header">
-            <div class="card-title-group">
-              <span class="card-icon">🌊</span>
-              <span class="card-title">MODULACIÓN LFO & FILTER SWEEP (PINK FLOYD LAB)</span>
-            </div>
-          </div>
-          <div class="params-grid" style="grid-template-columns: repeat(4, 1fr);">
-            <div class="param-group">
-              <label><span>Onda LFO</span></label>
-              <select id="matrix-lfo-wave" class="subdiv-select" style="height:24px; font-size:0.68rem; font-weight:800;">
-                <option value="sample_hold" selected>Sample & Hold (Aleatorio S&H)</option>
-                <option value="triangle">Triangular (Sweeper)</option>
-                <option value="sine">Senoidal (Suave)</option>
-                <option value="sawtooth">Diente de Sierra</option>
-                <option value="square">Cuadrada (Trémolo)</option>
-              </select>
-            </div>
-            <div class="param-group">
-              <label><span>Velocidad Rate</span> <span id="val-matrix-lfo-rate">1/16</span></label>
-              <select id="matrix-lfo-subdiv" class="subdiv-select" style="height:24px; font-size:0.68rem; font-weight:800;">
-                <option value="0.25" selected>1/16 Semicorchea</option>
-                <option value="0.5">1/8 Corchea</option>
-                <option value="1.0">1/4 Negra</option>
-                <option value="2.0">1/2 Blanca</option>
-                <option value="4.0">1 Compás</option>
-              </select>
-            </div>
-            <div class="param-group">
-              <label><span>Barrido Depth</span> <span id="val-matrix-lfo-depth">75%</span></label>
-              <input type="range" id="p-matrix-lfo-depth" min="0" max="1" step="0.05" value="0.75">
-            </div>
-            <div class="param-group">
-              <label><span>Resonancia Q</span> <span id="val-matrix-q">6.0</span></label>
-              <input type="range" id="p-matrix-q" min="0.5" max="18" step="0.5" value="6.0">
-            </div>
-          </div>
+        <!-- FILA 2: Controles LFO compactos en línea -->
+        <div class="matrix-ctrl-row">
+          <span class="matrix-lfo-label">🌊 LFO:</span>
+          <select id="matrix-lfo-wave" class="subdiv-select" style="height:22px; font-size:0.62rem; font-weight:700; max-width:130px;">
+            <option value="sample_hold" selected>S&H Aleatorio</option>
+            <option value="triangle">Triangular</option>
+            <option value="sine">Senoidal</option>
+            <option value="sawtooth">Sierra</option>
+            <option value="square">Cuadrada</option>
+          </select>
+          <div class="matrix-ctrl-divider"></div>
+          <span class="matrix-lfo-label">Rate:</span>
+          <select id="matrix-lfo-subdiv" class="subdiv-select" style="height:22px; font-size:0.62rem; font-weight:700; max-width:110px;">
+            <option value="0.25" selected>1/16</option>
+            <option value="0.5">1/8</option>
+            <option value="1.0">1/4</option>
+            <option value="2.0">1/2</option>
+            <option value="4.0">1 Compás</option>
+          </select>
+          <div class="matrix-ctrl-divider"></div>
+          <span class="matrix-lfo-label">Depth:</span>
+          <input type="range" id="p-matrix-lfo-depth" min="0" max="1" step="0.05" value="0.75" style="width:80px; height:4px;">
+          <span id="val-matrix-lfo-depth" style="font-size:0.62rem; font-weight:800; color:var(--accent-hover); min-width:28px;">75%</span>
+          <div class="matrix-ctrl-divider"></div>
+          <span class="matrix-lfo-label">Res Q:</span>
+          <input type="range" id="p-matrix-q" min="0.5" max="18" step="0.5" value="6.0" style="width:70px; height:4px;">
+          <span id="val-matrix-q" style="font-size:0.62rem; font-weight:800; color:var(--accent-hover); min-width:24px;">6.0</span>
         </div>
 
-        <!-- MATRIX STEPS GRID (16 PASOS) -->
-        <div class="rack-card matrix-steps-card">
-          <div class="card-header">
-            <div class="card-title-group">
-              <span class="card-icon">🎚️</span>
-              <span class="card-title">MATRIZ DE PASOS (STEP PITCH, GATE & SLIDE)</span>
-            </div>
+      </div>
+
+      <!-- GRID DE PASOS (ocupa todo el espacio restante) -->
+      <div class="matrix-body-grid">
+        <div class="matrix-steps-card">
+          <div class="matrix-steps-card-header">
+            <span style="font-size:0.8rem;">🎚️</span>
+            <span class="matrix-steps-card-title">Matriz de Pasos — Step Pitch · Gate · Slide</span>
           </div>
           <div class="matrix-steps-container" id="matrix-steps-container"></div>
         </div>
       </div>
+
     </div>
   </div>
 
