@@ -684,15 +684,22 @@
         <div class="pill-group" style="padding-left: 6px; padding-right: 6px;">
           <span style="font-size: 0.62rem; color: var(--text-muted); font-weight: 700; margin-right: 2px;">SONIDO:</span>
           <select id="inst-select" class="inst-select">
-            <optgroup label="Clásicos">
+            <optgroup label="Leyendas del Synth">
               <option value="analog" selected>🎹 Synth Pad</option>
-              <option value="bornslippy">⚡ Synthpotting</option>
+              <option value="bornslippy">⚡ Synthpotting (Born Slippy)</option>
+              <option value="supersaw">⚡ SuperSaw 2000s (Sandstorm)</option>
+              <option value="m1organ">🎹 90s House Organ (Robin S)</option>
+              <option value="synthbrass">🎺 80s Synth Brass (Jump)</option>
+              <option value="vangelis">🌌 Blade Runner (CS-80)</option>
+              <option value="gfunk">🐍 G-Funk Whistle (Moog)</option>
+            </optgroup>
+            <optgroup label="Clásicos">
               <option value="dx7ep">🎹 DX7 E-Piano 1</option>
               <option value="dx7bass">⚡ DX7 Solid Bass</option>
+              <option value="acidbass">⚡ Bajo Ácido (303)</option>
               <option value="strings">🎻 Cuerdas Caoticas</option>
               <option value="organ">🎹 Órgano Hammond</option>
               <option value="guitar">🎸 Guitarra Eléctrica</option>
-              <option value="acidbass">⚡ Bajo Ácido (303)</option>
             </optgroup>
             <optgroup label="Falopa / FX">
               <option value="8bit">👾 8-Bit (Chiptune)</option>
@@ -942,6 +949,11 @@
           <select id="latch-inst-select" class="inst-select" style="background:transparent; border:none; color:var(--accent-hover); font-size:0.72rem; font-weight:800; cursor:pointer; max-width:115px;">
             <option value="analog" selected>🎹 Synth Pad</option>
             <option value="bornslippy">⚡ Synthpotting 90s</option>
+            <option value="supersaw">⚡ SuperSaw 2000s</option>
+            <option value="m1organ">🎹 90s House Organ</option>
+            <option value="synthbrass">🎺 80s Synth Brass</option>
+            <option value="vangelis">🌌 Blade Runner</option>
+            <option value="gfunk">🐍 G-Funk Whistle</option>
             <option value="dx7ep">🎹 DX7 E-Piano 1</option>
             <option value="dx7bass">⚡ DX7 Solid Bass</option>
             <option value="acidbass">⚡ Bajo Ácido (303)</option>
@@ -1013,6 +1025,11 @@
           <select id="matrix-inst-select" class="inst-select" style="max-width:115px; font-size:0.68rem;">
             <option value="acidbass" selected>⚡ Bajo Ácido (303)</option>
             <option value="bornslippy">⚡ Synthpotting 90s</option>
+            <option value="supersaw">⚡ SuperSaw 2000s</option>
+            <option value="m1organ">🎹 90s House Organ</option>
+            <option value="synthbrass">🎺 80s Synth Brass</option>
+            <option value="vangelis">🌌 Blade Runner</option>
+            <option value="gfunk">🐍 G-Funk Whistle</option>
             <option value="dx7bass">⚡ DX7 Solid Bass</option>
             <option value="analog">🎹 Synth Pad</option>
             <option value="dx7ep">🎹 DX7 E-Piano 1</option>
@@ -1124,7 +1141,12 @@
       crystal: { attack: 0.03, release: 2.8, cutoff: 3000, echo: 0.35, glide: 0.03 },
       sweep: { attack: 0.20, release: 1.8, cutoff: 1900, echo: 0.25, glide: 0.05 },
       alien: { attack: 0.04, release: 1.3, cutoff: 2600, echo: 0.35, glide: 0.04 },
-      bornslippy: { attack: 0.015, release: 1.1, cutoff: 3600, echo: 0.35, echoSubdiv: "0.75", glide: 0.01 }
+      bornslippy: { attack: 0.015, release: 1.1, cutoff: 3600, echo: 0.35, echoSubdiv: "0.75", glide: 0.01 },
+      supersaw: { attack: 0.01, release: 0.8, cutoff: 4200, echo: 0.25, echoSubdiv: "0.25", glide: 0.01 },
+      m1organ: { attack: 0.005, release: 0.35, cutoff: 3200, echo: 0.15, glide: 0.005 },
+      synthbrass: { attack: 0.02, release: 0.9, cutoff: 2800, echo: 0.15, glide: 0.02 },
+      vangelis: { attack: 0.35, release: 2.8, cutoff: 2200, echo: 0.35, echoSubdiv: "0.75", glide: 0.12 },
+      gfunk: { attack: 0.02, release: 0.5, cutoff: 5000, echo: 0.20, glide: 0.15 }
     };
 
     const PARAM_INPUT_MAP = {
@@ -2081,6 +2103,101 @@
           const subGain = actx.createGain(); subGain.gain.value = 0.4; sub.connect(subGain); subGain.connect(filterNode);
           extraNodes.push(subGain); oscillators.push(sub);
         }
+
+      // ROLAND JP-8000 SUPERSAW (Trance / Rave 2000s - Sandstorm)
+      } else if (inst === 'supersaw') {
+        filterNode.Q.value = 1.4; targetGain = 0.040;
+        const detunes = [-18, -11, -5, 0, 5, 11, 18];
+        detunes.forEach((d, idx) => {
+          const osc = actx.createOscillator(); osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(prevFreq || freq, t); osc.detune.value = d; osc.freqMultiplier = 1;
+          if (prevFreq && synthParams.glide > 0.005) osc.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          const g = actx.createGain(); g.gain.value = idx === 3 ? 0.26 : 0.16;
+          osc.connect(g); g.connect(filterNode);
+          extraNodes.push(g); oscillators.push(osc);
+        });
+        if (isBass && !isStrum) {
+          const sub = actx.createOscillator(); sub.type = 'sawtooth'; sub.frequency.setValueAtTime((prevFreq || freq) / 2, t); sub.freqMultiplier = 0.5;
+          if (prevFreq && synthParams.glide > 0.005) sub.frequency.setTargetAtTime(freq / 2, t, synthParams.glide);
+          const subGain = actx.createGain(); subGain.gain.value = 0.35; sub.connect(subGain); subGain.connect(filterNode);
+          extraNodes.push(subGain); oscillators.push(sub);
+        }
+
+      // KORG M1 HOUSE ORGAN 2 (90s Deep House / Eurodance - Show Me Love)
+      } else if (inst === 'm1organ') {
+        filterNode.Q.value = 1.2; targetGain = 0.050;
+        const carrier = actx.createOscillator(); carrier.type = 'sine'; carrier.frequency.setValueAtTime(prevFreq || freq, t); carrier.freqMultiplier = 1;
+        const h2 = actx.createOscillator(); h2.type = 'sine'; h2.frequency.setValueAtTime((prevFreq || freq) * 3, t); h2.freqMultiplier = 3;
+        const h3 = actx.createOscillator(); h3.type = 'square'; h3.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); h3.freqMultiplier = 0.5;
+        const click = actx.createOscillator(); click.type = 'square'; click.frequency.setValueAtTime((prevFreq || freq) * 7.5, t); click.freqMultiplier = 7.5;
+        
+        if (prevFreq && synthParams.glide > 0.005) {
+          carrier.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          h2.frequency.setTargetAtTime(freq * 3, t, synthParams.glide);
+          h3.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
+          click.frequency.setTargetAtTime(freq * 7.5, t, synthParams.glide);
+        }
+        const g2 = actx.createGain(); g2.gain.value = 0.45; h2.connect(g2); g2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.30; h3.connect(g3); g3.connect(filterNode);
+        const gClick = actx.createGain(); gClick.gain.setValueAtTime(0.5, t); gClick.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+        click.connect(gClick); gClick.connect(filterNode);
+        carrier.connect(filterNode);
+        extraNodes.push(g2, g3, gClick); oscillators.push(carrier, h2, h3, click);
+
+      // OBERHEIM OB-XA SYNTH BRASS (80s Anthem - Van Halen Jump)
+      } else if (inst === 'synthbrass') {
+        filterNode.Q.value = 2.4; targetGain = 0.045;
+        filterNode.frequency.setValueAtTime(Math.min(14000, synthParams.cutoff * 3.8), t);
+        filterNode.frequency.exponentialRampToValueAtTime(Math.max(120, synthParams.cutoff), t + 0.16);
+
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -7; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 7; osc2.freqMultiplier = 1;
+        const osc3 = actx.createOscillator(); osc3.type = 'sawtooth'; osc3.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); osc3.detune.value = 2; osc3.freqMultiplier = 0.5;
+        
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc3.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
+        }
+        osc1.connect(filterNode); osc2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.35; osc3.connect(g3); g3.connect(filterNode);
+        extraNodes.push(g3); oscillators.push(osc1, osc2, osc3);
+
+      // YAMAHA CS-80 CINEMATIC LEAD (Blade Runner Theme)
+      } else if (inst === 'vangelis') {
+        filterNode.Q.value = 1.2; targetGain = 0.042;
+        filterNode.frequency.setValueAtTime(Math.max(100, synthParams.cutoff * 0.3), t);
+        filterNode.frequency.exponentialRampToValueAtTime(Math.min(12000, synthParams.cutoff * 2.2), t + 0.6);
+
+        const osc1 = actx.createOscillator(); osc1.type = 'sawtooth'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.detune.value = -5; osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 5; osc2.freqMultiplier = 1;
+        const osc3 = actx.createOscillator(); osc3.type = 'sine'; osc3.frequency.setValueAtTime((prevFreq || freq) * 0.5, t); osc3.freqMultiplier = 0.5;
+
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc3.frequency.setTargetAtTime(freq * 0.5, t, synthParams.glide);
+        }
+        osc1.connect(filterNode); osc2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.35; osc3.connect(g3); g3.connect(filterNode);
+        extraNodes.push(g3); oscillators.push(osc1, osc2, osc3);
+
+      // MINIMOOG WEST COAST WHISTLE (90s G-Funk Lead - Dr. Dre)
+      } else if (inst === 'gfunk') {
+        filterNode.Q.value = 0.9; targetGain = 0.052;
+        const osc1 = actx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(prevFreq || freq, t); osc1.freqMultiplier = 1;
+        const osc2 = actx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(prevFreq || freq, t); osc2.detune.value = 4; osc2.freqMultiplier = 1;
+        const osc3 = actx.createOscillator(); osc3.type = 'sine'; osc3.frequency.setValueAtTime((prevFreq || freq) * 2, t); osc3.freqMultiplier = 2;
+        
+        if (prevFreq && synthParams.glide > 0.005) {
+          osc1.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc2.frequency.setTargetAtTime(freq, t, synthParams.glide);
+          osc3.frequency.setTargetAtTime(freq * 2, t, synthParams.glide);
+        }
+        osc1.connect(filterNode);
+        const g2 = actx.createGain(); g2.gain.value = 0.4; osc2.connect(g2); g2.connect(filterNode);
+        const g3 = actx.createGain(); g3.gain.value = 0.25; osc3.connect(g3); g3.connect(filterNode);
+        extraNodes.push(g2, g3); oscillators.push(osc1, osc2, osc3);
 
       // YAMAHA DX7 E-PIANO 1 (FM dual: campana metálica + cuerpo)
       } else if (inst === 'dx7ep') {
